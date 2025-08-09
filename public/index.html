@@ -898,4 +898,862 @@
                     
                     <div class="form-group">
                         <label for="relationshipToCv">Relationship to CV</label>
-                        <select i
+                        <select id="relationshipToCv" name="relationshipToCv">
+                            <option value="">Select Relationship</option>
+                            <option value="STRANGER">Stranger</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="FATHER">Father</option>
+                            <option value="MOTHER">Mother</option>
+                            <option value="LANDLOARD">Landlord</option>
+                            <option value="NEIBOUR">Neighbor</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeAddRecordModal()">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let allData = [];
+        let filteredData = [];
+        let charts = {};
+        let isConnectedToDatabase = false;
+
+        // API configuration
+        const API_BASE = window.location.origin + '/api';
+
+        // Color schemes
+        const colors = {
+            primary: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+            gradient: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(240, 147, 251, 0.8)', 'rgba(245, 87, 108, 0.8)', 'rgba(79, 172, 254, 0.8)', 'rgba(0, 242, 254, 0.8)']
+        };
+
+        // Enhanced Age Handling Functions
+        function setupAgeInputHandlers() {
+            const ageInput = document.getElementById('cvwAge');
+            const ageUnit = document.getElementById('ageUnit');
+            
+            if (ageInput && ageUnit) {
+                ageUnit.addEventListener('change', function() {
+                    const unit = this.value;
+                    
+                    if (unit === 'months') {
+                        ageInput.max = '60'; // 5 years max in months
+                        ageInput.placeholder = 'Enter months (0-60)';
+                        ageInput.title = 'Enter age in months (0-60 months = 0-5 years)';
+                        // Highlight for months input
+                        ageInput.style.borderColor = '#dc2626';
+                        ageInput.style.backgroundColor = '#fef2f2';
+                    } else if (unit === 'years') {
+                        ageInput.max = '18';
+                        ageInput.placeholder = 'Enter years (0-18)';
+                        ageInput.title = 'Enter age in years (0-18 years)';
+                        // Reset styling for years
+                        ageInput.style.borderColor = '#dee2e6';
+                        ageInput.style.backgroundColor = 'white';
+                    } else {
+                        ageInput.max = '120';
+                        ageInput.placeholder = 'Enter age';
+                        ageInput.title = '';
+                        ageInput.style.borderColor = '#dee2e6';
+                        ageInput.style.backgroundColor = 'white';
+                    }
+                    
+                    // Clear the input when unit changes
+                    ageInput.value = '';
+                });
+
+                // Validate age input based on unit
+                ageInput.addEventListener('input', function() {
+                    const unit = ageUnit.value;
+                    const value = parseFloat(this.value);
+                    
+                    if (unit === 'months' && value > 60) {
+                        this.setCustomValidity('Maximum 60 months (5 years). Use "Years" for older children.');
+                    } else if (unit === 'years' && value > 18) {
+                        this.setCustomValidity('Maximum 18 years for CVW cases.');
+                    } else if (value < 0) {
+                        this.setCustomValidity('Age cannot be negative.');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+        }
+
+        // Function to convert age to years for database storage
+        function convertAgeToYears(age, unit) {
+            if (!age || !unit) return null;
+            
+            const ageNum = parseFloat(age);
+            
+            if (unit === 'months') {
+                return Math.round((ageNum / 12) * 100) / 100; // Convert months to years, round to 2 decimals
+            } else if (unit === 'years') {
+                return ageNum;
+            }
+            
+            return ageNum;
+        }
+
+        // Function to display age in human-readable format
+        function formatAgeDisplay(ageInYears) {
+            if (!ageInYears || ageInYears === 0) return 'N/A';
+            
+            const years = parseFloat(ageInYears);
+            
+            // If less than 1 year, show in months
+            if (years < 1) {
+                const months = Math.round(years * 12);
+                return `${months} month${months !== 1 ? 's' : ''}`;
+            }
+            
+            // If it's a whole number, show as years
+            if (years === Math.floor(years)) {
+                return `${Math.floor(years)} year${Math.floor(years) !== 1 ? 's' : ''}`;
+            }
+            
+            // If it has decimals (converted from months), show in a readable format
+            const wholeYears = Math.floor(years);
+            const extraMonths = Math.round((years - wholeYears) * 12);
+            
+            if (wholeYears === 0) {
+                return `${extraMonths} month${extraMonths !== 1 ? 's' : ''}`;
+            } else if (extraMonths === 0) {
+                return `${wholeYears} year${wholeYears !== 1 ? 's' : ''}`;
+            } else {
+                return `${wholeYears}y ${extraMonths}m`;
+            }
+        }
+
+        // Get age category for styling
+        function getAgeCategory(ageInYears) {
+            if (!ageInYears) return '';
+            const years = parseFloat(ageInYears);
+            
+            if (years < 1) return 'infant';
+            if (years < 3) return 'toddler';
+            if (years < 13) return 'child';
+            return 'teen';
+        }
+
+        // Database connection status
+        async function checkDatabaseConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const status = await response.json();
+                
+                const statusElement = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('statusText');
+                
+                if (status.status === 'connected') {
+                    statusElement.className = 'connection-status status-connected';
+                    statusText.textContent = `✅ Database Connected (${status.totalRecords} records)`;
+                    isConnectedToDatabase = true;
+                } else {
+                    statusElement.className = 'connection-status status-disconnected';
+                    statusText.textContent = '❌ Database Connection Failed - Using Fallback Data';
+                    isConnectedToDatabase = false;
+                }
+            } catch (error) {
+                console.error('Error checking database status:', error);
+                const statusElement = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('statusText');
+                statusElement.className = 'connection-status status-disconnected';
+                statusText.textContent = '❌ Database Offline - Using Fallback Data';
+                isConnectedToDatabase = false;
+            }
+        }
+
+        // Load data from database or fallback
+        async function loadData() {
+            try {
+                if (isConnectedToDatabase) {
+                    const response = await fetch(`${API_BASE}/cases`);
+                    const dbData = await response.json();
+                    
+                    // Transform database data to match expected format
+                    allData = dbData.map(row => ({
+                        'cvw code': row.cvw_code,
+                        'Record Type': row.record_type,
+                        'Date Reported': new Date(row.date_reported),
+                        'District': row.district,
+                        'CVW Gender': row.cvw_gender,
+                        'CVW Age': row.cvw_age || 0,
+                        'Offender Gender': row.offender_gender || '',
+                        'Offender Age': row.offender_age || 0,
+                        'Crime Type': row.crime_type,
+                        'Disability': row.disability || 'NON',
+                        'Services Rendered': row.services_rendered || '',
+                        'Relationship to CV': row.relationship_to_cv || ''
+                    }));
+                    
+                    console.log('✅ Data loaded from database:', allData.length, 'records');
+                } else {
+                    // Fallback to embedded data
+                    loadFallbackData();
+                }
+                
+                filteredData = [...allData];
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                loadFallbackData();
+            }
+        }
+
+        // Generate next case ID from database
+        async function generateCaseId() {
+            const recordType = document.getElementById('recordType').value;
+            const caseIdInput = document.getElementById('caseId');
+            
+            if (!recordType) {
+                caseIdInput.value = '';
+                return;
+            }
+            
+            if (isConnectedToDatabase) {
+                try {
+                    const response = await fetch(`${API_BASE}/next-case-id/${recordType}`);
+                    const data = await response.json();
+                    caseIdInput.value = data.nextCaseId;
+                } catch (error) {
+                    console.error('Error generating case ID:', error);
+                    // Fallback to local generation
+                    generateLocalCaseId(recordType);
+                }
+            } else {
+                generateLocalCaseId(recordType);
+            }
+        }
+
+        function generateLocalCaseId(recordType) {
+            const prefix = recordType === 'Victim' ? 'NPA-CV' : 'ZP-CW';
+            const existingIds = allData
+                .filter(record => record['cvw code'].startsWith(prefix))
+                .map(record => {
+                    const match = record['cvw code'].match(/(\d+)$/);
+                    return match ? parseInt(match[1]) : 0;
+                });
+            
+            const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+            document.getElementById('caseId').value = `${prefix}${nextNumber}`;
+        }
+
+        // Add new record to database
+        async function addRecord(recordData) {
+            if (isConnectedToDatabase) {
+                try {
+                    const response = await fetch(`${API_BASE}/cases`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            cvw_code: recordData.caseId,
+                            record_type: recordData.recordType,
+                            date_reported: recordData.dateReported,
+                            district: recordData.district,
+                            cvw_gender: recordData.cvwGender,
+                            cvw_age: parseFloat(recordData.cvwAge) || null,
+                            offender_gender: recordData.offenderGender || null,
+                            offender_age: parseInt(recordData.offenderAge) || null,
+                            crime_type: recordData.crimeType,
+                            disability: recordData.disability || 'NON',
+                            services_rendered: recordData.servicesRendered || null,
+                            relationship_to_cv: recordData.relationshipToCv || null
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || 'Failed to add record');
+                    }
+
+                    const result = await response.json();
+                    
+                    // Reload data to get latest from database
+                    await loadData();
+                    
+                    return result;
+                } catch (error) {
+                    console.error('Database error, adding locally:', error);
+                    // Fall back to local addition
+                    addRecordLocally(recordData);
+                    throw error; // Re-throw to show user the database error
+                }
+            } else {
+                addRecordLocally(recordData);
+                return { message: 'Record added locally (database offline)' };
+            }
+        }
+
+        function addRecordLocally(recordData) {
+            const newRecord = {
+                'cvw code': recordData.caseId,
+                'Record Type': recordData.recordType,
+                'Date Reported': new Date(recordData.dateReported),
+                'District': recordData.district,
+                'CVW Gender': recordData.cvwGender,
+                'CVW Age': parseFloat(recordData.cvwAge) || 0,
+                'Offender Gender': recordData.offenderGender || '',
+                'Offender Age': parseInt(recordData.offenderAge) || 0,
+                'Crime Type': recordData.crimeType,
+                'Disability': recordData.disability || 'NON',
+                'Services Rendered': recordData.servicesRendered || '',
+                'Relationship to CV': recordData.relationshipToCv || ''
+            };
+            
+            allData.push(newRecord);
+            filteredData = [...allData];
+        }
+
+        // Modal functions
+        function openAddRecordModal() {
+            document.getElementById('addRecordModal').style.display = 'block';
+            document.getElementById('dateReported').value = new Date().toISOString().split('T')[0];
+            document.getElementById('caseId').value = '';
+        }
+
+        function closeAddRecordModal() {
+            document.getElementById('addRecordModal').style.display = 'none';
+            document.getElementById('addRecordForm').reset();
+            hideMessages();
+            // Reset age input styling
+            const ageInput = document.getElementById('cvwAge');
+            if (ageInput) {
+                ageInput.style.borderColor = '#dee2e6';
+                ageInput.style.backgroundColor = 'white';
+            }
+        }
+
+        function showDashboardView() {
+            document.querySelector('.kpi-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideMessages() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Enhanced form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup age input handlers
+            setupAgeInputHandlers();
+            
+            document.getElementById('addRecordForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const recordData = {};
+                
+                // Collect form data
+                for (let [key, value] of formData.entries()) {
+                    recordData[key] = value;
+                }
+                
+                // Validate required fields
+                const requiredFields = ['recordType', 'dateReported', 'district', 'cvwGender', 'crimeType', 'cvwAge', 'ageUnit'];
+                const missingFields = requiredFields.filter(field => !recordData[field]);
+                
+                if (missingFields.length > 0) {
+                    showErrorMessage('Please fill in all required fields: ' + missingFields.join(', '));
+                    return;
+                }
+                
+                // Convert age to years for database storage
+                const originalAge = recordData.cvwAge;
+                const originalUnit = recordData.ageUnit;
+                const ageInYears = convertAgeToYears(originalAge, originalUnit);
+                
+                recordData.cvwAge = ageInYears;
+                
+                // Auto-generate case ID if needed
+                if (!recordData.caseId) {
+                    await generateCaseId();
+                    recordData.caseId = document.getElementById('caseId').value;
+                }
+                
+                try {
+                    const result = await addRecord(recordData);
+                    
+                    // Update filters and dashboard
+                    updateFilters();
+                    applyFilters();
+                    
+                    // Update connection status
+                    await checkDatabaseConnection();
+                    
+                    // Show success message with readable age
+                    const ageDisplay = formatAgeDisplay(ageInYears);
+                    showSuccessMessage(`✅ Record added successfully! Case ID: ${recordData.caseId} (Age: ${ageDisplay})`);
+                    
+                    // Reset form after delay
+                    setTimeout(() => {
+                        closeAddRecordModal();
+                    }, 2000);
+                    
+                } catch (error) {
+                    showErrorMessage(`❌ Error adding record: ${error.message}`);
+                }
+            });
+        });
+
+        // Fallback CSV data parsing
+        function loadFallbackData() {
+            const csvData = `cvw code,Record Type,Date Reported,District,CVW Gender,CVW Age,Offender Gender,Offender Age,Crime Type,Disability,Services Rendered,Relationship to CV
+NPA-CV1,Victim,1/4/2025,Lusaka,MALE,5,FEMALE,25,ASSAULT ON A CHILD,NON,MEDICAL REPORT,STRANGER
+NPA-CV2,Victim,2/2/2025,Lusaka,FEMALE,8,MALE,30,PHYSICAL ABUSE,PHYSICAL,MEDICAL + COUNSELLING,STRANGER
+NPA-CV3,Victim,1/27/2025,Solwezi,FEMALE,10,MALE,40,SEXUAL ASSAULT,MENTAL,MEDICAL + COUNSELLING,LANDLOARD
+NPA-CV4,Victim,3/11/2025,Lusaka,FEMALE,12,MALE,50,RAPE,MENTAL+PHYSICAL,MEDICAL + COUNSELLING,FATHER
+NPA-CV5,Victim,2/7/2025,Katete,MALE,15,FEMALE,60,RAPE,NON,COUNSELLING,FRIEND
+NPA-CV6,Victim,1/7/2025,Chipata,FEMALE,0.5,FEMALE,20,CHILD NEGLECT,NON,COUNSELLING,FRIEND
+NPA-CV7,Victim,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + COUNSELLING,STRANGER`;
+
+            const lines = csvData.trim().split('\n');
+            const headers = lines[0].split(',');
+            const rawData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                rawData.push(row);
+            }
+
+            allData = rawData.map(row => ({
+                ...row,
+                'CVW Gender': row['CVW Gender'].replace('FEMAL', 'FEMALE'),
+                'Offender Gender': row['Offender Gender'].replace('FEMAL', 'FEMALE'),
+                'CVW Age': parseFloat(row['CVW Age']) || 0,
+                'Offender Age': parseFloat(row['Offender Age']) || 0,
+                'Date Reported': new Date(row['Date Reported'])
+            }));
+
+            console.log('📋 Fallback data loaded:', allData.length, 'records');
+        }
+
+        function updateFilters() {
+            // Update district filter
+            const districts = [...new Set(allData.map(d => d.District))].sort();
+            const districtSelect = document.getElementById('districtFilter');
+            const currentValue = districtSelect.value;
+            
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+            districtSelect.value = currentValue;
+
+            // Update crime type filter
+            const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
+            const crimeSelect = document.getElementById('crimeTypeFilter');
+            const currentCrimeValue = crimeSelect.value;
+            
+            crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
+            crimeTypes.forEach(crime => {
+                const option = document.createElement('option');
+                option.value = crime;
+                option.textContent = crime;
+                crimeSelect.appendChild(option);
+            });
+            crimeSelect.value = currentCrimeValue;
+
+            // Update services filter  
+            const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
+            const servicesSelect = document.getElementById('servicesFilter');
+            const currentServicesValue = servicesSelect.value;
+            
+            servicesSelect.innerHTML = '<option value="">All Services</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service;
+                option.textContent = service;
+                servicesSelect.appendChild(option);
+            });
+            servicesSelect.value = currentServicesValue;
+        }
+
+        function setupFilters() {
+            updateFilters();
+
+            // Add event listeners
+            document.getElementById('districtFilter').addEventListener('change', applyFilters);
+            document.getElementById('recordTypeFilter').addEventListener('change', applyFilters);
+            document.getElementById('crimeTypeFilter').addEventListener('change', applyFilters);
+            document.getElementById('genderFilter').addEventListener('change', applyFilters);
+            document.getElementById('servicesFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+        }
+
+        function applyFilters() {
+            const districtFilter = document.getElementById('districtFilter').value;
+            const recordTypeFilter = document.getElementById('recordTypeFilter').value;
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const servicesFilter = document.getElementById('servicesFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+
+            filteredData = allData.filter(row => {
+                const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
+                                 (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
+                
+                return (!districtFilter || row.District === districtFilter) &&
+                       (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
+                       (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
+                       (!genderFilter || row['CVW Gender'] === genderFilter) &&
+                       (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
+                       dateMatch;
+            });
+
+            updateDashboard();
+        }
+
+        function resetFilters() {
+            document.getElementById('districtFilter').value = '';
+            document.getElementById('recordTypeFilter').value = '';
+            document.getElementById('crimeTypeFilter').value = '';
+            document.getElementById('genderFilter').value = '';
+            document.getElementById('servicesFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            filteredData = [...allData];
+            updateDashboard();
+        }
+
+        function updateKPIs() {
+            const totalCases = filteredData.length;
+            const victimCases = filteredData.filter(d => d['Record Type'] === 'Victim').length;
+            const witnessCases = filteredData.filter(d => d['Record Type'] === 'Witness').length;
+            const avgAge = filteredData.filter(d => d['CVW Age'] > 0).reduce((sum, d) => sum + d['CVW Age'], 0) / filteredData.filter(d => d['CVW Age'] > 0).length || 0;
+
+            document.getElementById('totalCases').textContent = totalCases;
+            document.getElementById('victimCases').textContent = victimCases;
+            document.getElementById('witnessCases').textContent = witnessCases;
+            document.getElementById('avgAge').textContent = formatAgeDisplay(avgAge);
+        }
+
+        function createChart(canvasId, type, data, options = {}) {
+            try {
+                const ctx = document.getElementById(canvasId);
+                if (!ctx) {
+                    console.error(`Canvas element ${canvasId} not found`);
+                    return;
+                }
+                
+                const context = ctx.getContext('2d');
+                
+                if (charts[canvasId]) {
+                    charts[canvasId].destroy();
+                }
+
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js not loaded');
+                    ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666;">Chart loading error</p>';
+                    return;
+                }
+
+                const defaultOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                };
+
+                charts[canvasId] = new Chart(context, {
+                    type: type,
+                    data: data,
+                    options: { ...defaultOptions, ...options }
+                });
+
+            } catch (error) {
+                console.error(`Error creating chart ${canvasId}:`, error);
+                const canvas = document.getElementById(canvasId);
+                if (canvas && canvas.parentElement) {
+                    canvas.parentElement.innerHTML = '<p style="text-align: center; color: #666;">Chart error</p>';
+                }
+            }
+        }
+
+        function updateCharts() {
+            // District chart
+            const districtCounts = {};
+            filteredData.forEach(d => {
+                districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+            });
+
+            createChart('districtChart', 'bar', {
+                labels: Object.keys(districtCounts),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(districtCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+
+            // Crime type chart
+            const crimeCounts = {};
+            filteredData.forEach(d => {
+                crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+            });
+
+            createChart('crimeChart', 'doughnut', {
+                labels: Object.keys(crimeCounts),
+                datasets: [{
+                    data: Object.values(crimeCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2
+                }]
+            });
+
+            // Enhanced Age distribution with better groupings
+            const ageRanges = { 'Infants (0-11m)': 0, 'Toddlers (1-2y)': 0, 'Children (3-12y)': 0, 'Teens (13-18y)': 0 };
+            filteredData.filter(d => d['CVW Age'] > 0).forEach(d => {
+                const age = d['CVW Age'];
+                if (age < 1) ageRanges['Infants (0-11m)']++;
+                else if (age < 3) ageRanges['Toddlers (1-2y)']++;
+                else if (age < 13) ageRanges['Children (3-12y)']++;
+                else ageRanges['Teens (13-18y)']++;
+            });
+
+            createChart('ageChart', 'bar', {
+                labels: Object.keys(ageRanges),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(ageRanges),
+                    backgroundColor: ['#fee2e2', '#fed7aa', '#dcfce7', '#dbeafe'],
+                    borderColor: ['#dc2626', '#ea580c', '#059669', '#2563eb'],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+
+            // Gender distribution
+            const genderCounts = {};
+            filteredData.forEach(d => {
+                genderCounts[d['CVW Gender']] = (genderCounts[d['CVW Gender']] || 0) + 1;
+            });
+
+            createChart('genderChart', 'pie', {
+                labels: Object.keys(genderCounts),
+                datasets: [{
+                    data: Object.values(genderCounts),
+                    backgroundColor: colors.gradient.slice(0, Object.keys(genderCounts).length),
+                    borderColor: colors.primary.slice(0, Object.keys(genderCounts).length),
+                    borderWidth: 2
+                }]
+            });
+
+            // Time series chart
+            const monthCounts = {};
+            filteredData.forEach(d => {
+                const month = d['Date Reported'].toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                monthCounts[month] = (monthCounts[month] || 0) + 1;
+            });
+
+            createChart('timeChart', 'line', {
+                labels: Object.keys(monthCounts),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(monthCounts),
+                    borderColor: colors.primary[0],
+                    backgroundColor: colors.gradient[0],
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            }, {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            });
+
+            // Services distribution
+            const servicesCounts = {};
+            filteredData.forEach(d => {
+                const service = d['Services Rendered'] || 'Not Specified';
+                servicesCounts[service] = (servicesCounts[service] || 0) + 1;
+            });
+
+            createChart('servicesChart', 'doughnut', {
+                labels: Object.keys(servicesCounts),
+                datasets: [{
+                    data: Object.values(servicesCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2
+                }]
+            });
+
+            // Relationship analysis
+            const relationshipCounts = {};
+            filteredData.forEach(d => {
+                const relationship = d['Relationship to CV'] || 'Not Specified';
+                relationshipCounts[relationship] = (relationshipCounts[relationship] || 0) + 1;
+            });
+
+            createChart('relationshipChart', 'bar', {
+                labels: Object.keys(relationshipCounts),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(relationshipCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2
+                }]
+            }, {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            });
+        }
+
+        // Enhanced table display with readable ages
+        function updateTable() {
+            const tbody = document.getElementById('caseTableBody');
+            tbody.innerHTML = '';
+
+            const displayData = filteredData.slice(0, 50);
+
+            displayData.forEach(row => {
+                const ageDisplay = formatAgeDisplay(row['CVW Age']);
+                const ageCategory = getAgeCategory(row['CVW Age']);
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row['cvw code']}</td>
+                    <td><span class="status-badge ${row['Record Type'].toLowerCase()}-badge">${row['Record Type']}</span></td>
+                    <td>${row['Date Reported'].toLocaleDateString()}</td>
+                    <td>${row['District']}</td>
+                    <td>${row['CVW Gender']}</td>
+                    <td><span class="age-display ${ageCategory}">${ageDisplay}</span></td>
+                    <td>${row['Crime Type']}</td>
+                    <td>${row['Disability']}</td>
+                    <td>${row['Services Rendered']}</td>
+                    <td>${row['Relationship to CV']}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (filteredData.length > 50) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="10" style="text-align: center; font-style: italic; color: #666;">Showing first 50 of ${filteredData.length} records</td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateDashboard() {
+            updateKPIs();
+            updateCharts();
+            updateTable();
+        }
+
+        // Initialize dashboard
+        async function initializeDashboard() {
+            try {
+                console.log('🚀 Initializing CVW Dashboard...');
+                
+                // Check database connection first
+                await checkDatabaseConnection();
+                
+                // Load data (from database or fallback)
+                await loadData();
+                
+                // Setup UI
+                setupFilters();
+                updateDashboard();
+                
+                console.log('✅ Dashboard initialized successfully');
+                
+            } catch (error) {
+                console.error('❌ Error initializing dashboard:', error);
+                
+                // Final fallback - show error state
+                const container = document.querySelector('.dashboard-container');
+                if (container && allData.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 50px; color: #e74c3c;">
+                            <h2>⚠️ Dashboard Loading Error</h2>
+                            <p>Unable to load dashboard data. Please check your connection and refresh the page.</p>
+                            <p><small>Error: ${error.message}</small></p>
+                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addRecordModal');
+            if (event.target == modal) {
+                closeAddRecordModal();
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeDashboard, 100);
+        });
+
+        // Fallback initialization
+        window.addEventListener('load', function() {
+            if (!allData || allData.length === 0) {
+                console.log('🔄 Fallback initialization...');
+                initializeDashboard();
+            }
+        });
+
+        // Auto-refresh connection status every 30 seconds
+        setInterval(checkDatabaseConnection, 30000);
+    </script>
+</body>
+</html>
