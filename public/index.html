@@ -1735,8 +1735,7 @@ body {
                 const value = parseFloat(this.value);
                 
                 if (unit === 'months' && value > 60) {
-                    this.setCustomValidity('Maximum 60
-months (5 years). Use "Years" for older children.');
+                    this.setCustomValidity('Maximum 60months(5 years). Use "Years" for older children.');
 } else if (unit === 'years' && value > 18) {
 this.setCustomValidity('Maximum 18 years for CVW cases.');
 } else if (value < 0) {
@@ -2603,3 +2602,4 @@ const lines = csvData.trim().split('\n');
 </html></parameter>
 </invoke>
 </artifacts>
+
