@@ -1,4 +1,22 @@
-body {
+<artifacts>
+<invoke name="artifacts">
+<parameter name="command">rewrite</parameter>
+<parameter name="type">text/html</parameter>
+<parameter name="title">CVW Dashboard - Final Clean Version with Agencies</parameter>
+<parameter name="id">cvw_dashboard_final_clean_agencies</parameter>
+<parameter name="content"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVW Case Reports Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
@@ -2439,3 +2457,4 @@ const lines = csvData.trim().split('\n');
 </html></parameter>
 </invoke>
 </artifacts>
+
