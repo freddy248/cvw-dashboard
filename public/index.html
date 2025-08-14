@@ -1503,7 +1503,6 @@ body {
             permissions: ['add']
         }
     };
-
     // Authentication Functions
     function login(username, password) {
         console.log('🔐
@@ -1512,14 +1511,14 @@ body {
 <parameter name="command">update</parameter>
 <parameter name="id">cvw_final_fixed_system</parameter>
 <parameter name="old_str">        // Authentication Functions
-        function login(username, password) {
-            console.log('🔐</parameter>
+    function login(username, password) {
+        console.log('🔐</parameter>
 <parameter name="new_str">        // Authentication Functions
-        function login(username, password) {
-            console.log('🔐 Login function called for:', username);
-            console.log('🔑 Available users:', Object.keys(users));
+    function login(username, password) {
+        console.log('🔐 Login function called for:', username);
+        console.log('🔑 Available users:', Object.keys(users));
             
-            const user = users[username];
+        const user = users[username];
         console.log('👤 Found user:', user ? 'YES' : 'NO');
         
         if (user) {
@@ -2478,5 +2477,6 @@ const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
 </html></parameter>
 </invoke>
 </artifacts>
+
 
 
