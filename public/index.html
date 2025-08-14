@@ -2,8 +2,8 @@
 <invoke name="artifacts">
 <parameter name="command">rewrite</parameter>
 <parameter name="type">text/html</parameter>
-<parameter name="title">CVW Dashboard - Complete Working System</parameter>
-<parameter name="id">cvw_complete_working_system</parameter>
+<parameter name="title">CVW Dashboard - Fixed Complete System</parameter>
+<parameter name="id">cvw_fixed_complete_system</parameter>
 <parameter name="content"><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -477,6 +477,8 @@ body {
         font-weight: bold;
         cursor: pointer;
         transition: color 0.3s ease;
+        background: none;
+        border: none;
     }
 
     .close:hover {
@@ -993,18 +995,15 @@ body {
     <div id="userInfoBar" class="user-info-bar">
         <div class="user-details">
             <div id="userAvatar" class="user-avatar">A</div>
-            <div class="user-info">
-                <div id="userName" class="user-name">Administrator</div>
-                <div id="userRole" class="user-role">Admin Account</div>
+            <div class="user-
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_working_system</parameter>
-<parameter name="old_str">                <div class="user-info">
-                    <div id="userName" class="user-name">Administrator</div>
-                    <div id="userRole" class="user-role">Admin Account</div>
-                </parameter>
-<parameter name="new_str">                <div class="user-info">
+<parameter name="id">cvw_fixed_complete_system</parameter>
+<parameter name="old_str">                <div id="userAvatar" class="user-avatar">A</div>
+                <div class="user-</parameter>
+<parameter name="new_str">                <div id="userAvatar" class="user-avatar">A</div>
+                <div class="user-info">
                     <div id="userName" class="user-name">Administrator</div>
                     <div id="userRole" class="user-role">Admin Account</div>
                 </div>
@@ -1190,7 +1189,7 @@ body {
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">➕ Add New Case Record</h2>
-            <button class="close" onclick="closeAddRecordModal()" title="Close add record modal" aria-label="Close add record modal" style="background: none; border: none; cursor: pointer;">&times;</button>
+            <button class="close" onclick="closeAddRecordModal()" title="Close add record modal" aria-label="Close add record modal">&times;</button>
         </div>
         
         <div class="success-message" id="successMessage">
@@ -1339,7 +1338,7 @@ body {
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">🔍 Search Case by ID</h2>
-            <button class="close" onclick="closeSearchCaseModal()" title="Close search modal" aria-label="Close search case modal" style="background: none; border: none; cursor: pointer;">&times;</button>
+            <button class="close" onclick="closeSearchCaseModal()" title="Close search modal" aria-label="Close search case modal">&times;</button>
         </div>
         
         <div class="success-message" id="searchSuccessMessage">
@@ -1498,28 +1497,23 @@ body {
         'reporter': { 
             password: 'report123', 
             role: 'reporter', 
-            name:
+            name: 'Case Reporter',
+            avatar: 'R',
+            permissions: ['add']
+        }
+    };
+
+    // Authentication Functions
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_working_system</parameter>
-<parameter name="old_str">            'reporter': { 
-                password: 'report123', 
-                role: 'reporter', 
-                name: </parameter>
-<parameter name="new_str">            'reporter': { 
-                password: 'report123', 
-                role: 'reporter', 
-                name: 'Case Reporter',
-                avatar: 'R',
-                permissions: ['add']
-            }
-        };
-// Authentication Functions
-    function login(username, password) {
-        console.log('🔐 Login attempt for:', username);
-        
-        const user = users[username];
+<parameter name="id">cvw_fixed_complete_system</parameter>
+<parameter name="old_str">        // Authentication Functions
+        </parameter>
+<parameter name="new_str">        // Authentication Functions
+        function login(username, password) {
+            console.log('🔐 Login attempt for:', username);
+const user = users[username];
         if (user && user.password === password) {
             currentUser = {
                 username: username,
@@ -2242,24 +2236,26 @@ const lines = csvData.trim().split('\n');
             const currentServices = allData[caseIndex]['Services Rendered'] || '';
             const agencyPrefix = selectedAgency;
             
-            let newServiceEntry =
+            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
+            if (serviceNotes) {
+                newServiceEntry += ` [${serviceNotes}]`;
+            }
+            
+            let updatedServices;
+            if (currentServices && currentServices !== 'No services
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_working_system</parameter>
-<parameter name="old_str">                let newServiceEntry =</parameter>
-<parameter name="new_str">                let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
-                if (serviceNotes) {
-                    newServiceEntry += ` [${serviceNotes}]`;
+<parameter name="id">cvw_fixed_complete_system</parameter>
+<parameter name="old_str">                let updatedServices;
+                if (currentServices && currentServices !== 'No services</parameter>
+<parameter name="new_str">                let updatedServices;
+                if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
+                    updatedServices = `${currentServices} + ${newServiceEntry}`;
+                } else {
+                    updatedServices = newServiceEntry;
                 }
-let updatedServices;
-            if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
-                updatedServices = `${currentServices} + ${newServiceEntry}`;
-            } else {
-                updatedServices = newServiceEntry;
-            }
-            
-            allData[caseIndex]['Services Rendered'] = updatedServices;
+allData[caseIndex]['Services Rendered'] = updatedServices;
             document.getElementById('foundServicesRendered').value = updatedServices;
             
             saveDataToLocalStorage();
@@ -2452,6 +2448,4 @@ let updatedServices;
 </html></parameter>
 </invoke>
 </artifacts>
-
-
 
