@@ -2,8 +2,8 @@
 <invoke name="artifacts">
 <parameter name="command">rewrite</parameter>
 <parameter name="type">text/html</parameter>
-<parameter name="title">CVW Dashboard - Fixed Complete System</parameter>
-<parameter name="id">cvw_fixed_complete_system</parameter>
+<parameter name="title">CVW Dashboard - Complete Fixed System with Debug</parameter>
+<parameter name="id">cvw_complete_fixed_debug</parameter>
 <parameter name="content"><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -995,15 +995,15 @@ body {
     <div id="userInfoBar" class="user-info-bar">
         <div class="user-details">
             <div id="userAvatar" class="user-avatar">A</div>
-            <div class="user-
+            <div class="user-info">
+                <div id="userName" class="user-name">Administrator</div>
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_fixed_complete_system</parameter>
-<parameter name="old_str">                <div id="userAvatar" class="user-avatar">A</div>
-                <div class="user-</parameter>
-<parameter name="new_str">                <div id="userAvatar" class="user-avatar">A</div>
-                <div class="user-info">
+<parameter name="id">cvw_complete_fixed_debug</parameter>
+<parameter name="old_str">                <div class="user-info">
+                    <div id="userName" class="user-name">Administrator</div></parameter>
+<parameter name="new_str">                <div class="user-info">
                     <div id="userName" class="user-name">Administrator</div>
                     <div id="userRole" class="user-role">Admin Account</div>
                 </div>
@@ -1504,27 +1504,43 @@ body {
     };
 
     // Authentication Functions
+    function login(username, password) {
+        console.log('🔐 Login function
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_fixed_complete_system</parameter>
+<parameter name="id">cvw_complete_fixed_debug</parameter>
 <parameter name="old_str">        // Authentication Functions
-        </parameter>
+        function login(username, password) {
+            console.log('🔐 Login function</parameter>
 <parameter name="new_str">        // Authentication Functions
         function login(username, password) {
-            console.log('🔐 Login attempt for:', username);
+            console.log('🔐 Login function called for:', username);
+            console.log('🔑 Available users:', Object.keys(users));
 const user = users[username];
+        console.log('👤 Found user:', user ? 'YES' : 'NO');
+        
+        if (user) {
+            console.log('🔒 Password check:', user.password === password ? 'MATCH' : 'NO MATCH');
+            console.log('🔒 Expected:', user.password, 'Got:', password);
+        }
+        
         if (user && user.password === password) {
+            console.log('✅ Authentication successful');
             currentUser = {
                 username: username,
                 ...user
             };
             
             localStorage.setItem('cvw_session', JSON.stringify(currentUser));
+            console.log('💾 Session saved to localStorage');
+            
             updateUserInterface();
             showDashboard();
             return true;
         }
+        
+        console.log('❌ Authentication failed');
         return false;
     }
 
@@ -1603,11 +1619,13 @@ const user = users[username];
     }
 
     function showLoginScreen() {
+        console.log('📱 Showing login screen');
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('mainDashboard').classList.add('hidden');
     }
 
     function showDashboard() {
+        console.log('📊 Showing dashboard for user:', currentUser?.name);
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainDashboard').classList.remove('hidden');
         
@@ -2224,13 +2242,18 @@ const lines = csvData.trim().split('\n');
             return;
         }
         
-        const today = new Date().toISOString().split('T')[0];
-        if (serviceDate > today) {
-            showSearchErrorMessage('Service date cannot be in the future');
-            return;
-        }
-        
-        const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
+        const today =
+<artifacts>
+<invoke name="artifacts">
+<parameter name="command">update</parameter>
+<parameter name="id">cvw_complete_fixed_debug</parameter>
+<parameter name="old_str">            const today =</parameter>
+<parameter name="new_str">            const today = new Date().toISOString().split('T')[0];
+            if (serviceDate > today) {
+                showSearchErrorMessage('Service date cannot be in the future');
+                return;
+            }
+const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
         
         if (caseIndex !== -1) {
             const currentServices = allData[caseIndex]['Services Rendered'] || '';
@@ -2242,20 +2265,13 @@ const lines = csvData.trim().split('\n');
             }
             
             let updatedServices;
-            if (currentServices && currentServices !== 'No services
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_fixed_complete_system</parameter>
-<parameter name="old_str">                let updatedServices;
-                if (currentServices && currentServices !== 'No services</parameter>
-<parameter name="new_str">                let updatedServices;
-                if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
-                    updatedServices = `${currentServices} + ${newServiceEntry}`;
-                } else {
-                    updatedServices = newServiceEntry;
-                }
-allData[caseIndex]['Services Rendered'] = updatedServices;
+            if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
+                updatedServices = `${currentServices} + ${newServiceEntry}`;
+            } else {
+                updatedServices = newServiceEntry;
+            }
+
+            allData[caseIndex]['Services Rendered'] = updatedServices;
             document.getElementById('foundServicesRendered').value = updatedServices;
             
             saveDataToLocalStorage();
@@ -2324,31 +2340,43 @@ allData[caseIndex]['Services Rendered'] = updatedServices;
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 CVW Dashboard loaded, setting up...');
         
+        // Check for existing session first
         if (!checkSession()) {
             showLoginScreen();
         }
 
+        // Set up login form handler
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
+            console.log('✅ Login form found, attaching event listener');
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                console.log('📝 Login form submitted');
                 
                 const username = document.getElementById('username').value.trim();
                 const password = document.getElementById('password').value.trim();
                 
+                console.log('🔐 Login attempt:', username, password ? '[PASSWORD PROVIDED]' : '[NO PASSWORD]');
+                
                 if (!username || !password) {
+                    console.log('❌ Missing credentials');
                     document.getElementById('loginError').style.display = 'block';
                     document.getElementById('loginError').textContent = '❌ Please enter both username and password';
                     return;
                 }
                 
+                console.log('🔄 Calling login function...');
                 if (login(username, password)) {
+                    console.log('✅ Login successful');
                     document.getElementById('loginError').style.display = 'none';
                 } else {
+                    console.log('❌ Login failed');
                     document.getElementById('loginError').style.display = 'block';
                     document.getElementById('loginError').textContent = '❌ Invalid username or password';
                 }
             });
+        } else {
+            console.error('❌ Login form not found!');
         }
 
         setupAgeInputHandlers();
