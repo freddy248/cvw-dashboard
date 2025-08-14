@@ -2,8 +2,8 @@
 <invoke name="artifacts">
 <parameter name="command">rewrite</parameter>
 <parameter name="type">text/html</parameter>
-<parameter name="title">CVW Dashboard - Complete Fixed System with Debug</parameter>
-<parameter name="id">cvw_complete_fixed_debug</parameter>
+<parameter name="title">CVW Dashboard - Final Fixed Complete System</parameter>
+<parameter name="id">cvw_final_fixed_system</parameter>
 <parameter name="content"><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1000,9 +1000,10 @@ body {
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_fixed_debug</parameter>
+<parameter name="id">cvw_final_fixed_system</parameter>
 <parameter name="old_str">                <div class="user-info">
-                    <div id="userName" class="user-name">Administrator</div></parameter>
+                    <div id="userName" class="user-name">Administrator</div>
+                </parameter>
 <parameter name="new_str">                <div class="user-info">
                     <div id="userName" class="user-name">Administrator</div>
                     <div id="userRole" class="user-role">Admin Account</div>
@@ -1505,14 +1506,14 @@ body {
 
     // Authentication Functions
     function login(username, password) {
-        console.log('🔐 Login function
+        console.log('🔐
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_fixed_debug</parameter>
+<parameter name="id">cvw_final_fixed_system</parameter>
 <parameter name="old_str">        // Authentication Functions
         function login(username, password) {
-            console.log('🔐 Login function</parameter>
+            console.log('🔐</parameter>
 <parameter name="new_str">        // Authentication Functions
         function login(username, password) {
             console.log('🔐 Login function called for:', username);
@@ -2242,12 +2243,12 @@ const lines = csvData.trim().split('\n');
             return;
         }
         
-        const today =
+        const today = new Date().
 <artifacts>
 <invoke name="artifacts">
 <parameter name="command">update</parameter>
-<parameter name="id">cvw_complete_fixed_debug</parameter>
-<parameter name="old_str">            const today =</parameter>
+<parameter name="id">cvw_final_fixed_system</parameter>
+<parameter name="old_str">            const today = new Date().</parameter>
 <parameter name="new_str">            const today = new Date().toISOString().split('T')[0];
             if (serviceDate > today) {
                 showSearchErrorMessage('Service date cannot be in the future');
@@ -2476,3 +2477,4 @@ const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
 </html></parameter>
 </invoke>
 </artifacts>
+
