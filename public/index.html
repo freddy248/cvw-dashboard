@@ -2261,10 +2261,10 @@ function addServiceToCase() {
 <parameter name="id">cvw_fully_fixed_complete</parameter>
 <parameter name="old_str">            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;</parameter>
 <parameter name="new_str">            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
-            if (serviceNotes) {
+        if (serviceNotes) {
                 newServiceEntry += ` [${serviceNotes}]`;
             }
-let updatedServices;
+        let updatedServices;
         if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
             updatedServices = `${currentServices} + ${newServiceEntry}`;
         } else {
@@ -2472,4 +2472,5 @@ window.onclick = function(event) {
 </html></parameter>
 </invoke>
 </artifacts>
+
 
