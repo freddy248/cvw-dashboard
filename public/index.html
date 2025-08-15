@@ -2,8 +2,8 @@
 <invoke name="artifacts">
 <parameter name="command">rewrite</parameter>
 <parameter name="type">text/html</parameter>
-<parameter name="title">CVW Dashboard - Clean Syntax Fixed Version</parameter>
-<parameter name="id">cvw_clean_syntax_fixed</parameter>
+<parameter name="title">CVW Dashboard - Final Clean Version</parameter>
+<parameter name="id">cvw_final_clean</parameter>
 <parameter name="content"><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +14,7 @@
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
+            box-sizing: border-box;}
 body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -619,7 +618,7 @@ body {
             
             localStorage.setItem('cvw_session', JSON.stringify(currentUser));
             updateUserInterface();
-            showDashboard();
+            showMainDashboard();
             return true;
         }
         
@@ -665,9 +664,13 @@ body {
         document.getElementById('mainDashboard').classList.add('hidden');
     }
 
-    function showDashboard() {
+    function showMainDashboard() {
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainDashboard').classList.remove('hidden');
+        loadData();
+    }
+
+    function showDashboard() {
         loadData();
     }
 
@@ -677,7 +680,7 @@ body {
         document.querySelectorAll('.agency-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
-        document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+        document.querySelector('[data-agency="' + agency + '"]').classList.add('selected');
         
         document.getElementById('addRecordBtn').disabled = false;
         document.getElementById('searchCaseBtn').disabled = false;
@@ -740,7 +743,7 @@ body {
         }
         
         const suffix = recordType === 'Victim' ? 'CV' : 'CW';
-        const prefix = `${selectedAgency}-${suffix}`;
+        const prefix = selectedAgency + '-' + suffix;
         
         const existingIds = allData
             .filter(record => record['cvw code'].startsWith(prefix))
@@ -750,7 +753,7 @@ body {
             });
         
         const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-        document.getElementById('caseId').value = `${prefix}${nextNumber}`;
+        document.getElementById('caseId').value = prefix + nextNumber;
     }
 
     function openAddRecordModal() {
@@ -796,23 +799,22 @@ body {
         if (foundCase) {
             displayCaseDetails(foundCase);
         } else {
-            alert(`Case ${caseId} not found in the system.`);
+            alert('Case ' + caseId + ' not found in the system.');
             document.getElementById('caseDetailsSection').classList.add('hidden');
         }
     }
 
     function displayCaseDetails(caseData) {
         const caseDetails = document.getElementById('caseDetails');
-        caseDetails.innerHTML = `
-            <p><strong>Case ID:</strong> ${caseData['cvw code']}</p>
-            <p><strong>Record Type:</strong> ${caseData['Record Type']}</p>
-            <p><strong>Date Reported:</strong> ${caseData['Date Reported']}</p>
-            <p><strong>District:</strong> ${caseData['District']}</p>
-            <p><strong>Gender:</strong> ${caseData['CVW Gender']}</p>
-            <p><strong>Age:</strong> ${caseData['CVW Age']} years</p>
-            <p><strong>Crime Type:</strong> ${caseData['Crime Type']}</p>
-            <p><strong>Services:</strong> ${caseData['Services Rendered'] || 'None recorded'}</p>
-        `;
+        caseDetails.innerHTML = 
+            '<p><strong>Case ID:</strong> ' + caseData['cvw code'] + '</p>' +
+            '<p><strong>Record Type:</strong> ' + caseData['Record Type'] + '</p>' +
+            '<p><strong>Date Reported:</strong> ' + caseData['Date Reported'] + '</p>' +
+            '<p><strong>District:</strong> ' + caseData['District'] + '</p>' +
+            '<p><strong>Gender:</strong> ' + caseData['CVW Gender'] + '</p>' +
+            '<p><strong>Age:</strong> ' + caseData['CVW Age'] + ' years</p>' +
+            '<p><strong>Crime Type:</strong> ' + caseData['Crime Type'] + '</p>' +
+            '<p><strong>Services:</strong> ' + (caseData['Services Rendered'] || 'None recorded') + '</p>';
         
         document.getElementById('caseDetailsSection').classList.remove('hidden');
     }
@@ -822,7 +824,7 @@ body {
         if (successMsg) {
             successMsg.textContent = message;
             successMsg.style.display = 'block';
-            setTimeout(() => {
+            setTimeout(function() {
                 successMsg.style.display = 'none';
             }, 3000);
         }
@@ -833,7 +835,7 @@ body {
         if (errorMsg) {
             errorMsg.textContent = message;
             errorMsg.style.display = 'block';
-            setTimeout(() => {
+            setTimeout(function() {
                 errorMsg.style.display = 'none';
             }, 5000);
         }
@@ -856,7 +858,7 @@ body {
             try {
                 currentUser = JSON.parse(session);
                 updateUserInterface();
-                showDashboard();
+                showMainDashboard();
             } catch (e) {
                 localStorage.removeItem('cvw_session');
                 showLoginScreen();
@@ -870,18 +872,10 @@ body {
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
                 
-                const username = document.getElementById('username').value.trim();
-                const password = document.getElementByI
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_clean_syntax_fixed</parameter>
-<parameter name="old_str">                    const username = document.getElementById('username').value.trim();
-                    const password = document.getElementByI</parameter>
-<parameter name="new_str">                    const username = document.getElementById('username').value.trim();
-                    const password = document.getElementById('password').value.trim();
-if (!username || !password) {
+                if (!username || !password) {
                     document.getElementById('loginError').style.display = 'block';
                     document.getElementById('loginError').textContent = '❌ Please enter both username and password';
                     return;
@@ -914,7 +908,9 @@ if (!username || !password) {
                 };
                 
                 const requiredFields = ['recordType', 'dateReported', 'district', 'cvwGender', 'cvwAge', 'crimeType'];
-                const missingFields = requiredFields.filter(field => !recordData[field] || recordData[field].trim() === '');
+                const missingFields = requiredFields.filter(function(field) {
+                    return !recordData[field] || recordData[field].trim() === '';
+                });
                 
                 if (missingFields.length > 0) {
                     showErrorMessage('Please fill in all required fields');
@@ -947,9 +943,9 @@ if (!username || !password) {
                 saveData();
                 updateKPIs();
                 
-                showSuccessMessage(`✅ Record added successfully! Case ID: ${recordData.caseId}`);
+                showSuccessMessage('✅ Record added successfully! Case ID: ' + recordData.caseId);
                 
-                setTimeout(() => {
+                setTimeout(function() {
                     closeAddRecordModal();
                 }, 2000);
             });
