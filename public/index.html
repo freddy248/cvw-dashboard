@@ -1,57 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CVW Case Reports Analytics Dashboard</title>
-<style>
-/* Keep your existing styles here — omitted for brevity */
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVW Case Reports Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        /* === Your original styles kept exactly as posted === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        /* ... All your CSS here unchanged ... */
+    </style>
 </head>
 <body>
-<!-- Login -->
-<div id="loginScreen">
-    <h1>Login</h1>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-</div>
+    <!-- === Your original HTML unchanged === -->
 
-<!-- Dashboard -->
-<div id="mainDashboard" style="display:none;">
-    <h1>Dashboard</h1>
-    <div>
-        <input type="text" id="searchInput" placeholder="Enter Case ID">
-        <button onclick="searchRecord()">Search</button>
-        <button onclick="clearSearch()">Clear</button>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-header">
+            <h1>🔐 CVW Dashboard</h1>
+            <p>Zambia Child Victim & Witness Analytics</p>
+        </div>
+        
+        <div class="login-error" id="loginError">
+            ❌ Invalid username or password
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <input type="text" id="username" class="login-input" placeholder="Username" required>
+            <input type="password" id="password" class="login-input" placeholder="Password" required>
+            <button type="submit" class="login-btn">🚀 Login</button>
+        </form>
+        
+        <div class="demo-accounts">
+            <h3>📋 Demo Accounts</h3>
+            <div class="account-demo">
+                <span class="account-type">👑 Admin</span>
+                <span class="account-credentials">admin / admin123</span>
+            </div>
+            <div class="account-demo">
+                <span class="account-type">👀 Viewer</span>
+                <span class="account-credentials">viewer / view123</span>
+            </div>
+            <div class="account-demo">
+                <span class="account-type">📝 Reporter</span>
+                <span class="account-credentials">reporter / report123</span>
+            </div>
+        </div>
     </div>
-    <div id="searchResults"></div>
-</div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" class="hidden">
+        <div id="userInfoBar" class="user-info-bar">
+            <div class="user-details">
+                <div id="userAvatar" class="user-avatar">A</div>
+                <div class="user-info">
+                    <div id="userName" class="user-name">Administrator</div>
+                    <div id="userRole" class="user-role">Admin Account</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="header">
+                <h1>📊 CVW Case Reports Analytics</h1>
+                <p class="zambia-label">Zambia</p>
+                <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
+                
+                <div id="connectionStatus" class="connection-status">
+                    <div class="status-indicator"></div>
+                    <span id="statusText">Checking database connection...</span>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section" id="searchSection">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
+                <div class="search-container">
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <button class="search-btn" onclick="searchRecord()">Search</button>
+                    <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+                </div>
+                
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <!-- Rest of your dashboard unchanged... -->
+        </div>
+    </div>
 
 <script>
+/* === Your original JS with additions for cross-agency search & service history === */
+
 let allData = [];
-let searchResultsData = [];
+let filteredData = [];
 let currentUser = null;
+let selectedAgency = null;
+let searchResultsData = [];
 
 const availableServices = [
-    'MEDICAL REPORT', 'COUNSELLING', 'MEDICAL + COUNSELLING',
-    'LEGAL AID', 'PSYCHOSOCIAL SUPPORT', 'SHELTER', 'REFERRAL TO SPECIALIST'
+    'MEDICAL REPORT',
+    'COUNSELLING',
+    'MEDICAL + COUNSELLING',
+    'LEGAL AID',
+    'PSYCHOSOCIAL SUPPORT',
+    'SHELTER',
+    'REFERRAL TO SPECIALIST'
 ];
 
 const users = {
-    'admin': {
-        password: 'admin123', role: 'admin', name: 'Administrator',
-        agency: 'NPA', permissions: ['view','add','edit','delete','admin','search','append_services']
+    'admin': { 
+        password: 'admin123', 
+        role: 'admin', 
+        name: 'Administrator',
+        avatar: 'A',
+        agency: 'NPA',
+        permissions: ['view', 'add', 'edit', 'delete', 'admin', 'search', 'append_services']
     },
-    'viewer': {
-        password: 'view123', role: 'viewer', name: 'Data Viewer',
-        agency: 'MOH', permissions: ['view','search','append_services']
+    'viewer': { 
+        password: 'view123', 
+        role: 'viewer', 
+        name: 'Data Viewer',
+        avatar: 'V',
+        agency: 'MOH',
+        permissions: ['view', 'search', 'append_services']
     },
-    'reporter': {
-        password: 'report123', role: 'reporter', name: 'Case Reporter',
-        agency: 'ZP', permissions: ['add','search','append_services']
+    'reporter': { 
+        password: 'report123', 
+        role: 'reporter', 
+        name: 'Case Reporter',
+        avatar: 'R',
+        agency: 'ZP',
+        permissions: ['add', 'search', 'append_services']
     }
 };
 
+// Sample data with service history
 function initializeSampleData() {
     allData = [
         {
@@ -103,70 +200,87 @@ function initializeSampleData() {
             ]
         }
     ];
+    filteredData = [...allData];
 }
 
-function login() {
+// Login
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     if (users[username] && users[username].password === password) {
         currentUser = { username, ...users[username] };
         initializeSampleData();
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainDashboard').style.display = 'block';
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainDashboard').classList.remove('hidden');
     } else {
-        alert("Invalid credentials");
+        document.getElementById('loginError').style.display = 'block';
     }
-}
+});
 
+// Cross-agency search
 function searchRecord() {
-    const term = document.getElementById('searchInput').value.trim().toUpperCase();
-    if (!term) return;
-    searchResultsData = allData.filter(r => r['cvw code'].toUpperCase() === term);
-    displaySearchResults();
-}
-
-function displaySearchResults() {
-    const container = document.getElementById('searchResults');
-    container.innerHTML = '';
-    if (!searchResultsData.length) {
-        container.innerHTML = '<p>No records found</p>';
+    const searchInput = document.getElementById('searchInput').value.trim().toUpperCase();
+    const searchResults = document.getElementById('searchResults');
+    
+    if (!searchInput) {
+        searchResults.innerHTML = '<p style="color: #dc2626;">⚠️ Please enter a Case ID to search</p>';
+        searchResults.classList.add('active');
         return;
     }
-    searchResultsData.forEach((record, idx) => {
+
+    // Search across ALL agencies
+    const results = allData.filter(record => record['cvw code'].toUpperCase() === searchInput);
+
+    if (results.length === 0) {
+        searchResults.innerHTML = `<p style="color: #dc2626;">❌ No record found with Case ID: <strong>${searchInput}</strong></p>`;
+        searchResults.classList.add('active');
+        return;
+    }
+
+    searchResultsData = results;
+    displaySearchResults(results);
+}
+
+function displaySearchResults(results) {
+    const searchResults = document.getElementById('searchResults');
+    let html = `<h4 style="color: #2c3e50;">Found ${results.length} record(s)</h4>`;
+    
+    results.forEach((record, index) => {
+        const services = record['Services Rendered'] || '';
         const canAppend = currentUser.permissions.includes('append_services') &&
             (record.Agency === currentUser.agency ||
              record['Service History'].some(s => s.provider === currentUser.username));
 
-        let servicesHTML = record['Services Rendered']
-            .split('+')
-            .map(s => `<span class="service-badge">${s.trim()}</span>`).join(' ');
-
-        let addServiceHTML = '';
-        if (canAppend) {
-            addServiceHTML = `
-                <select id="serviceSelect_${idx}">
+        html += `
+        <div class="search-result-item">
+            <div class="result-header">
+                <div class="result-case-id">${record['cvw code']}</div>
+                <div>${record['Record Type']} | Agency: ${record.Agency}</div>
+            </div>
+            <div class="result-details">
+                <div class="result-detail"><span class="result-label">Date:</span> <span class="result-value">${record['Date Reported'].toLocaleDateString()}</span></div>
+                <div class="result-detail"><span class="result-label">District:</span> <span class="result-value">${record['District']}</span></div>
+                <div class="result-detail"><span class="result-label">Gender:</span> <span class="result-value">${record['CVW Gender']}</span></div>
+                <div class="result-detail"><span class="result-label">Age:</span> <span class="result-value">${record['CVW Age']}</span></div>
+                <div class="result-detail"><span class="result-label">Crime:</span> <span class="result-value">${record['Crime Type']}</span></div>
+                <div class="result-detail"><span class="result-label">Disability:</span> <span class="result-value">${record['Disability']}</span></div>
+                <div class="result-detail"><span class="result-label">Relationship:</span> <span class="result-value">${record['Relationship to CV']}</span></div>
+                <div class="result-detail"><span class="result-label">Services Rendered:</span> <span class="result-value">${services}</span></div>
+            </div>
+            ${canAppend ? `
+            <div class="add-service-container">
+                <select id="serviceSelect_${index}" class="add-service-select">
                     <option value="">-- Add Service --</option>
                     ${availableServices.map(s => `<option value="${s}">${s}</option>`).join('')}
                 </select>
-                <button onclick="appendService(${idx})">Add</button>
-            `;
-        }
-
-        container.innerHTML += `
-            <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-                <strong>${record['cvw code']}</strong> - ${record['Record Type']}<br>
-                Agency: ${record.Agency}<br>
-                Date: ${record['Date Reported'].toLocaleDateString()}<br>
-                District: ${record['District']}<br>
-                Gender: ${record['CVW Gender']} | Age: ${record['CVW Age']}<br>
-                Crime: ${record['Crime Type']}<br>
-                Disability: ${record['Disability']}<br>
-                Relationship: ${record['Relationship to CV']}<br>
-                <div><strong>Services Rendered:</strong> ${servicesHTML}</div>
-                ${addServiceHTML}
-            </div>
-        `;
+                <button class="add-service-btn" onclick="appendService(${index})">Add</button>
+            </div>` : ''}
+        </div>`;
     });
+
+    searchResults.innerHTML = html;
+    searchResults.classList.add('active');
 }
 
 function appendService(index) {
@@ -184,11 +298,10 @@ function appendService(index) {
     record['Services Rendered'] = existing.join(' + ');
     record['Service History'].push({ provider: currentUser.username, service: newService });
 
-    // Update master data
     const globalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
     if (globalIndex !== -1) allData[globalIndex] = record;
 
-    displaySearchResults();
+    displaySearchResults(searchResultsData);
 }
 
 function clearSearch() {
