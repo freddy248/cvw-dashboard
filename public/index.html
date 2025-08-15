@@ -1,455 +1,263 @@
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">    <title>CVW Case Reports Analytics Dashboard</title></parameter>
-<parameter name="new_str">    <title>CVW Case Reports Analytics Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script></parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">        <!-- Reporter Only Content -->
-        <div id="reporterOnlyContent" class="hidden">
-            <div style="text-align: center; padding: 50px; background: #f8f9fa; border-radius: 10px;">
-                <h2>📝 Reporter Dashboard</h2>
-                <p>Welcome! You can add new case records and search existing cases.</p>
-                <p><strong>Step 1:</strong> Select your reporting agency above</p>
-                <p><strong>Step 2:</strong> Click "Add New Record" or "Search Case"</p>
-            </div>
-        </div></parameter>
-<parameter name="new_str">        <!-- Charts Section -->
-        <div class="charts-section" id="chartsSection">
-            <div class="chart-container">
-                <h3>📊 Case Distribution by Type</h3>
-                <canvas id="typeChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <h3>📈 Cases by District</h3>
-                <canvas id="districtChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <h3>🎯 Age Distribution</h3>
-                <canvas id="ageChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <h3>⚖️ Crime Types</h3>
-                <canvas id="crimeChart" width="400" height="200"></canvas>
-            </div>
-        </div>
-<!-- Data Table Section -->
-    <div class="table-container" id="tableSection">
-        <h3>📋 All Case Records</h3>
-        <div class="table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Case ID</th>
-                        <th>Type</th>
-                        <th>Date</th>
-                        <th>District</th>
-                        <th>Gender</th>
-                        <th>Age</th>
-                        <th>Crime Type</th>
-                        <th>Services</th>
-                    </tr>
-                </thead>
-                <tbody id="caseTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px;">Loading case data...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Reporter Only Content -->
-    <div id="reporterOnlyContent" class="hidden">
-        <div style="text-align: center; padding: 50px; background: #f8f9fa; border-radius: 10px;">
-            <h2>📝 Reporter Dashboard</h2>
-            <p>Welcome! You can add new case records and search existing cases.</p>
-            <p><strong>Step 1:</strong> Select your reporting agency above</p>
-            <p><strong>Step 2:</strong> Click "Add New Record" or "Search Case"</p>
-        </div>
-    </div></parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">    .hidden {
-        display: none !important;
-    }</parameter>
-<parameter name="new_str">    .hidden {
-        display: none !important;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CVW Case Reports Analytics Dashboard</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0; padding: 0;
+        background: #f5f6fa;
+        color: #2f3640;
     }
-.charts-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
-}
+    header {
+        background: linear-gradient(90deg, #0984e3, #6c5ce7);
+        padding: 1rem;
+        color: #fff;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    #loginSection, #mainSection {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; margin-bottom: .3rem; font-weight: bold; }
+    .input-group input, .input-group select {
+        width: 100%;
+        padding: .5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        padding: .6rem 1.2rem;
+        border: none;
+        border-radius: 4px;
+        background: #0984e3;
+        color: #fff;
+        cursor: pointer;
+    }
+    button:hover { background: #74b9ff; }
+    .section-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin: 1rem 0 .5rem;
+    }
+    #searchResults { margin-top: 1rem; }
+    .search-result-item {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+    }
+    .result-header { display: flex; justify-content: space-between; margin-bottom: .5rem; }
+    .result-case-id { font-weight: bold; font-size: 1.2rem; }
+    .result-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .5rem; }
+    .result-detail { font-size: 0.9rem; }
+    .result-label { font-weight: bold; }
+    .service-badge {
+        display: inline-block;
+        padding: .3rem .6rem;
+        background: #dfe6e9;
+        border-radius: 12px;
+        font-size: .8rem;
+        margin: .2rem;
+    }
+    .add-service-container { margin-top: .5rem; }
+    .add-service-select { padding: .3rem; }
+</style>
+</head>
+<body>
 
-.chart-container {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
+<header>CVW Case Reports Analytics Dashboard</header>
 
-.chart-container h3 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 1.2rem;
-}
+<div id="loginSection">
+    <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="usernameInput">
+    </div>
+    <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="passwordInput">
+    </div>
+    <button onclick="login()">Login</button>
+</div>
 
-.table-container {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-}
+<div id="mainSection" style="display:none;">
+    <div>Welcome, <span id="welcomeUser"></span> (<span id="welcomeRole"></span>)</div>
+    
+    <div class="section-title">Select Agency</div>
+    <select id="agencySelect">
+        <option value="">--Select--</option>
+        <option value="Police">Police</option>
+        <option value="Social Welfare">Social Welfare</option>
+        <option value="NGO">NGO</option>
+    </select>
 
-.table-container h3 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 1.3rem;
-}
+    <div class="section-title">Dashboard</div>
+    <div id="dashboardContainer">[Dashboard charts will appear here]</div>
 
-.table-wrapper {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-}
+    <div class="section-title">Search Case</div>
+    <input type="text" id="searchInput" placeholder="Enter CVW code">
+    <button onclick="searchCase()">Search</button>
+    <button onclick="clearSearch()">Clear</button>
+    <div id="searchResults"></div>
+</div>
 
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-.data-table th {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    padding: 15px 10px;
-    text-align: left;
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.data-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.data-table tr:hover td {
-    background-color: #f8f9fa;
-}
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.victim-badge { 
-    background: #fee2e2; 
-    color: #dc2626; 
-}
-
-.witness-badge { 
-    background: #dbeafe; 
-    color: #2563eb; 
-}</parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">        if (role === 'admin') {
-            document.getElementById('agencySelection').classList.remove('hidden');
-            document.getElementById('kpiSection').classList.remove('hidden');
-            document.getElementById('reporterOnlyContent').classList.add('hidden');
-        } else if (role === 'viewer') {
-            document.getElementById('agencySelection').classList.add('hidden');
-            document.getElementById('kpiSection').classList.remove('hidden');
-            document.getElementById('reporterOnlyContent').classList.add('hidden');
-        } else if (role === 'reporter') {
-            document.getElementById('agencySelection').classList.remove('hidden');
-            document.getElementById('kpiSection').classList.add('hidden');
-            document.getElementById('reporterOnlyContent').classList.remove('hidden');
-        }</parameter>
-<parameter name="new_str">        if (role === 'admin') {
-            document.getElementById('agencySelection').classList.remove('hidden');
-            document.getElementById('kpiSection').classList.remove('hidden');
-            document.getElementById('chartsSection').classList.remove('hidden');
-            document.getElementById('tableSection').classList.remove('hidden');
-            document.getElementById('reporterOnlyContent').classList.add('hidden');
-        } else if (role === 'viewer') {
-            document.getElementById('agencySelection').classList.add('hidden');
-            document.getElementById('kpiSection').classList.remove('hidden');
-            document.getElementById('chartsSection').classList.remove('hidden');
-            document.getElementById('tableSection').classList.remove('hidden');
-            document.getElementById('reporterOnlyContent').classList.add('hidden');
-        } else if (role === 'reporter') {
-            document.getElementById('agencySelection').classList.remove('hidden');
-            document.getElementById('kpiSection').classList.add('hidden');
-            document.getElementById('chartsSection').classList.add('hidden');
-            document.getElementById('tableSection').classList.add('hidden');
-            document.getElementById('reporterOnlyContent').classList.remove('hidden');
-        }</parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">    function updateKPIs() {
-        const totalCases = allData.length;
-        const victimCases = allData.filter(d => d['Record Type'] === 'Victim').length;
-        const witnessCases = allData.filter(d => d['Record Type'] === 'Witness').length;
-        const avgAge = allData.reduce((sum, d) => sum + d['CVW Age'], 0) / allData.length || 0;
-document.getElementById('totalCases').textContent = totalCases;
-    document.getElementById('victimCases').textContent = victimCases;
-    document.getElementById('witnessCases').textContent = witnessCases;
-    document.getElementById('avgAge').textContent = Math.round(avgAge * 10) / 10;
-}</parameter>
-<parameter name="new_str">    function updateKPIs() {
-const totalCases = allData.length;
-const victimCases = allData.filter(d => d['Record Type'] === 'Victim').length;
-const witnessCases = allData.filter(d => d['Record Type'] === 'Witness').length;
-const avgAge = allData.reduce((sum, d) => sum + d['CVW Age'], 0) / allData.length || 0;
-document.getElementById('totalCases').textContent = totalCases;
-    document.getElementById('victimCases').textContent = victimCases;
-    document.getElementById('witnessCases').textContent = witnessCases;
-    document.getElementById('avgAge').textContent = Math.round(avgAge * 10) / 10;
-}
-
-function updateCharts() {
-    updateTypeChart();
-    updateDistrictChart();
-    updateAgeChart();
-    updateCrimeChart();
-}
-
-function updateTypeChart() {
-    const ctx = document.getElementById('typeChart');
-    if (!ctx) return;
-
-    const victimCases = allData.filter(d => d['Record Type'] === 'Victim').length;
-    const witnessCases = allData.filter(d => d['Record Type'] === 'Witness').length;
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Victim Cases', 'Witness Cases'],
-            datasets: [{
-                data: [victimCases, witnessCases],
-                backgroundColor: ['#dc2626', '#2563eb'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-}
-
-function updateDistrictChart() {
-    const ctx = document.getElementById('districtChart');
-    if (!ctx) return;
-
-    const districts = {};
-    allData.forEach(d => {
-        districts[d.District] = (districts[d.District] || 0) + 1;
-    });
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(districts),
-            datasets: [{
-                label: 'Cases by District',
-                data: Object.values(districts),
-                backgroundColor: '#667eea',
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-function updateAgeChart() {
-    const ctx = document.getElementById('ageChart');
-    if (!ctx) return;
-
-    const ageGroups = {
-        '0-5': 0,
-        '6-10': 0,
-        '11-15': 0,
-        '16-18': 0
+<script>
+    const roles = {
+        admin: { permissions: ['view', 'add', 'append_services'] },
+        viewer: { permissions: ['view'] },
+        reporter: { permissions: ['view', 'add'] }
     };
 
-    allData.forEach(d => {
-        const age = d['CVW Age'];
-        if (age <= 5) ageGroups['0-5']++;
-        else if (age <= 10) ageGroups['6-10']++;
-        else if (age <= 15) ageGroups['11-15']++;
-        else ageGroups['16-18']++;
-    });
+    let currentUser = null;
+    let allData = [];
+    let searchResultsData = [];
+    const availableServices = [
+        'Counseling', 'Medical Assistance', 'Legal Aid',
+        'Shelter', 'Rehabilitation', 'Vocational Training'
+    ];
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Object.keys(ageGroups),
-            datasets: [{
-                label: 'Cases by Age Group',
-                data: Object.values(ageGroups),
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+    function login() {
+        const username = document.getElementById('usernameInput').value.trim();
+        const password = document.getElementById('passwordInput').value.trim();
+        if (!username || !password) {
+            alert("Please enter username and password");
+            return;
         }
-    });
-}
+        let role = 'viewer';
+        if (username.toLowerCase().includes('admin')) role = 'admin';
+        if (username.toLowerCase().includes('report')) role = 'reporter';
 
-function updateCrimeChart() {
-    const ctx = document.getElementById('crimeChart');
-    if (!ctx) return;
+        currentUser = {
+            username,
+            role,
+            permissions: roles[role].permissions
+        };
 
-    const crimes = {};
-    allData.forEach(d => {
-        crimes[d['Crime Type']] = (crimes[d['Crime Type']] || 0) + 1;
-    });
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainSection').style.display = 'block';
+        document.getElementById('welcomeUser').innerText = username;
+        document.getElementById('welcomeRole').innerText = role;
 
-    new Chart(ctx, {
-        type: 'polarArea',
-        data: {
-            labels: Object.keys(crimes),
-            datasets: [{
-                data: Object.values(crimes),
-                backgroundColor: [
-                    '#ff6b6b',
-                    '#4ecdc4',
-                    '#45b7d1',
-                    '#96ceb4',
-                    '#ffeaa7',
-                    '#dda0dd',
-                    '#98d8c8'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-}
-
-function updateTable() {
-    const tbody = document.getElementById('caseTableBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-
-    allData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = 
-            '<td>' + row['cvw code'] + '</td>' +
-            '<td><span class="status-badge ' + row['Record Type'].toLowerCase() + '-badge">' + row['Record Type'] + '</span></td>' +
-            '<td>' + row['Date Reported'] + '</td>' +
-            '<td>' + row['District'] + '</td>' +
-            '<td>' + row['CVW Gender'] + '</td>' +
-            '<td>' + row['CVW Age'] + ' years</td>' +
-            '<td>' + row['Crime Type'] + '</td>' +
-            '<td>' + (row['Services Rendered'] || 'None') + '</td>';
-        tbody.appendChild(tr);
-    });
-
-    if (allData.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="8" style="text-align: center; color: #666;">No records found</td>';
-        tbody.appendChild(tr);
+        initializeSampleData();
     }
-}</parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">        }
-        updateKPIs();
-    }</parameter>
-<parameter name="new_str">        }
-        updateKPIs();
-        if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-            updateCharts();
-            updateTable();
+
+    function initializeSampleData() {
+        allData = [
+            {
+                "cvw code": "CVW001",
+                "Date Reported": new Date(2025, 6, 10),
+                "District": "Lusaka",
+                "CVW Gender": "Female",
+                "CVW Age": 14,
+                "Crime Type": "Assault",
+                "Disability": "None",
+                "Relationship to CV": "Neighbor",
+                "Services Rendered": "Counseling + Medical Assistance",
+                "Record Type": "Victim"
+            },
+            {
+                "cvw code": "CVW002",
+                "Date Reported": new Date(2025, 6, 12),
+                "District": "Ndola",
+                "CVW Gender": "Male",
+                "CVW Age": 16,
+                "Crime Type": "Theft",
+                "Disability": "None",
+                "Relationship to CV": "Friend",
+                "Services Rendered": "Legal Aid",
+                "Record Type": "Witness"
+            }
+        ];
+    }
+
+    function searchCase() {
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!query) {
+            alert("Enter a CVW code to search.");
+            return;
         }
-    }</parameter>
-</invoke>
-</artifacts>
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_final_clean</parameter>
-<parameter name="old_str">                allData.push(newRecord);
-                saveData();
-                updateKPIs();</parameter>
-<parameter name="new_str">                allData.push(newRecord);
-                saveData();
-                updateKPIs();
-                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                    updateCharts();
-                    updateTable();
-                }</parameter>
-</invoke>
-</artifacts>
+        searchResultsData = allData.filter(r => r['cvw code'].toLowerCase().includes(query));
+        displaySearchResults(searchResultsData);
+    }
+
+    function displaySearchResults(results) {
+        const searchResults = document.getElementById('searchResults');
+        if (results.length === 0) {
+            searchResults.innerHTML = '<p>No records found.</p>';
+            return;
+        }
+        let html = '';
+        results.forEach((record, index) => {
+            const services = record['Services Rendered'] || '';
+            html += `
+                <div class="search-result-item">
+                    <div class="result-header">
+                        <div class="result-case-id">${record['cvw code']}</div>
+                        <div style="font-size: 0.85rem; color: #7f8c8d;">
+                            ${record['Record Type']}
+                        </div>
+                    </div>
+
+                    <div class="result-details">
+                        <div class="result-detail"><span class="result-label">Date Reported:</span> <span class="result-value">${record['Date Reported'] instanceof Date ? record['Date Reported'].toLocaleDateString() : record['Date Reported']}</span></div>
+                        <div class="result-detail"><span class="result-label">District:</span> <span class="result-value">${record['District']}</span></div>
+                        <div class="result-detail"><span class="result-label">Gender:</span> <span class="result-value">${record['CVW Gender']}</span></div>
+                        <div class="result-detail"><span class="result-label">Age:</span> <span class="result-value">${record['CVW Age']}</span></div>
+                        <div class="result-detail"><span class="result-label">Crime Type:</span> <span class="result-value">${record['Crime Type']}</span></div>
+                        <div class="result-detail"><span class="result-label">Disability:</span> <span class="result-value">${record['Disability']}</span></div>
+                        <div class="result-detail"><span class="result-label">Relationship to CV:</span> <span class="result-value">${record['Relationship to CV']}</span></div>
+                    </div>
+
+                    <div class="services-section">
+                        <div class="current-services">Services Rendered:</div>
+                        ${services.split('+').map(s => `<span class="service-badge">${s.trim()}</span>`).join('')}
+
+                        ${currentUser && currentUser.permissions.includes('append_services') ? `
+                        <div class="add-service-container">
+                            <select id="serviceSelect_${index}" class="add-service-select">
+                                <option value="">-- Add Service --</option>
+                                ${availableServices.map(s => `<option value="${s}">${s}</option>`).join('')}
+                            </select>
+                            <button onclick="appendService(${index})">Add</button>
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        searchResults.innerHTML = html;
+    }
+
+    function appendService(index) {
+        const record = searchResultsData[index];
+        const selectEl = document.getElementById(`serviceSelect_${index}`);
+        const selectedService = selectEl.value.trim();
+        if (!selectedService) return;
+        let existing = record['Services Rendered'] ? record['Services Rendered'].split('+').map(s => s.trim()) : [];
+        if (existing.includes(selectedService)) {
+            alert("This service is already assigned.");
+            return;
+        }
+        existing.push(selectedService);
+        record['Services Rendered'] = existing.join(' + ');
+        const globalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
+        if (globalIndex !== -1) {
+            allData[globalIndex] = record;
+        }
+        displaySearchResults(searchResultsData);
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchResults').innerHTML = '';
+    }
+</script>
+</body>
+</html>
