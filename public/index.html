@@ -4,260 +4,197 @@
 <meta charset="UTF-8">
 <title>CVW Case Reports Analytics Dashboard</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0; padding: 0;
-        background: #f5f6fa;
-        color: #2f3640;
-    }
-    header {
-        background: linear-gradient(90deg, #0984e3, #6c5ce7);
-        padding: 1rem;
-        color: #fff;
-        text-align: center;
-        font-size: 1.3rem;
-        font-weight: bold;
-    }
-    #loginSection, #mainSection {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 1rem;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-    .input-group { margin-bottom: 1rem; }
-    .input-group label { display: block; margin-bottom: .3rem; font-weight: bold; }
-    .input-group input, .input-group select {
-        width: 100%;
-        padding: .5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    button {
-        padding: .6rem 1.2rem;
-        border: none;
-        border-radius: 4px;
-        background: #0984e3;
-        color: #fff;
-        cursor: pointer;
-    }
-    button:hover { background: #74b9ff; }
-    .section-title {
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin: 1rem 0 .5rem;
-    }
-    #searchResults { margin-top: 1rem; }
-    .search-result-item {
-        border: 1px solid #ddd;
-        padding: 1rem;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-    }
-    .result-header { display: flex; justify-content: space-between; margin-bottom: .5rem; }
-    .result-case-id { font-weight: bold; font-size: 1.2rem; }
-    .result-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .5rem; }
-    .result-detail { font-size: 0.9rem; }
-    .result-label { font-weight: bold; }
-    .service-badge {
-        display: inline-block;
-        padding: .3rem .6rem;
-        background: #dfe6e9;
-        border-radius: 12px;
-        font-size: .8rem;
-        margin: .2rem;
-    }
-    .add-service-container { margin-top: .5rem; }
-    .add-service-select { padding: .3rem; }
+/* Keep your existing styles here — omitted for brevity */
 </style>
 </head>
 <body>
-
-<header>CVW Case Reports Analytics Dashboard</header>
-
-<div id="loginSection">
-    <div class="input-group">
-        <label>Username</label>
-        <input type="text" id="usernameInput">
-    </div>
-    <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="passwordInput">
-    </div>
+<!-- Login -->
+<div id="loginScreen">
+    <h1>Login</h1>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
 </div>
 
-<div id="mainSection" style="display:none;">
-    <div>Welcome, <span id="welcomeUser"></span> (<span id="welcomeRole"></span>)</div>
-    
-    <div class="section-title">Select Agency</div>
-    <select id="agencySelect">
-        <option value="">--Select--</option>
-        <option value="Police">Police</option>
-        <option value="Social Welfare">Social Welfare</option>
-        <option value="NGO">NGO</option>
-    </select>
-
-    <div class="section-title">Dashboard</div>
-    <div id="dashboardContainer">[Dashboard charts will appear here]</div>
-
-    <div class="section-title">Search Case</div>
-    <input type="text" id="searchInput" placeholder="Enter CVW code">
-    <button onclick="searchCase()">Search</button>
-    <button onclick="clearSearch()">Clear</button>
+<!-- Dashboard -->
+<div id="mainDashboard" style="display:none;">
+    <h1>Dashboard</h1>
+    <div>
+        <input type="text" id="searchInput" placeholder="Enter Case ID">
+        <button onclick="searchRecord()">Search</button>
+        <button onclick="clearSearch()">Clear</button>
+    </div>
     <div id="searchResults"></div>
 </div>
 
 <script>
-    const roles = {
-        admin: { permissions: ['view', 'add', 'append_services'] },
-        viewer: { permissions: ['view'] },
-        reporter: { permissions: ['view', 'add'] }
-    };
+let allData = [];
+let searchResultsData = [];
+let currentUser = null;
 
-    let currentUser = null;
-    let allData = [];
-    let searchResultsData = [];
-    const availableServices = [
-        'Counseling', 'Medical Assistance', 'Legal Aid',
-        'Shelter', 'Rehabilitation', 'Vocational Training'
+const availableServices = [
+    'MEDICAL REPORT', 'COUNSELLING', 'MEDICAL + COUNSELLING',
+    'LEGAL AID', 'PSYCHOSOCIAL SUPPORT', 'SHELTER', 'REFERRAL TO SPECIALIST'
+];
+
+const users = {
+    'admin': {
+        password: 'admin123', role: 'admin', name: 'Administrator',
+        agency: 'NPA', permissions: ['view','add','edit','delete','admin','search','append_services']
+    },
+    'viewer': {
+        password: 'view123', role: 'viewer', name: 'Data Viewer',
+        agency: 'MOH', permissions: ['view','search','append_services']
+    },
+    'reporter': {
+        password: 'report123', role: 'reporter', name: 'Case Reporter',
+        agency: 'ZP', permissions: ['add','search','append_services']
+    }
+};
+
+function initializeSampleData() {
+    allData = [
+        {
+            'cvw code': 'NPA-CV1',
+            'Record Type': 'Victim',
+            'Date Reported': new Date('2025-01-04'),
+            'District': 'Lusaka',
+            'CVW Gender': 'MALE',
+            'CVW Age': 5,
+            'Crime Type': 'ASSAULT ON A CHILD',
+            'Disability': 'NON',
+            'Services Rendered': 'MEDICAL REPORT',
+            'Relationship to CV': 'STRANGER',
+            'Agency': 'NPA',
+            'Service History': [
+                { provider: 'admin', service: 'MEDICAL REPORT' }
+            ]
+        },
+        {
+            'cvw code': 'MOH-CW5',
+            'Record Type': 'Witness',
+            'Date Reported': new Date('2025-02-07'),
+            'District': 'Katete',
+            'CVW Gender': 'MALE',
+            'CVW Age': 15,
+            'Crime Type': 'RAPE',
+            'Disability': 'NON',
+            'Services Rendered': 'COUNSELLING',
+            'Relationship to CV': 'FRIEND',
+            'Agency': 'MOH',
+            'Service History': [
+                { provider: 'viewer', service: 'COUNSELLING' }
+            ]
+        },
+        {
+            'cvw code': 'ZP-CV4',
+            'Record Type': 'Victim',
+            'Date Reported': new Date('2025-03-11'),
+            'District': 'Lusaka',
+            'CVW Gender': 'FEMALE',
+            'CVW Age': 12,
+            'Crime Type': 'RAPE',
+            'Disability': 'MENTAL+PHYSICAL',
+            'Services Rendered': 'MEDICAL + COUNSELLING',
+            'Relationship to CV': 'FATHER',
+            'Agency': 'ZP',
+            'Service History': [
+                { provider: 'reporter', service: 'MEDICAL + COUNSELLING' }
+            ]
+        }
     ];
+}
 
-    function login() {
-        const username = document.getElementById('usernameInput').value.trim();
-        const password = document.getElementById('passwordInput').value.trim();
-        if (!username || !password) {
-            alert("Please enter username and password");
-            return;
-        }
-        let role = 'viewer';
-        if (username.toLowerCase().includes('admin')) role = 'admin';
-        if (username.toLowerCase().includes('report')) role = 'reporter';
-
-        currentUser = {
-            username,
-            role,
-            permissions: roles[role].permissions
-        };
-
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainSection').style.display = 'block';
-        document.getElementById('welcomeUser').innerText = username;
-        document.getElementById('welcomeRole').innerText = role;
-
+function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if (users[username] && users[username].password === password) {
+        currentUser = { username, ...users[username] };
         initializeSampleData();
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainDashboard').style.display = 'block';
+    } else {
+        alert("Invalid credentials");
     }
+}
 
-    function initializeSampleData() {
-        allData = [
-            {
-                "cvw code": "CVW001",
-                "Date Reported": new Date(2025, 6, 10),
-                "District": "Lusaka",
-                "CVW Gender": "Female",
-                "CVW Age": 14,
-                "Crime Type": "Assault",
-                "Disability": "None",
-                "Relationship to CV": "Neighbor",
-                "Services Rendered": "Counseling + Medical Assistance",
-                "Record Type": "Victim"
-            },
-            {
-                "cvw code": "CVW002",
-                "Date Reported": new Date(2025, 6, 12),
-                "District": "Ndola",
-                "CVW Gender": "Male",
-                "CVW Age": 16,
-                "Crime Type": "Theft",
-                "Disability": "None",
-                "Relationship to CV": "Friend",
-                "Services Rendered": "Legal Aid",
-                "Record Type": "Witness"
-            }
-        ];
+function searchRecord() {
+    const term = document.getElementById('searchInput').value.trim().toUpperCase();
+    if (!term) return;
+    searchResultsData = allData.filter(r => r['cvw code'].toUpperCase() === term);
+    displaySearchResults();
+}
+
+function displaySearchResults() {
+    const container = document.getElementById('searchResults');
+    container.innerHTML = '';
+    if (!searchResultsData.length) {
+        container.innerHTML = '<p>No records found</p>';
+        return;
     }
+    searchResultsData.forEach((record, idx) => {
+        const canAppend = currentUser.permissions.includes('append_services') &&
+            (record.Agency === currentUser.agency ||
+             record['Service History'].some(s => s.provider === currentUser.username));
 
-    function searchCase() {
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (!query) {
-            alert("Enter a CVW code to search.");
-            return;
-        }
-        searchResultsData = allData.filter(r => r['cvw code'].toLowerCase().includes(query));
-        displaySearchResults(searchResultsData);
-    }
+        let servicesHTML = record['Services Rendered']
+            .split('+')
+            .map(s => `<span class="service-badge">${s.trim()}</span>`).join(' ');
 
-    function displaySearchResults(results) {
-        const searchResults = document.getElementById('searchResults');
-        if (results.length === 0) {
-            searchResults.innerHTML = '<p>No records found.</p>';
-            return;
-        }
-        let html = '';
-        results.forEach((record, index) => {
-            const services = record['Services Rendered'] || '';
-            html += `
-                <div class="search-result-item">
-                    <div class="result-header">
-                        <div class="result-case-id">${record['cvw code']}</div>
-                        <div style="font-size: 0.85rem; color: #7f8c8d;">
-                            ${record['Record Type']}
-                        </div>
-                    </div>
-
-                    <div class="result-details">
-                        <div class="result-detail"><span class="result-label">Date Reported:</span> <span class="result-value">${record['Date Reported'] instanceof Date ? record['Date Reported'].toLocaleDateString() : record['Date Reported']}</span></div>
-                        <div class="result-detail"><span class="result-label">District:</span> <span class="result-value">${record['District']}</span></div>
-                        <div class="result-detail"><span class="result-label">Gender:</span> <span class="result-value">${record['CVW Gender']}</span></div>
-                        <div class="result-detail"><span class="result-label">Age:</span> <span class="result-value">${record['CVW Age']}</span></div>
-                        <div class="result-detail"><span class="result-label">Crime Type:</span> <span class="result-value">${record['Crime Type']}</span></div>
-                        <div class="result-detail"><span class="result-label">Disability:</span> <span class="result-value">${record['Disability']}</span></div>
-                        <div class="result-detail"><span class="result-label">Relationship to CV:</span> <span class="result-value">${record['Relationship to CV']}</span></div>
-                    </div>
-
-                    <div class="services-section">
-                        <div class="current-services">Services Rendered:</div>
-                        ${services.split('+').map(s => `<span class="service-badge">${s.trim()}</span>`).join('')}
-
-                        ${currentUser && currentUser.permissions.includes('append_services') ? `
-                        <div class="add-service-container">
-                            <select id="serviceSelect_${index}" class="add-service-select">
-                                <option value="">-- Add Service --</option>
-                                ${availableServices.map(s => `<option value="${s}">${s}</option>`).join('')}
-                            </select>
-                            <button onclick="appendService(${index})">Add</button>
-                        </div>` : ''}
-                    </div>
-                </div>
+        let addServiceHTML = '';
+        if (canAppend) {
+            addServiceHTML = `
+                <select id="serviceSelect_${idx}">
+                    <option value="">-- Add Service --</option>
+                    ${availableServices.map(s => `<option value="${s}">${s}</option>`).join('')}
+                </select>
+                <button onclick="appendService(${idx})">Add</button>
             `;
-        });
-        searchResults.innerHTML = html;
-    }
-
-    function appendService(index) {
-        const record = searchResultsData[index];
-        const selectEl = document.getElementById(`serviceSelect_${index}`);
-        const selectedService = selectEl.value.trim();
-        if (!selectedService) return;
-        let existing = record['Services Rendered'] ? record['Services Rendered'].split('+').map(s => s.trim()) : [];
-        if (existing.includes(selectedService)) {
-            alert("This service is already assigned.");
-            return;
         }
-        existing.push(selectedService);
-        record['Services Rendered'] = existing.join(' + ');
-        const globalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
-        if (globalIndex !== -1) {
-            allData[globalIndex] = record;
-        }
-        displaySearchResults(searchResultsData);
-    }
 
-    function clearSearch() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('searchResults').innerHTML = '';
+        container.innerHTML += `
+            <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+                <strong>${record['cvw code']}</strong> - ${record['Record Type']}<br>
+                Agency: ${record.Agency}<br>
+                Date: ${record['Date Reported'].toLocaleDateString()}<br>
+                District: ${record['District']}<br>
+                Gender: ${record['CVW Gender']} | Age: ${record['CVW Age']}<br>
+                Crime: ${record['Crime Type']}<br>
+                Disability: ${record['Disability']}<br>
+                Relationship: ${record['Relationship to CV']}<br>
+                <div><strong>Services Rendered:</strong> ${servicesHTML}</div>
+                ${addServiceHTML}
+            </div>
+        `;
+    });
+}
+
+function appendService(index) {
+    const record = searchResultsData[index];
+    const selectEl = document.getElementById(`serviceSelect_${index}`);
+    const newService = selectEl.value.trim();
+    if (!newService) return;
+
+    let existing = record['Services Rendered'].split('+').map(s => s.trim());
+    if (existing.includes(newService)) {
+        alert("Service already exists");
+        return;
     }
+    existing.push(newService);
+    record['Services Rendered'] = existing.join(' + ');
+    record['Service History'].push({ provider: currentUser.username, service: newService });
+
+    // Update master data
+    const globalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
+    if (globalIndex !== -1) allData[globalIndex] = record;
+
+    displaySearchResults();
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+}
 </script>
 </body>
 </html>
