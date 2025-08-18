@@ -1,19 +1,8 @@
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">rewrite</parameter>
-<parameter name="type">text/html</parameter>
-<parameter name="title">CVW Dashboard - Fully Analyzed and Fixed Complete System</parameter>
-<parameter name="id">cvw_fully_fixed_complete</parameter>
-<parameter name="content"><!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Zambia Child Victim & Witness Analytics Dashboard - Inter-agency collaboration system">
-    <meta http-equiv="x-content-type-options" content="nosniff">
-    <meta http-equiv="cache-control" content="max-age=31536000, immutable">
     <title>CVW Case Reports Analytics Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <style>
         * {
             margin: 0;
@@ -27,18 +16,7 @@ body {
         padding: 20px;
     }
 
-    .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-    }
-
+    /* Login Screen Styles */
     .login-container {
         max-width: 400px;
         margin: 10% auto;
@@ -46,7 +24,6 @@ body {
         border-radius: 20px;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
         padding: 40px;
         text-align: center;
     }
@@ -147,6 +124,7 @@ body {
         display: none;
     }
 
+    /* User Info Bar */
     .user-info-bar {
         background: rgba(255, 255, 255, 0.9);
         padding: 10px 20px;
@@ -209,18 +187,12 @@ body {
         background: #c82333;
     }
 
-    .role-admin .user-avatar { 
-        background: linear-gradient(135deg, #28a745, #20c997); 
-    }
-    
-    .role-viewer .user-avatar { 
-        background: linear-gradient(135deg, #17a2b8, #6f42c1); 
-    }
-    
-    .role-reporter .user-avatar { 
-        background: linear-gradient(135deg, #ffc107, #fd7e14); 
-    }
+    /* Role-based styling */
+    .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
+    .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+    .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
 
+    /* Agency Selection Styles */
     .agency-btn {
         background: white;
         border: 3px solid #dee2e6;
@@ -277,6 +249,20 @@ body {
         display: inline-block;
     }
 
+    /* Disabled button styling */
+    .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .action-btn:disabled:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Dashboard Styles */
     .dashboard-container {
         max-width: 1400px;
         margin: 0 auto;
@@ -284,7 +270,6 @@ body {
         border-radius: 20px;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
         padding: 30px;
     }
 
@@ -377,22 +362,6 @@ body {
         display: flex;
         align-items: center;
         gap: 8px;
-        min-height: 44px;
-        touch-action: manipulation;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
-    .action-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-
-    .action-btn:disabled:hover {
-        transform: none !important;
-        box-shadow: none !important;
     }
 
     .add-record-btn {
@@ -400,7 +369,7 @@ body {
         color: white;
     }
 
-    .add-record-btn:hover:not(:disabled) {
+    .add-record-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
     }
@@ -415,10 +384,10 @@ body {
         box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
     }
 
-    .hidden { 
-        display: none !important; 
-    }
+    /* Hidden elements for different roles */
+    .hidden { display: none !important; }
 
+    /* Access denied message */
     .access-denied {
         text-align: center;
         padding: 50px;
@@ -432,6 +401,7 @@ body {
         margin-bottom: 10px;
     }
 
+    /* Modal Styles */
     .modal {
         display: none;
         position: fixed;
@@ -442,7 +412,6 @@ body {
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
     }
 
     .modal-content {
@@ -478,8 +447,6 @@ body {
         font-weight: bold;
         cursor: pointer;
         transition: color 0.3s ease;
-        background: none;
-        border: none;
     }
 
     .close:hover {
@@ -513,8 +480,6 @@ body {
         background: white;
         font-size: 14px;
         transition: all 0.3s ease;
-        user-select: text;
-        -webkit-user-select: text;
     }
 
     .form-group input:focus,
@@ -547,7 +512,6 @@ body {
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
-        min-height: 44px;
     }
 
     .cancel-btn:hover {
@@ -563,7 +527,6 @@ body {
         cursor: pointer;
         font-weight: 600;
         transition: all 0.3s ease;
-        min-height: 44px;
     }
 
     .submit-btn:hover {
@@ -625,7 +588,6 @@ body {
         font-weight: 600;
         transition: all 0.3s ease;
         height: fit-content;
-        min-height: 44px;
     }
 
     .reset-btn:hover {
@@ -668,6 +630,40 @@ body {
         font-weight: 500;
     }
 
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .chart-container {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ecf0f1;
+    }
+
+    .chart-canvas {
+        max-height: 300px;
+    }
+
     .table-container {
         background: white;
         border-radius: 15px;
@@ -708,21 +704,6 @@ body {
         overflow-y: auto;
         border-radius: 10px;
         border: 1px solid #dee2e6;
-        scrollbar-width: thin;
-        scrollbar-color: #667eea #f1f1f1;
-    }
-
-    .table-wrapper::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb {
-        background: #667eea;
-        border-radius: 4px;
     }
 
     .loading {
@@ -757,15 +738,8 @@ body {
         text-transform: uppercase;
     }
 
-    .victim-badge { 
-        background: #fee2e2; 
-        color: #dc2626; 
-    }
-    
-    .witness-badge { 
-        background: #dbeafe; 
-        color: #2563eb; 
-    }
+    .victim-badge { background: #fee2e2; color: #dc2626; }
+    .witness-badge { background: #dbeafe; color: #2563eb; }
 
     .success-message {
         background: #d1fae5;
@@ -787,6 +761,7 @@ body {
         display: none;
     }
 
+    /* Enhanced Age Input Styling */
     .age-input-container {
         display: flex;
         gap: 10px;
@@ -801,6 +776,7 @@ body {
         flex: 1;
     }
 
+    /* Age display in tables with color coding */
     .age-display {
         font-weight: 500;
         padding: 2px 6px;
@@ -830,6 +806,21 @@ body {
         color: #2563eb;
     }
 
+    /* Highlight months selection */
+    select option[value="months"] {
+        background-color: #fef2f2;
+        font-weight: 600;
+    }
+
+    /* Form validation styling */
+    input:invalid {
+        border-color: #ef4444;
+    }
+
+    input:valid {
+        border-color: #10b981;
+    }
+
     .age-help-text {
         color: #666;
         font-size: 0.8rem;
@@ -844,6 +835,10 @@ body {
         
         .header h1 {
             font-size: 2rem;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr;
         }
         
         .filters-grid {
@@ -935,6 +930,7 @@ body {
             min-height: 50px;
         }
 
+        /* Mobile form improvements */
         .form-group label {
             font-size: 16px;
             margin-bottom: 10px;
@@ -945,11 +941,13 @@ body {
             line-height: 1.4;
         }
 
+        /* Ensure tap targets are at least 44px */
         button, .action-btn, .agency-btn {
             min-height: 44px;
             touch-action: manipulation;
         }
 
+        /* Prevent zoom on input focus for iOS */
         input, select, textarea {
             font-size: 16px !important;
             transform-origin: left top;
@@ -968,14 +966,10 @@ body {
         ❌ Invalid username or password
     </div>
     
-    <form class="login-form" id="loginForm" role="form" aria-label="Login Form">
-        <label for="username" class="sr-only">Username</label>
-        <input type="text" id="username" name="username" class="login-input" placeholder="Username" title="Enter your username" autocomplete="username" required aria-label="Username">
-        
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" name="password" class="login-input" placeholder="Password" title="Enter your password" autocomplete="current-password" required aria-label="Password">
-        
-        <button type="submit" class="login-btn" title="Submit login form" aria-label="Login to dashboard">🚀 Login</button>
+    <form class="login-form" id="loginForm">
+        <input type="text" id="username" class="login-input" placeholder="Username" required>
+        <input type="password" id="password" class="login-input" placeholder="Password" required>
+        <button type="submit" class="login-btn">🚀 Login</button>
     </form>
     
     <div class="demo-accounts">
@@ -1006,15 +1000,10 @@ body {
                 <div id="userRole" class="user-role">Admin Account</div>
             </div>
         </div>
-        <button class="logout-
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_fully_fixed_complete</parameter>
-<parameter name="old_str">            <button class="logout-</parameter>
-<parameter name="new_str">            <button class="logout-btn" onclick="logout()" title="Logout from dashboard" aria-label="Logout from current session">🚪 Logout</button>
-        </div>
-<div class="dashboard-container">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <div class="dashboard-container">
         <div class="header">
             <h1>📊 CVW Case Reports Analytics</h1>
             <p class="zambia-label">Zambia</p>
@@ -1022,27 +1011,26 @@ body {
             
             <!-- Database Connection Status -->
             <div id="connectionStatus" class="connection-status">
-                <div class="status-indicator"></div>
-                <span id="statusText">Checking database connection...</span>
+<div class="status-indicator"></div>
+                    <span id="statusText">Checking database connection...</span>
+                </div>
             </div>
-        </div>
-
-        <!-- Reporting Agency Selection (For Admin and Reporter) -->
+<!-- Reporting Agency Selection (For Admin and Reporter) -->
         <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
             <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
             <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')" title="Select National Prosecution Authority" aria-label="Select National Prosecution Authority as reporting agency">
-                    <div class="agency-icon" role="img" aria-label="Scales of justice">⚖️</div>
+                <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')">
+                    <div class="agency-icon">⚖️</div>
                     <div class="agency-name">National Prosecution Authority</div>
                     <div class="agency-code">NPA</div>
                 </button>
-                <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')" title="Select Ministry of Health" aria-label="Select Ministry of Health as reporting agency">
-                    <div class="agency-icon" role="img" aria-label="Hospital">🏥</div>
+                <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')">
+                    <div class="agency-icon">🏥</div>
                     <div class="agency-name">Ministry of Health</div>
                     <div class="agency-code">MOH</div>
                 </button>
-                <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')" title="Select Zambia Police" aria-label="Select Zambia Police as reporting agency">
-                    <div class="agency-icon" role="img" aria-label="Police officer">👮</div>
+                <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')">
+                    <div class="agency-icon">👮</div>
                     <div class="agency-name">Zambia Police</div>
                     <div class="agency-code">ZP</div>
                 </button>
@@ -1051,17 +1039,14 @@ body {
 
         <!-- Action Buttons (Role-based visibility) -->
         <div class="action-buttons" id="actionButtons">
-            <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled title="Add new case record" aria-label="Add new case record">
-                <span role="img" aria-label="Plus sign">➕</span> Add New Record
+            <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled>
+                ➕ Add New Record
             </button>
-            <button class="action-btn" id="searchCaseBtn" style="background: linear-gradient(135deg, #17a2b8, #6f42c1);" onclick="openSearchCaseModal()" disabled title="Search existing cases" aria-label="Search for existing cases">
-                <span role="img" aria-label="Magnifying glass">🔍</span> Search Case
+            <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
+                📈 View Dashboard
             </button>
-            <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()" title="View analytics dashboard" aria-label="View analytics dashboard">
-                <span role="img" aria-label="Chart">📈</span> View Dashboard
-            </button>
-            <button class="action-btn" id="clearDataBtn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);" onclick="clearAllData()" title="Clear all locally saved data" aria-label="Clear all locally saved data">
-                <span role="img" aria-label="Trash can">🗑️</span> Clear Data
+            <button class="action-btn" id="clearDataBtn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);" onclick="clearAllData()" title="Clear all locally saved data">
+                🗑️ Clear Data
             </button>
         </div>
 
@@ -1070,13 +1055,13 @@ body {
             <div class="filters-grid">
                 <div class="filter-group">
                     <label for="districtFilter">District</label>
-                    <select id="districtFilter" title="Filter by district" aria-label="Filter cases by district">
+                    <select id="districtFilter">
                         <option value="">All Districts</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="recordTypeFilter">Record Type</label>
-                    <select id="recordTypeFilter" title="Filter by record type" aria-label="Filter cases by record type">
+                    <select id="recordTypeFilter">
                         <option value="">All Types</option>
                         <option value="Victim">Victim</option>
                         <option value="Witness">Witness</option>
@@ -1084,13 +1069,13 @@ body {
                 </div>
                 <div class="filter-group">
                     <label for="crimeTypeFilter">Crime Type</label>
-                    <select id="crimeTypeFilter" title="Filter by crime type" aria-label="Filter cases by crime type">
+                    <select id="crimeTypeFilter">
                         <option value="">All Crime Types</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="genderFilter">Gender</label>
-                    <select id="genderFilter" title="Filter by gender" aria-label="Filter cases by gender">
+                    <select id="genderFilter">
                         <option value="">All Genders</option>
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
@@ -1098,22 +1083,20 @@ body {
                 </div>
                 <div class="filter-group">
                     <label for="dateFromFilter">Date From</label>
-                    <input type="date" id="dateFromFilter" name="dateFromFilter" class="date-input" title="Filter from date" aria-label="Filter cases from this date" autocomplete="off">
+                    <input type="date" id="dateFromFilter" class="date-input">
                 </div>
                 <div class="filter-group">
                     <label for="dateToFilter">Date To</label>
-                    <input type="date" id="dateToFilter" name="dateToFilter" class="date-input" title="Filter to date" aria-label="Filter cases up to this date" autocomplete="off">
+                    <input type="date" id="dateToFilter" class="date-input">
                 </div>
                 <div class="filter-group">
                     <label for="servicesFilter">Services Rendered</label>
-                    <select id="servicesFilter" title="Filter by services rendered" aria-label="Filter cases by services rendered">
+                    <select id="servicesFilter">
                         <option value="">All Services</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <button class="reset-btn" onclick="resetFilters()" title="Reset all filters" aria-label="Reset all filter selections">
-                        <span role="img" aria-label="Refresh">🔄</span> Reset Filters
-                    </button>
+                    <button class="reset-btn" onclick="resetFilters()">🔄 Reset Filters</button>
                 </div>
             </div>
         </div>
@@ -1138,9 +1121,47 @@ body {
             </div>
         </div>
 
+        <!-- Charts Section (Hidden for Reporter) -->
+        <div class="charts-grid" id="chartsSection">
+            <div class="chart-container">
+                <div class="chart-title">Cases by District</div>
+                <canvas id="districtChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Crime Types Distribution</div>
+                <canvas id="crimeChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Age Distribution</div>
+                <canvas id="ageChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Gender Distribution</div>
+                <canvas id="genderChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Cases Over Time</div>
+                <canvas id="timeChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Services Rendered Distribution</div>
+                <canvas id="servicesChart" class="chart-canvas"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Relationship Analysis</div>
+                <canvas id="relationshipChart" class="chart-canvas"></canvas>
+            </div>
+        </div>
+
         <!-- Table Section (Hidden for Reporter) -->
         <div class="table-container full-width" id="tableSection">
-            <div class="modal-title">Case Details</div>
+            <div class="chart-title">Case Details</div>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
@@ -1173,15 +1194,15 @@ body {
         <div id="reporterOnlyContent" class="hidden">
             <div class="access-denied">
                 <h2>📝 Reporter Dashboard</h2>
-                <p>Welcome! You have access to add new case records and search existing cases.</p>
+                <p>Welcome! You have access to add new case records.</p>
                 <p><strong>Step 1:</strong> Select your reporting agency above</p>
-                <p><strong>Step 2:</strong> Click "Add New Record" to report a new case or "Search Case" to find existing cases</p>
+                <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
                 <br>
                 <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
-                    <strong>🔍 Inter-Agency Collaboration:</strong><br>
-                    • <strong>Search Cases:</strong> Find cases from any agency (NPA, MOH, ZP)<br>
-                    • <strong>Add Services:</strong> Contribute additional services to existing cases<br>
-                    • <strong>Case ID Format:</strong> NPA-CV/CW, MOH-CV/CW, ZP-CV/CW
+                    <strong>Case ID Prefixes:</strong><br>
+                    • <strong>NPA-CV/CW:</strong> National Prosecution Authority<br>
+                    • <strong>MOH-CV/CW:</strong> Ministry of Health<br>
+                    • <strong>ZP-CV/CW:</strong> Zambia Police
                 </div>
             </div>
         </div>
@@ -1193,7 +1214,7 @@ body {
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">➕ Add New Case Record</h2>
-            <button class="close" onclick="closeAddRecordModal()" title="Close add record modal" aria-label="Close add record modal">&times;</button>
+            <span class="close" onclick="closeAddRecordModal()">&times;</span>
         </div>
         
         <div class="success-message" id="successMessage">
@@ -1204,32 +1225,31 @@ body {
             ❌ Please fill in all required fields.
         </div>
 
-        <form id="addRecordForm" role="form" aria-label="Add New Case Record Form">
+        <form id="addRecordForm">
             <div class="form-grid">
                 <div class="form-group">
                     <label for="caseId">Case ID</label>
-                    <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly title="Case ID will be auto-generated" aria-label="Case ID - automatically generated" aria-describedby="caseid-help">
-                    <small id="caseid-help" style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
+                    <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly>
+                    <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="recordType">Record Type *</label>
-                    <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();" title="Select record type" aria-label="Select record type" aria-describedby="recordtype-help">
+                    <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();">
                         <option value="">Select Type</option>
                         <option value="Victim">Victim</option>
                         <option value="Witness">Witness</option>
                     </select>
-                    <small id="recordtype-help" style="color: #666; margin-top: 5px;">Choose whether this is a victim or witness record</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="dateReported">Date Reported *</label>
-                    <input type="date" id="dateReported" name="dateReported" required title="Date when case was reported" aria-label="Date when case was reported" autocomplete="off">
+                    <input type="date" id="dateReported" name="dateReported" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="district">District *</label>
-                    <select id="district" name="district" required title="Select district where case occurred" aria-label="Select district where case occurred">
+                    <select id="district" name="district" required>
                         <option value="">Select District</option>
                         <option value="Lusaka">Lusaka</option>
                         <option value="Kitwe">Kitwe</option>
@@ -1242,16 +1262,17 @@ body {
                 
                 <div class="form-group">
                     <label for="cvwGender">CVW Gender *</label>
-                    <select id="cvwGender" name="cvwGender" required title="Select child/victim/witness gender" aria-label="Select child victim or witness gender" autocomplete="sex">
+                    <select id="cvwGender" name="cvwGender" required>
                         <option value="">Select Gender</option>
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
                 </div>
                 
+                <!-- DISABILITY RIGHT AFTER CVW GENDER -->
                 <div class="form-group">
                     <label for="disability">CVW Disability Status</label>
-                    <select id="disability" name="disability" title="Select disability status" aria-label="Select child disability status">
+                    <select id="disability" name="disability">
                         <option value="NON">None</option>
                         <option value="PHYSICAL">Physical</option>
                         <option value="MENTAL">Mental</option>
@@ -1259,24 +1280,26 @@ body {
                     </select>
                 </div>
                 
+                <!-- CVW AGE WITH YEARS/MONTHS -->
                 <div class="form-group">
                     <label for="cvwAge">CVW Age *</label>
                     <div class="age-input-container">
-                        <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required title="Enter child age" aria-label="Enter child age" autocomplete="off">
-                        <select id="ageUnit" name="ageUnit" required title="Select age unit" aria-label="Select age unit - years or months">
+                        <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required>
+                        <select id="ageUnit" name="ageUnit" required>
                             <option value="">Select Unit</option>
                             <option value="years">Years</option>
                             <option value="months">Months</option>
                         </select>
                     </div>
-                    <small class="age-help-text" id="age-help">
-                        <span role="img" aria-label="Light bulb">💡</span> Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
+                    <small class="age-help-text">
+                        💡 Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
                     </small>
                 </div>
                 
+                <!-- SERVICES RENDERED RIGHT AFTER CVW AGE -->
                 <div class="form-group">
                     <label for="servicesRendered">Services Rendered</label>
-                    <select id="servicesRendered" name="servicesRendered" title="Select services provided" aria-label="Select services provided to the child">
+                    <select id="servicesRendered" name="servicesRendered">
                         <option value="">Select Services</option>
                         <option value="MEDICAL REPORT">Medical Report</option>
                         <option value="COUNSELLING">Counselling</option>
@@ -1286,16 +1309,17 @@ body {
                 
                 <div class="form-group">
                     <label for="offenderGender">Offender Gender</label>
-                    <select id="offenderGender" name="offenderGender" title="Select offender gender" aria-label="Select offender gender" autocomplete="off">
+                    <select id="offenderGender" name="offenderGender">
                         <option value="">Select Gender</option>
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
                 </div>
                 
+                <!-- CRIME TYPE RIGHT AFTER OFFENDER GENDER -->
                 <div class="form-group">
                     <label for="crimeType">Crime Type *</label>
-                    <select id="crimeType" name="crimeType" required title="Select type of crime" aria-label="Select type of crime committed">
+                    <select id="crimeType" name="crimeType" required>
                         <option value="">Select Crime Type</option>
                         <option value="ASSAULT ON A CHILD">Assault on a Child</option>
                         <option value="PHYSICAL ABUSE">Physical Abuse</option>
@@ -1309,12 +1333,13 @@ body {
                 
                 <div class="form-group">
                     <label for="offenderAge">Offender Age</label>
-                    <input type="number" id="offenderAge" name="offenderAge" min="0" placeholder="Offender Age" title="Enter offender age" aria-label="Enter offender age" autocomplete="off">
+                    <input type="number" id="offenderAge" name="offenderAge" min="0" placeholder="Offender Age">
                 </div>
                 
+                <!-- DYNAMIC RELATIONSHIP FIELD RIGHT AFTER OFFENDER AGE -->
                 <div class="form-group">
                     <label for="relationshipToCv" id="relationshipLabel">Relationship to Child</label>
-                    <select id="relationshipToCv" name="relationshipToCv" title="Select relationship to child" aria-label="Select offender relationship to child">
+                    <select id="relationshipToCv" name="relationshipToCv">
                         <option value="">Select Relationship</option>
                         <option value="STRANGER">Stranger</option>
                         <option value="FRIEND">Friend</option>
@@ -1330,1086 +1355,261 @@ body {
             </div>
             
             <div class="form-actions">
-                <button type="button" class="cancel-btn" onclick="closeAddRecordModal()" title="Cancel and close form" aria-label="Cancel form and close modal">Cancel</button>
-                <button type="submit" class="submit-btn" title="Submit case record" aria-label="Submit new case record">Add Record</button>
+                <button type="button" class="cancel-btn" onclick="closeAddRecordModal()">Cancel</button>
+                <button type="submit" class="submit-btn">Add Record</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Search Case Modal -->
-<div id="searchCaseModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">🔍 Search Case by ID</h2>
-            <button class="close" onclick="closeSearchCaseModal()" title="Close search modal" aria-label="Close search case modal">&times;</button>
-        </div>
-        
-        <div class="success-message" id="searchSuccessMessage">
-            ✅ Case found successfully!
-        </div>
-        
-        <div class="error-message" id="searchErrorMessage">
-            ❌ Case not found.
-        </div>
-
-        <!-- Search Form -->
-        <div style="margin-bottom: 30px;">
-            <div class="form-group">
-                <label for="searchCaseId">Enter Case ID</label>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="searchCaseId" name="searchCaseId" placeholder="e.g., NPA-CV1, MOH-CW5, ZP-CV12" title="Enter case ID to search" aria-label="Enter case ID to search" autocomplete="off" style="flex: 1; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
-                    <button onclick="searchCase()" title="Search for case" aria-label="Search for case by ID" style="padding: 12px 20px; background: linear-gradient(135deg, #17a2b8, #6f42c1); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                        <span role="img" aria-label="Magnifying glass">🔍</span> Search
-                    </button>
-                </div>
-                <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] - Search cases from any agency</small>
-            </div>
-        </div>
-
-        <!-- Case Details Display -->
-        <div id="caseDetailsSection" class="hidden">
-            <h3 style="color: #2c3e50; margin-bottom: 20px; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">📋 Case Details</h3>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Case ID</label>
-                    <input type="text" id="foundCaseId" name="foundCaseId" readonly title="Case ID" aria-label="Found case ID" style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>Reporting Agency</label>
-                    <input type="text" id="foundReportingAgency" name="foundReportingAgency" readonly title="Reporting agency" aria-label="Reporting agency" style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>Record Type</label>
-                    <input type="text" id="foundRecordType" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>Date Reported</label>
-                    <input type="text" id="foundDateReported" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>District</label>
-                    <input type="text" id="foundDistrict" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>CVW Gender</label>
-                    <input type="text" id="foundCvwGender" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>CVW Age</label>
-                    <input type="text" id="foundCvwAge" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>Crime Type</label>
-                    <input type="text" id="foundCrimeType" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group">
-                    <label>Disability</label>
-                    <input type="text" id="foundDisability" readonly style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px;">
-                </div>
-                <div class="form-group full-width">
-                    <label>Current Services Rendered</label>
-                    <textarea id="foundServicesRendered" name="foundServicesRendered" readonly title="Services rendered by all agencies" aria-label="Services rendered by all agencies" style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 12px; border-radius: 8px; min-height: 100px; resize: vertical;"></textarea>
-                    <small style="color: #666; margin-top: 5px;">This shows all services provided by different agencies</small>
-                </div>
-            </div>
-
-            <!-- Add Service Section -->
-            <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-radius: 15px; border: 2px solid #2196f3;">
-                <h4 style="color: #1976d2; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    ➕ Add Service by Your Agency
-                    <span id="currentAgencyBadge" style="background: #1976d2; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"></span>
-                </h4>
-                <p style="color: #1565c0; margin-bottom: 20px; line-height: 1.4;">
-                    <strong>Inter-Agency Collaboration:</strong> Add additional services that your agency has provided to this case. 
-                    This will be tracked with your agency name and date.
-                </p>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="additionalService">Service Provided by Your Agency *</label>
-                        <select id="additionalService" name="additionalService" title="Select additional service provided" aria-label="Select additional service provided by your agency" style="padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
-                            <option value="">Select Service</option>
-                            <option value="MEDICAL REPORT">Medical Report</option>
-                            <option value="COUNSELLING">Counselling</option>
-                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
-                            <option value="LEGAL SUPPORT">Legal Support</option>
-                            <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
-                            <option value="SAFE HOUSE PLACEMENT">Safe House Placement</option>
-                            <option value="FAMILY MEDIATION">Family Mediation</option>
-                            <option value="COURT PREPARATION">Court Preparation</option>
-                            <option value="FOLLOW-UP VISIT">Follow-up Visit</option>
-                            <option value="CHILD PROTECTION SERVICES">Child Protection Services</option>
-                            <option value="EMERGENCY ACCOMMODATION">Emergency Accommodation</option>
-                            <option value="EDUCATIONAL SUPPORT">Educational Support</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="serviceDate">Date Service Provided *</label>
-                        <input type="date" id="serviceDate" name="serviceDate" title="Date service was provided" aria-label="Date service was provided" autocomplete="off" style="padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px;">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="serviceNotes">Service Notes (Optional)</label>
-                    <textarea id="serviceNotes" name="serviceNotes" placeholder="Additional details about the service provided..." title="Optional notes about the service" aria-label="Optional notes about the service provided" style="padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; min-height: 80px; resize: vertical; font-size: 16px;"></textarea>
-                </div>
-                
-                <button onclick="addServiceToCase()" title="Add service to this case" aria-label="Add selected service to this case record" style="padding: 15px 30px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px; margin-top: 15px; display: flex; align-items: center; gap: 8px; min-height: 50px;">
-                    <span role="img" aria-label="Check mark">✅</span> Add Service to Case
-                </button>
-                
-                <div style="margin-top: 15px; padding: 15px; background: rgba(255, 255, 255, 0.7); border-radius: 8px; border-left: 4px solid #ff9800;">
-                    <strong>📋 Service Tracking Format:</strong><br>
-                    <small style="color: #666;">Your service will be added as: "<em>[SERVICE] ([YOUR_AGENCY] - [DATE]) [Notes if provided]</em>"</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-actions">
-            <button type="button" class="cancel-btn" onclick="closeSearchCaseModal()" title="Close search modal" aria-label="Close search case modal">Close</button>
-        </div>
-    </div>
-</div>
-
 <script>
-let allData = [];
-let filteredData = [];
-let charts = {};
-let isConnectedToDatabase = false;
-let currentUser = null;
-let selectedAgency = null;
+    let allData = [];
+    let filteredData = [];
+    let charts = {};
+    let isConnectedToDatabase = false;
+    let currentUser = null;
+    let selectedAgency = null;
 
-const users = {
-    'admin': { 
-        password: 'admin123', 
-        role: 'admin', 
-        name: 'Administrator',
-        avatar: 'A',
-        permissions: ['view', 'add', 'edit', 'delete', 'admin']
-    },
-    'viewer': { 
-        password: 'view123', 
-        role: 'viewer', 
-        name: 'Data Viewer',
-        avatar: 'V',
-        permissions: ['view']
-    },
-    'reporter': { 
-        password: 'report123', 
-        role: 'reporter', 
-        name: 'Case Reporter',
-        avatar: 'R',
-        permissions: ['add']
-    }
-};
+    // API configuration
+    const API_BASE = window.location.origin + '/api';
 
-function login(username, password) {
-    console.log('🔐 Login function called for:', username);
-    console.log('🔑 Available users:', Object.keys(users));
-    
-    const user = users[username];
-    console.log('👤 Found user:', user ? 'YES' : 'NO');
-    
-    if (user) {
-        console.log('🔒 Password check:', user.password === password ? 'MATCH'
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_fully_fixed_complete</parameter>
-<parameter name="old_str">        if (user) {
-            console.log('🔒 Password check:', user.password === password ? 'MATCH'</parameter>
-<parameter name="new_str">        if (user) {
-            console.log('🔒 Password check:', user.password === password ? 'MATCH' : 'NO MATCH');
-            console.log('🔒 Expected:', user.password, 'Got:', password);
+    // User accounts database
+    const users = {
+        'admin': { 
+            password: 'admin123', 
+            role: 'admin', 
+            name: 'Administrator',
+            avatar: 'A',
+            permissions: ['view', 'add', 'edit', 'delete', 'admin']
+        },
+        'viewer': { 
+            password: 'view123', 
+            role: 'viewer', 
+            name: 'Data Viewer',
+            avatar: 'V',
+            permissions: ['view']
+        },
+        'reporter': { 
+            password: 'report123', 
+            role: 'reporter', 
+            name: 'Case Reporter',
+            avatar: 'R',
+            permissions: ['add']
         }
-if (user && user.password === password) {
-        console.log('✅ Authentication successful');
-        currentUser = {
-            username: username,
-            ...user
-        };
-        
-        localStorage.setItem('cvw_session', JSON.stringify(currentUser));
-        console.log('💾 Session saved to localStorage');
-        
-        updateUserInterface();
-        showDashboard();
-        return true;
-    }
-    
-    console.log('❌ Authentication failed');
-    return false;
-}
+    };
 
-function logout() {
-    currentUser = null;
-    localStorage.removeItem('cvw_session');
-    showLoginScreen();
-}
+    // Color schemes
+    const colors = {
+        primary: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+        gradient: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(240, 147, 251, 0.8)', 'rgba(245, 87, 108, 0.8)', 'rgba(79, 172, 254, 0.8)', 'rgba(0, 242, 254, 0.8)']
+    };
 
-function checkSession() {
-    const session = localStorage.getItem('cvw_session');
-    if (session) {
-        try {
-            currentUser = JSON.parse(session);
+    // Authentication Functions
+    function login(username, password) {
+        const user = users[username];
+        if (user && user.password === password) {
+            currentUser = {
+                username: username,
+                ...user
+            };
+            
+            // Save session
+            localStorage.setItem('cvw_session', JSON.stringify(currentUser));
+            
+            // Update UI
             updateUserInterface();
             showDashboard();
             return true;
-        } catch (e) {
-            localStorage.removeItem('cvw_session');
         }
-    }
-    return false;
-}
-
-function hasPermission(permission) {
-    return currentUser && currentUser.permissions.includes(permission);
-}
-
-function updateUserInterface() {
-    if (!currentUser) return;
-
-    document.getElementById('userName').textContent = currentUser.name;
-    document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
-    document.getElementById('userAvatar').textContent = currentUser.avatar;
-    
-    const userInfoBar = document.getElementById('userInfoBar');
-    userInfoBar.className = `user-info-bar role-${currentUser.role}`;
-
-    const role = currentUser.role;
-    
-    if (role === 'admin') {
-        document.getElementById('addRecordBtn').classList.remove('hidden');
-        document.getElementById('viewDashboardBtn').classList.remove('hidden');
-        document.getElementById('clearDataBtn').classList.remove('hidden');
-        document.getElementById('filtersSection').classList.remove('hidden');
-        document.getElementById('kpiSection').classList.remove('hidden');
-        document.getElementById('tableSection').classList.remove('hidden');
-        document.getElementById('reporterOnlyContent').classList.add('hidden');
-        document.getElementById('agencySelection').classList.remove('hidden');
-    }
-    else if (role === 'viewer') {
-        document.getElementById('addRecordBtn').classList.add('hidden');
-        document.getElementById('viewDashboardBtn').classList.remove('hidden');
-        document.getElementById('clearDataBtn').classList.add('hidden');
-        document.getElementById('filtersSection').classList.remove('hidden');
-        document.getElementById('kpiSection').classList.remove('hidden');
-        document.getElementById('tableSection').classList.remove('hidden');
-        document.getElementById('reporterOnlyContent').classList.add('hidden');
-        document.getElementById('agencySelection').classList.add('hidden');
-    }
-    else if (role === 'reporter') {
-        document.getElementById('addRecordBtn').classList.remove('hidden');
-        document.getElementById('viewDashboardBtn').classList.add('hidden');
-        document.getElementById('clearDataBtn').classList.add('hidden');
-        document.getElementById('filtersSection').classList.add('hidden');
-        document.getElementById('kpiSection').classList.add('hidden');
-        document.getElementById('tableSection').classList.add('hidden');
-        document.getElementById('reporterOnlyContent').classList.remove('hidden');
-        document.getElementById('agencySelection').classList.remove('hidden');
+        return false;
     }
 
-    selectedAgency = null;
-    document.getElementById('addRecordBtn').disabled = true;
-    document.getElementById('searchCaseBtn').disabled = true;
-    document.querySelectorAll('.agency-btn').forEach(btn => btn.classList.remove('selected'));
-}
-
-function showLoginScreen() {
-    console.log('📱 Showing login screen');
-    document.getElementById('loginScreen').classList.remove('hidden');
-    document.getElementById('mainDashboard').classList.add('hidden');
-}
-
-function showDashboard() {
-    console.log('📊 Showing dashboard for user:', currentUser?.name);
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('mainDashboard').classList.remove('hidden');
-    
-    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-        setTimeout(initializeDashboard, 100);
-    }
-}
-
-function selectAgency(agency) {
-    selectedAgency = agency;
-    
-    document.querySelectorAll('.agency-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
-    
-    document.getElementById('addRecordBtn').disabled = false;
-    document.getElementById('searchCaseBtn').disabled = false;
-    
-    const agencyNames = {
-        'NPA': 'National Prosecution Authority',
-        'MOH': 'Ministry of Health', 
-        'ZP': 'Zambia Police'
-    };
-    document.getElementById('addRecordBtn').innerHTML = `<span role="img" aria-label="Plus sign">➕</span> Add New Record (${agencyNames[agency]})`;
-    document.getElementById('searchCaseBtn').innerHTML = `<span role="img" aria-label="Magnifying glass">🔍</span> Search Case (${agencyNames[agency]})`;
-    
-    console.log(`📋 Selected agency: ${agency} - ${agencyNames[agency]}`);
-}
-
-function convertAgeToYears(age, unit) {
-    if (!age || !unit) return null;
-    
-    const ageNum = parseFloat(age);
-    
-    if (unit === 'months') {
-        return Math.round((ageNum / 12) * 100) / 100;
-    } else if (unit === 'years') {
-        return ageNum;
-    }
-    
-    return ageNum;
-}
-
-function formatAgeDisplay(ageInYears) {
-    if (!ageInYears || ageInYears === 0) return 'N/A';
-    
-    const years = parseFloat(ageInYears);
-    
-    if (years < 1) {
-        const months = Math.round(years * 12);
-        return `${months} month${months !== 1 ? 's' : ''}`;
-    }
-    
-    if (years === Math.floor(years)) {
-        return `${Math.floor(years)} year${Math.floor(years) !== 1 ? 's' : ''}`;
-    }
-    
-    const wholeYears = Math.floor(years);
-    const extraMonths = Math.round((years - wholeYears) * 12);
-    
-    if (wholeYears === 0) {
-        return `${extraMonths} month${extraMonths !== 1 ? 's' : ''}`;
-    } else if (extraMonths === 0) {
-        return `${wholeYears} year${wholeYears !== 1 ? 's' : ''}`;
-    } else {
-        return `${wholeYears}y ${extraMonths}m`;
-    }
-}
-
-function getAgeCategory(ageInYears) {
-    if (!ageInYears) return '';
-    const years = parseFloat(ageInYears);
-    
-    if (years < 1) return 'infant';
-    if (years < 3) return 'toddler';
-    if (years < 13) return 'child';
-    return 'teen';
-}
-
-async function checkDatabaseConnection() {
-    const statusElement = document.getElementById('connectionStatus');
-    const statusText = document.getElementById('statusText');
-    statusElement.className = 'connection-status status-disconnected';
-    statusText.textContent = '❌ Database Offline - Using Local Data';
-    isConnectedToDatabase = false;
-}
-
-async function loadData() {
-    loadFallbackData();
-    filteredData = [...allData];
-}
-
-function loadFallbackData() {
-    const savedData = loadDataFromLocalStorage();
-    if (savedData && savedData.length > 0) {
-        allData = savedData;
-        console.log('💾 Data loaded from localStorage:', allData.length, 'records');
-        return;
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('cvw_session');
+        showLoginScreen();
     }
 
-    const csvData = `cvw code,Record Type,Date Reported,District,CVW Gender,CVW Age,Offender Gender,Offender Age,Crime Type,Disability,Services Rendered,Relationship to CV
-NPA-CV1,Victim,1/4/2025,Lusaka,MALE,5,FEMALE,25,ASSAULT ON A CHILD,NON,MEDICAL REPORT,STRANGER
-NPA-CV2,Victim,2/2/2025,Lusaka,FEMALE,8,MALE,30,PHYSICAL ABUSE,PHYSICAL,MEDICAL + COUNSELLING,STRANGER
-MOH-CV3,Victim,1/27/2025,Solwezi,FEMALE,10,MALE,40,SEXUAL ASSAULT,MENTAL,MEDICAL + COUNSELLING,LANDLORD
-ZP-CV4,Victim,3/11/2025,Lusaka,FEMALE,12,MALE,50,RAPE,MENTAL+PHYSICAL,MEDICAL + COUNSELLING,FATHER
-NPA-CW5,Witness,2/7/2025,Katete,MALE,15,FEMALE,60,RAPE,NON,COUNSELLING,FRIEND
-MOH-CV6,Victim,1/7/2025,Chipata,FEMALE,0.5,FEMALE,20,CHILD NEGLECT,NON,COUNSELLING,FRIEND
-ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + COUNSELLING,STRANGER`;
-const lines = csvData.trim().split('\n');
-    const headers = lines[0].split(',');
-    const rawData = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
-        const row = {};
-        headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-        });
-        rawData.push(row);
-    }
-
-    allData = rawData.map(row => ({
-        ...row,
-        'CVW Gender': row['CVW Gender'].replace('FEMAL', 'FEMALE'),
-        'Offender Gender': row['Offender Gender'].replace('FEMAL', 'FEMALE'),
-        'CVW Age': parseFloat(row['CVW Age']) || 0,
-        'Offender Age': parseFloat(row['Offender Age']) || 0,
-        'Date Reported': new Date(row['Date Reported'])
-    }));
-
-    console.log('📋 Fallback data loaded:', allData.length, 'records');
-    saveDataToLocalStorage();
-}
-
-function saveDataToLocalStorage() {
-    try {
-        const dataToSave = allData.map(record => ({
-            ...record,
-            'Date Reported': record['Date Reported'].toISOString()
-        }));
-        localStorage.setItem('cvw_dashboard_data', JSON.stringify(dataToSave));
-        console.log('💾 Data saved to localStorage:', allData.length, 'records');
-    } catch (error) {
-        console.error('❌ Error saving to localStorage:', error);
-    }
-}
-
-function loadDataFromLocalStorage() {
-    try {
-        const savedData = localStorage.getItem('cvw_dashboard_data');
-        if (savedData) {
-            const parsedData = JSON.parse(savedData);
-            return parsedData.map(record => ({
-                ...record,
-                'Date Reported': new Date(record['Date Reported'])
-            }));
+    function checkSession() {
+        const session = localStorage.getItem('cvw_session');
+        if (session) {
+            try {
+                currentUser = JSON.parse(session);
+                updateUserInterface();
+                showDashboard();
+                return true;
+            } catch (e) {
+                localStorage.removeItem('cvw_session');
+            }
         }
-        return null;
-    } catch (error) {
-        console.error('Error loading from localStorage:', error);
-        return null;
+        return false;
     }
-}
 
-async function generateCaseId() {
-    const recordType = document.getElementById('recordType').value;
-    const caseIdInput = document.getElementById('caseId');
-    
-    if (!recordType || !selectedAgency) {
-        caseIdInput.value = '';
-        return;
+    function hasPermission(permission) {
+        return currentUser && currentUser.permissions.includes(permission);
     }
-    
-    const suffix = recordType === 'Victim' ? 'CV' : 'CW';
-    const prefix = `${selectedAgency}-${suffix}`;
-    
-    const existingIds = allData
-        .filter(record => record['cvw code'].startsWith(prefix))
-        .map(record => {
-            const match = record['cvw code'].match(/(\d+)$/);
-            return match ? parseInt(match[1]) : 0;
-        });
-    
-    const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-    caseIdInput.value = `${prefix}${nextNumber}`;
-}
 
-function addRecordLocally(recordData) {
-    console.log('📱 Adding record locally:', recordData);
-    
-    const newRecord = {
-        'cvw code': recordData.caseId,
-        'Record Type': recordData.recordType,
-        'Date Reported': new Date(recordData.dateReported),
-        'District': recordData.district,
-        'CVW Gender': recordData.cvwGender,
-        'CVW Age': parseFloat(recordData.cvwAge) || 0,
-        'Offender Gender': recordData.offenderGender || '',
-        'Offender Age': parseInt(recordData.offenderAge) || 0,
-        'Crime Type': recordData.crimeType,
-        'Disability': recordData.disability || 'NON',
-        'Services Rendered': recordData.servicesRendered || '',
-        'Relationship to CV': recordData.relationshipToCv || ''
-    };
-    
-    allData.push(newRecord);
-    filteredData = [...allData];
-    
-    saveDataToLocalStorage();
-    
-    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-        updateFilters();
-        updateDashboard();
-    }
-    
-    console.log('💾 Record saved locally. Total records:', allData.length);
-}
+    function updateUserInterface() {
+        if (!currentUser) return;
 
-function updateFilters() {
-    const districts = [...new Set(allData.map(d => d.District))].sort();
-    const districtSelect = document.getElementById('districtFilter');
-    const currentValue = districtSelect.value;
-    
-    districtSelect.innerHTML = '<option value="">All Districts</option>';
-    districts.forEach(district => {
-        const option = document.createElement('option');
-        option.value = district;
-        option.textContent = district;
-        districtSelect.appendChild(option);
-    });
-    districtSelect.value = currentValue;
-
-    const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
-    const crimeSelect = document.getElementById('crimeTypeFilter');
-    const currentCrimeValue = crimeSelect.value;
-    
-    crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
-    crimeTypes.forEach(crime => {
-        const option = document.createElement('option');
-        option.value = crime;
-        option.textContent = crime;
-        crimeSelect.appendChild(option);
-    });
-    crimeSelect.value = currentCrimeValue;
-
-    const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
-    const servicesSelect = document.getElementById('servicesFilter');
-    const currentServicesValue = servicesSelect.value;
-    
-    servicesSelect.innerHTML = '<option value="">All Services</option>';
-    services.forEach(service => {
-        const option = document.createElement('option');
-        option.value = service;
-        option.textContent = service;
-        servicesSelect.appendChild(option);
-    });
-    servicesSelect.value = currentServicesValue;
-}
-
-function setupFilters() {
-    updateFilters();
-
-    document.getElementById('districtFilter').addEventListener('change', applyFilters);
-    document.getElementById('recordTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('crimeTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('genderFilter').addEventListener('change', applyFilters);
-    document.getElementById('servicesFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateToFilter').addEventListener('change', applyFilters);
-}
-
-function applyFilters() {
-    const districtFilter = document.getElementById('districtFilter').value;
-    const recordTypeFilter = document.getElementById('recordTypeFilter').value;
-    const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
-    const genderFilter = document.getElementById('genderFilter').value;
-    const servicesFilter = document.getElementById('servicesFilter').value;
-    const dateFromFilter = document.getElementById('dateFromFilter').value;
-    const dateToFilter = document.getElementById('dateToFilter').value;
-
-    filteredData = allData.filter(row => {
-        const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
-                         (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
+        // Update user info bar
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
+        document.getElementById('userAvatar').textContent = currentUser.avatar;
         
-        return (!districtFilter || row.District === districtFilter) &&
-               (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
-               (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
-               (!genderFilter || row['CVW Gender'] === genderFilter) &&
-               (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
-               dateMatch;
-    });
+        // Add role-based styling
+        const userInfoBar = document.getElementById('userInfoBar');
+        userInfoBar.className = `user-info-bar role-${currentUser.role}`;
 
-    updateDashboard();
-}
-
-function resetFilters() {
-    document.getElementById('districtFilter').value = '';
-    document.getElementById('recordTypeFilter').value = '';
-    document.getElementById('crimeTypeFilter').value = '';
-    document.getElementById('genderFilter').value = '';
-    document.getElementById('servicesFilter').value = '';
-    document.getElementById('dateFromFilter').value = '';
-    document.getElementById('dateToFilter').value = '';
-    filteredData = [...allData];
-    updateDashboard();
-}
-
-function updateDashboard() {
-    updateKPIs();
-    updateTable();
-}
-
-function updateKPIs() {
-    const totalCases = filteredData.length;
-    const victimCases = filteredData.filter(d => d['Record Type'] === 'Victim').length;
-    const witnessCases = filteredData.filter(d => d['Record Type'] === 'Witness').length;
-    const avgAge = filteredData.filter(d => d['CVW Age'] > 0).reduce((sum, d) => sum + d['CVW Age'], 0) / filteredData.filter(d => d['CVW Age'] > 0).length || 0;
-
-    const totalElement = document.getElementById('totalCases');
-    const victimElement = document.getElementById('victimCases');
-    const witnessElement = document.getElementById('witnessCases');
-    const avgAgeElement = document.getElementById('avgAge');
-
-    if (totalElement) totalElement.textContent = totalCases;
-    if (victimElement) victimElement.textContent = victimCases;
-    if (witnessElement) witnessElement.textContent = witnessCases;
-    if (avgAgeElement) avgAgeElement.textContent = formatAgeDisplay(avgAge);
-}
-
-function updateTable() {
-    const tbody = document.getElementById('caseTableBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-
-    const displayData = filteredData.slice(0, 50);
-
-    displayData.forEach(row => {
-        const ageDisplay = formatAgeDisplay(row['CVW Age']);
-        const ageCategory = getAgeCategory(row['CVW Age']);
+        // Role-based visibility
+        const role = currentUser.role;
         
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row['cvw code']}</td>
-            <td><span class="status-badge ${row['Record Type'].toLowerCase()}-badge">${row['Record Type']}</span></td>
-            <td>${row['Date Reported'].toLocaleDateString()}</td>
-            <td>${row['District']}</td>
-            <td>${row['CVW Gender']}</td>
-            <td><span class="age-display ${ageCategory}">${ageDisplay}</span></td>
-            <td>${row['Crime Type']}</td>
-            <td>${row['Disability']}</td>
-            <td>${row['Services Rendered']}</td>
-            <td>${row['Relationship to CV']}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    if (filteredData.length > 50) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="10" style="text-align: center; font-style: italic; color: #666;">Showing first 50 of ${filteredData.length} records</td>`;
-        tbody.appendChild(tr);
-    }
-
-    if (filteredData.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="10" style="text-align: center; color: #666;">No records found</td>`;
-        tbody.appendChild(tr);
-    }
-}
-
-function openAddRecordModal() {
-    if (!hasPermission('add')) {
-        alert('❌ You do not have permission to add records.');
-        return;
-    }
-    
-    if (!selectedAgency) {
-        alert('⚠️ Please select a reporting agency first.');
-        return;
-    }
-    
-    document.getElementById('addRecordModal').style.display = 'block';
-    document.getElementById('dateReported').value = new Date().toISOString().split('T')[0];
-    document.getElementById('caseId').value = '';
-    
-    const agencyNames = {
-        'NPA': 'National Prosecution Authority',
-        'MOH': 'Ministry of Health', 
-        'ZP': 'Zambia Police'
-    };
-    document.querySelector('#addRecordModal .modal-title').innerHTML = `➕ Add New Case Record - ${agencyNames[selectedAgency]}`;
-}
-
-function closeAddRecordModal() {
-    document.getElementById('addRecordModal').style.display = 'none';
-    document.getElementById('addRecordForm').reset();
-    hideMessages();
-    
-    const ageInput = document.getElementById('cvwAge');
-    if (ageInput) {
-        ageInput.style.borderColor = '#dee2e6';
-        ageInput.style.backgroundColor = 'white';
-    }
-    updateRelationshipLabel();
-}
-
-function updateRelationshipLabel() {
-    const recordType = document.getElementById('recordType').value;
-    const relationshipLabel = document.getElementById('relationshipLabel');
-    
-    if (recordType === 'Victim') {
-        relationshipLabel.textContent = 'Relationship to Victim';
-    } else if (recordType === 'Witness') {
-        relationshipLabel.textContent = 'Relationship to Witness';
-    } else {
-        relationshipLabel.textContent = 'Relationship to Child';
-    }
-}
-
-function setupAgeInputHandlers() {
-    const ageInput = document.getElementById('cvwAge');
-    const ageUnit = document.getElementById('ageUnit');
-    
-    if (ageInput && ageUnit) {
-        ageUnit.addEventListener('change', function() {
-            const unit = this.value;
-            
-            if (unit === 'months') {
-                ageInput.max = '60';
-                ageInput.placeholder = 'Enter months (0-60)';
-                ageInput.style.borderColor = '#dc2626';
-                ageInput.style.backgroundColor = '#fef2f2';
-            } else if (unit === 'years') {
-                ageInput.max = '18';
-                ageInput.placeholder = 'Enter years (0-18)';
-                ageInput.style.borderColor = '#dee2e6';
-                ageInput.style.backgroundColor = 'white';
-            } else {
-                ageInput.max = '120';
-                ageInput.placeholder = 'Enter age';
-                ageInput.style.borderColor = '#dee2e6';
-                ageInput.style.backgroundColor = 'white';
-            }
-            
-            ageInput.value = '';
-        });
-
-        ageInput.addEventListener('input', function() {
-            const unit = ageUnit.value;
-            const value = parseFloat(this.value);
-            
-            if (unit === 'months' && value > 60) {
-                this.setCustomValidity('Maximum 60 months (5 years). Use "Years" for older children.');
-            } else if (unit === 'years' && value > 18) {
-                this.setCustomValidity('Maximum 18 years for CVW cases.');
-            } else if (value < 0) {
-                this.setCustomValidity('Age cannot be negative.');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-    }
-}
-
-function showDashboardView() {
-    const kpiSection = document.getElementById('kpiSection');
-    if (kpiSection) {
-        kpiSection.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-function showSuccessMessage(message) {
-    const successMsg = document.getElementById('successMessage');
-    if (successMsg) {
-        successMsg.textContent = message;
-        successMsg.style.display = 'block';
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 3000);
-    }
-}
-
-function showErrorMessage(message) {
-    const errorMsg = document.getElementById('errorMessage');
-    if (errorMsg) {
-        errorMsg.textContent = message;
-        errorMsg.style.display = 'block';
-        setTimeout(() => {
-            errorMsg.style.display = 'none';
-        }, 5000);
-    }
-}
-
-function hideMessages() {
-    const successMsg = document.getElementById('successMessage');
-    const errorMsg = document.getElementById('errorMessage');
-    if (successMsg) successMsg.style.display = 'none';
-    if (errorMsg) errorMsg.style.display = 'none';
-}
-
-function clearAllData() {
-    if (!hasPermission('admin')) {
-        alert('❌ You do not have permission to clear data.');
-        return;
-    }
-    
-    if (confirm('⚠️ Are you sure you want to clear ALL data? This cannot be undone!')) {
-        localStorage.removeItem('cvw_dashboard_data');
-        allData = [];
-        filteredData = [];
-        updateDashboard();
-        alert('✅ All data cleared successfully!');
-        
-        loadFallbackData();
-        filteredData = [...allData];
-        updateFilters();
-        updateDashboard();
-    }
-}
-
-function openSearchCaseModal() {
-    if (!selectedAgency) {
-        alert('⚠️ Please select a reporting agency first.');
-        return;
-    }
-    
-    document.getElementById('searchCaseModal').style.display = 'block';
-    document.getElementById('searchCaseId').value = '';
-    document.getElementById('caseDetailsSection').classList.add('hidden');
-    document.getElementById('serviceDate').value = new Date().toISOString().split('T')[0];
-    
-    const agencyNames = {
-        'NPA': 'National Prosecution Authority',
-        'MOH': 'Ministry of Health', 
-        'ZP': 'Zambia Police'
-    };
-    document.getElementById('currentAgencyBadge').textContent = `${selectedAgency} - ${agencyNames[selectedAgency]}`;
-    
-    hideSearchMessages();
-}
-
-function closeSearchCaseModal() {
-    document.getElementById('searchCaseModal').style.display = 'none';
-    document.getElementById('caseDetailsSection').classList.add('hidden');
-    hideSearchMessages();
-}
-
-function searchCase() {
-    const caseId = document.getElementById('searchCaseId').value.trim().toUpperCase();
-    
-    if (!caseId) {
-        showSearchErrorMessage('Please enter a Case ID');
-        return;
-    }
-    
-    const foundCase = allData.find(record => record['cvw code'].toUpperCase() === caseId);
-    
-    if (foundCase) {
-        displayCaseDetails(foundCase);
-        showSearchSuccessMessage(`Case ${caseId} found! You can now add services provided by your agency.`);
-    } else {
-        document.getElementById('caseDetailsSection').classList.add('hidden');
-        showSearchErrorMessage(`Case ${caseId} not found in the system. Please verify the Case ID format (e.g., NPA-CV1, MOH-CW5, ZP-CV12).`);
-    }
-}
-
-function displayCaseDetails(caseData) {
-    const reportingAgency = caseData['cvw code'].split('-')[0];
-    const agencyNames = {
-        'NPA': 'National Prosecution Authority',
-        'MOH': 'Ministry of Health', 
-        'ZP': 'Zambia Police'
-    };
-    
-    document.getElementById('foundCaseId').value = caseData['cvw code'];
-    document.getElementById('foundReportingAgency').value = `${reportingAgency} - ${agencyNames[reportingAgency] || 'Unknown Agency'}`;
-    document.getElementById('foundRecordType').value = caseData['Record Type'];
-    document.getElementById('foundDateReported').value = caseData['Date Reported'].toLocaleDateString();
-    document.getElementById('foundDistrict').value = caseData['District'];
-    document.getElementById('foundCvwGender').value = caseData['CVW Gender'];
-    document.getElementById('foundCvwAge').value = formatAgeDisplay(caseData['CVW Age']);
-    document.getElementById('foundCrimeType').value = caseData['Crime Type'];
-    document.getElementById('foundDisability').value = caseData['Disability'] || 'NON';
-    
-    const currentServices = caseData['Services Rendered'] || 'No services recorded yet';
-    document.getElementById('foundServicesRendered').value = currentServices;
-    
-    document.getElementById('additionalService').value = '';
-    document.getElementById('serviceNotes').value = '';
-    
-    document.getElementById('caseDetailsSection').classList.remove('hidden');
-    document.getElementById('caseDetailsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function addServiceToCase() {
-    const caseId = document.getElementById('foundCaseId').value;
-    const additionalService = document.getElementById('additionalService').value;
-    const serviceDate = document.getElementById('serviceDate').value;
-    const serviceNotes = document.getElementById('serviceNotes').value.trim();
-    
-    if (!additionalService) {
-        showSearchErrorMessage('Please select a service that your agency provided');
-        return;
-    }
-    
-    if (!serviceDate) {
-        showSearchErrorMessage('Please enter the date when the service was provided');
-        return;
-    }
-    
-    const today = new Date().toISOString().split('T')[0];
-    if (serviceDate > today) {
-        showSearchErrorMessage('Service date cannot be in the future');
-        return;
-    }
-
-    const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
-    
-    if (caseIndex !== -1) {
-        const currentServices = allData[caseIndex]['Services Rendered'] || '';
-        const agencyPrefix = selectedAgency;
-        
-        let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_fully_fixed_complete</parameter>
-<parameter name="old_str">            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
-<artifacts>
-<invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">cvw_fully_fixed_complete</parameter>
-<parameter name="old_str">            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;</parameter>
-<parameter name="new_str">            let newServiceEntry = `${additionalService} (${agencyPrefix} - ${new Date(serviceDate).toLocaleDateString()})`;
-            if (serviceNotes) {
-                newServiceEntry += ` [${serviceNotes}]`;
-            }
-let updatedServices;
-        if (currentServices && currentServices !== 'No services recorded yet' && currentServices !== 'No services recorded') {
-            updatedServices = `${currentServices} + ${newServiceEntry}`;
-        } else {
-            updatedServices = newServiceEntry;
+        // Admin: Full access
+        if (role === 'admin') {
+            document.getElementById('addRecordBtn').classList.remove('hidden');
+            document.getElementById('viewDashboardBtn').classList.remove('hidden');
+            document.getElementById('clearDataBtn').classList.remove('hidden');
+            document.getElementById('filtersSection').classList.remove('hidden');
+            document.getElementById('kpiSection').classList.remove('hidden');
+            document.getElementById('chartsSection').classList.remove('hidden');
+            document.getElementById('tableSection').classList.remove('hidden');
+            document.getElementById('reporterOnlyContent').classList.add('hidden');
+            document.getElementById('agencySelection').classList.remove('hidden');
+        }
+        // Viewer: Read-only access
+        else if (role === 'viewer') {
+            document.getElementById('addRecordBtn').classList.add('hidden');
+            document.getElementById('viewDashboardBtn').classList.remove('hidden');
+            document.getElementById('clearDataBtn').classList.add('hidden');
+            document.getElementById('filtersSection').classList.remove('hidden');
+            document.getElementById('kpiSection').classList.remove('hidden');
+            document.getElementById('chartsSection').classList.remove('hidden');
+            document.getElementById('tableSection').classList.remove('hidden');
+            document.getElementById('reporterOnlyContent').classList.add('hidden');
+            document.getElementById('agencySelection').classList.add('hidden');
+        }
+        // Reporter: Add records only
+        else if (role === 'reporter') {
+            document.getElementById('addRecordBtn').classList.remove('hidden');
+            document.getElementById('viewDashboardBtn').classList.add('hidden');
+            document.getElementById('clearDataBtn').classList.add('hidden');
+            document.getElementById('filtersSection').classList.add('hidden');
+            document.getElementById('kpiSection').classList.add('hidden');
+            document.getElementById('chartsSection').classList.add('hidden');
+            document.getElementById('tableSection').classList.add('hidden');
+            document.getElementById('reporterOnlyContent').classList.remove('hidden');
+            document.getElementById('agencySelection').classList.remove('hidden');
         }
 
-        allData[caseIndex]['Services Rendered'] = updatedServices;
-        document.getElementById('foundServicesRendered').value = updatedServices;
+        // Reset agency selection and button state
+        selectedAgency = null;
+        document.getElementById('addRecordBtn').disabled = true;
+        document.querySelectorAll('.agency-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function showLoginScreen() {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('mainDashboard').classList.add('hidden');
+    }
+
+    function showDashboard() {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainDashboard').classList.remove('hidden');
         
-        saveDataToLocalStorage();
-        
+        // Initialize dashboard if admin or viewer
         if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-            updateFilters();
-            updateDashboard();
+            setTimeout(initializeDashboard, 100);
         }
+    }
+
+    // Agency selection function
+    function selectAgency(agency) {
+        selectedAgency = agency;
         
+        // Update button states
+        document.querySelectorAll('.agency-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+        
+        // Enable add record button
+        document.getElementById('addRecordBtn').disabled = false;
+        
+        // Update button text to show selected agency
         const agencyNames = {
             'NPA': 'National Prosecution Authority',
             'MOH': 'Ministry of Health', 
             'ZP': 'Zambia Police'
         };
+        document.getElementById('addRecordBtn').innerHTML = `➕ Add New Record (${agencyNames[agency]})`;
         
-        showSearchSuccessMessage(`✅ Service "${additionalService}" successfully added to case ${caseId} by ${agencyNames[selectedAgency]} (${selectedAgency})`);
-        
-        document.getElementById('additionalService').value = '';
-        document.getElementById('serviceNotes').value = '';
-        
-        console.log('✅ Inter-agency service collaboration recorded successfully');
-    } else {
-        showSearchErrorMessage('Error: Case not found in database. Please try searching again.');
-    }
-}
-
-function showSearchSuccessMessage(message) {
-    const successMsg = document.getElementById('searchSuccessMessage');
-    successMsg.textContent = message;
-    successMsg.style.display = 'block';
-    document.getElementById('searchErrorMessage').style.display = 'none';
-    setTimeout(() => {
-        successMsg.style.display = 'none';
-    }, 6000);
-}
-
-function showSearchErrorMessage(message) {
-    const errorMsg = document.getElementById('searchErrorMessage');
-    errorMsg.textContent = message;
-    errorMsg.style.display = 'block';
-    document.getElementById('searchSuccessMessage').style.display = 'none';
-    setTimeout(() => {
-        errorMsg.style.display = 'none';
-    }, 6000);
-}
-
-function hideSearchMessages() {
-    document.getElementById('searchSuccessMessage').style.display = 'none';
-    document.getElementById('searchErrorMessage').style.display = 'none';
-}
-
-async function initializeDashboard() {
-    try {
-        console.log('🚀 Initializing CVW Dashboard...');
-        await checkDatabaseConnection();
-        await loadData();
-        setupFilters();
-        updateDashboard();
-        console.log('✅ Dashboard initialized successfully');
-    } catch (error) {
-        console.error('❌ Error initializing dashboard:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 CVW Dashboard loaded, setting up...');
-    
-    if (!checkSession()) {
-        showLoginScreen();
+        console.log(`📋 Selected agency: ${agency} - ${agencyNames[agency]}`);
     }
 
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        console.log('✅ Login form found, attaching event listener');
-        loginForm.addEventListener('submit', function(e) {
+    // Login form handler
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for existing session
+        if (!checkSession()) {
+            showLoginScreen();
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('📝 Login form submitted');
             
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
-            console.log('🔐 Login attempt:', username, password ? '[PASSWORD PROVIDED]' : '[NO PASSWORD]');
-            
-            if (!username || !password) {
-                console.log('❌ Missing credentials');
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').textContent = '❌ Please enter both username and password';
-                return;
-            }
-            
-            console.log('🔄 Calling login function...');
             if (login(username, password)) {
-                console.log('✅ Login successful');
                 document.getElementById('loginError').style.display = 'none';
             } else {
-                console.log('❌ Login failed');
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').textContent = '❌ Invalid username or password';
             }
         });
-    } else {
-        console.error('❌ Login form not found!');
-    }
 
-    setupAgeInputHandlers();
-    
-    const addRecordForm = document.getElementById('addRecordForm');
-    if (addRecordForm) {
-        addRecordForm.addEventListener('submit', async function(e) {
+        // Setup age input handlers
+        setupAgeInputHandlers();
+        
+        // Form submission for adding records
+        document.getElementById('addRecordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('📝 Form submission started...');
+            
+            // Check permissions
             if (!hasPermission('add')) {
                 showErrorMessage('❌ You do not have permission to add records.');
                 return;
             }
             
+            // Disable submit button to prevent double submission
             const submitBtn = e.target.querySelector('.submit-btn');
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '⏳ Saving...';
             
             try {
-                const recordData = {
-                    caseId: document.getElementById('caseId').value,
-                    recordType: document.getElementById('recordType').value,
-                    dateReported: document.getElementById('dateReported').value,
-                    district: document.getElementById('district').value,
-                    cvwGender: document.getElementById('cvwGender').value,
-                    disability: document.getElementById('disability').value,
-                    cvwAge: document.getElementById('cvwAge').value,
-                    ageUnit: document.getElementById('ageUnit').value,
-                    servicesRendered: document.getElementById('servicesRendered').value,
-                    offenderGender: document.getElementById('offenderGender').value,
-                    crimeType: document.getElementById('crimeType').value,
-                    offenderAge: document.getElementById('offenderAge').value,
-                    relationshipToCv: document.getElementById('relationshipToCv').value
-                };
+                const formData = new FormData(e.target);
+                const recordData = {};
                 
+                // Collect form data manually for better mobile compatibility
+                recordData.caseId = document.getElementById('caseId').value;
+                recordData.recordType = document.getElementById('recordType').value;
+                recordData.dateReported = document.getElementById('dateReported').value;
+                recordData.district = document.getElementById('district').value;
+                recordData.cvwGender = document.getElementById('cvwGender').value;
+                recordData.disability = document.getElementById('disability').value;
+                recordData.cvwAge = document.getElementById('cvwAge').value;
+                recordData.ageUnit = document.getElementById('ageUnit').value;
+                recordData.servicesRendered = document.getElementById('servicesRendered').value;
+                recordData.offenderGender = document.getElementById('offenderGender').value;
+                recordData.crimeType = document.getElementById('crimeType').value;
+                recordData.offenderAge = document.getElementById('offenderAge').value;
+                recordData.relationshipToCv = document.getElementById('relationshipToCv').value;
+                
+                console.log('📋 Collected form data:', recordData);
+                
+                // Validate required fields
                 const requiredFields = ['recordType', 'dateReported', 'district', 'cvwGender', 'crimeType', 'cvwAge', 'ageUnit'];
                 const missingFields = requiredFields.filter(field => !recordData[field] || recordData[field].trim() === '');
                 
@@ -2418,29 +1618,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
+                // Check if agency is selected
                 if (!selectedAgency) {
                     showErrorMessage('⚠️ Please select a reporting agency first.');
                     return;
                 }
                 
-                const ageInYears = convertAgeToYears(recordData.cvwAge, recordData.ageUnit);
+                // Convert age to years for database storage
+                const originalAge = recordData.cvwAge;
+                const originalUnit = recordData.ageUnit;
+                const ageInYears = convertAgeToYears(originalAge, originalUnit);
+                
                 recordData.cvwAge = ageInYears;
                 
+                // Auto-generate case ID if needed
                 if (!recordData.caseId) {
                     await generateCaseId();
                     recordData.caseId = document.getElementById('caseId').value;
                 }
                 
-                addRecordLocally(recordData);
+                console.log('💾 Attempting to save record:', recordData);
                 
+                const result = await addRecord(recordData);
+                
+                // Update filters and dashboard for admin/viewer
                 if (currentUser.role === 'admin' || currentUser.role === 'viewer') {
                     updateFilters();
                     applyFilters();
                 }
                 
+                // Update connection status
+                await checkDatabaseConnection();
+                
+                // Show success message with readable age
                 const ageDisplay = formatAgeDisplay(ageInYears);
                 showSuccessMessage(`✅ Record added successfully! Case ID: ${recordData.caseId} (Age: ${ageDisplay})`);
                 
+                console.log('✅ Record saved successfully!');
+                
+                // Reset form after delay
                 setTimeout(() => {
                     closeAddRecordModal();
                 }, 2000);
@@ -2449,27 +1665,932 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('❌ Form submission error:', error);
                 showErrorMessage(`❌ Error adding record: ${error.message}`);
             } finally {
+                // Re-enable submit button
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
         });
-    }
-});
+    });
 
-window.onclick = function(event) {
-    const addModal = document.getElementById('addRecordModal');
-    const searchModal = document.getElementById('searchCaseModal');
-    
-    if (event.target == addModal) {
-        closeAddRecordModal();
+    // Function to update relationship label based on record type
+    function updateRelationshipLabel() {
+        const recordType = document.getElementById('recordType').value;
+        const relationshipLabel = document.getElementById('relationshipLabel');
+        
+        if (recordType === 'Victim') {
+            relationshipLabel.textContent = 'Relationship to Victim';
+        } else if (recordType === 'Witness') {
+            relationshipLabel.textContent = 'Relationship to Witness';
+        } else {
+            relationshipLabel.textContent = 'Relationship to Child';
+        }
     }
-    if (event.target == searchModal) {
-        closeSearchCaseModal();
-    }
+
+    // Enhanced Age Handling Functions
+    function setupAgeInputHandlers() {
+        const ageInput = document.getElementById('cvwAge');
+        const ageUnit = document.getElementById('ageUnit');
+        
+        if (ageInput && ageUnit) {
+            ageUnit.addEventListener('change', function() {
+                const unit = this.value;
+                
+                if (unit === 'months') {
+                    ageInput.max = '60'; // 5 years max in months
+                    ageInput.placeholder = 'Enter months (0-60)';
+                    ageInput.title = 'Enter age in months (0-60 months = 0-5 years)';
+                    // Highlight for months input
+                    ageInput.style.borderColor = '#dc2626';
+                    ageInput.style.backgroundColor = '#fef2f2';
+                } else if (unit === 'years') {
+                    ageInput.max = '18';
+                    ageInput.placeholder = 'Enter years (0-18)';
+                    ageInput.title = 'Enter age in years (0-18 years)';
+                    // Reset styling for years
+                    ageInput.style.borderColor = '#dee2e6';
+                    ageInput.style.backgroundColor = 'white';
+                } else {
+                    ageInput.max = '120';
+                    ageInput.placeholder = 'Enter age';
+                    ageInput.title = '';
+                    ageInput.style.borderColor = '#dee2e6';
+                    ageInput.style.backgroundColor = 'white';
+                }
+                
+                // Clear the input when unit changes
+                ageInput.value = '';
+            });
+
+            // Validate age input based on unit
+            ageInput.addEventListener('input', function() {
+                const unit = ageUnit.value;
+                const value = parseFloat(this.value);
+                
+                if (unit === 'months' && value > 60) {
+                    this.setCustomValidity('Maximum 60months(5 years). Use "Years" for older children.');
+} else if (unit === 'years' && value > 18) {
+this.setCustomValidity('Maximum 18 years for CVW cases.');
+} else if (value < 0) {
+this.setCustomValidity('Age cannot be negative.');
+} else {
+this.setCustomValidity('');
 }
+});
+}
+}
+// Function to convert age to years for database storage
+    function convertAgeToYears(age, unit) {
+        if (!age || !unit) return null;
+        
+        const ageNum = parseFloat(age);
+        
+        if (unit === 'months') {
+            return Math.round((ageNum / 12) * 100) / 100; // Convert months to years, round to 2 decimals
+        } else if (unit === 'years') {
+            return ageNum;
+        }
+        
+        return ageNum;
+    }
+
+    // Function to display age in human-readable format
+    function formatAgeDisplay(ageInYears) {
+        if (!ageInYears || ageInYears === 0) return 'N/A';
+        
+        const years = parseFloat(ageInYears);
+        
+        // If less than 1 year, show in months
+        if (years < 1) {
+            const months = Math.round(years * 12);
+            return `${months} month${months !== 1 ? 's' : ''}`;
+        }
+        
+        // If it's a whole number, show as years
+        if (years === Math.floor(years)) {
+            return `${Math.floor(years)} year${Math.floor(years) !== 1 ? 's' : ''}`;
+        }
+        
+        // If it has decimals (converted from months), show in a readable format
+        const wholeYears = Math.floor(years);
+        const extraMonths = Math.round((years - wholeYears) * 12);
+        
+        if (wholeYears === 0) {
+            return `${extraMonths} month${extraMonths !== 1 ? 's' : ''}`;
+        } else if (extraMonths === 0) {
+            return `${wholeYears} year${wholeYears !== 1 ? 's' : ''}`;
+        } else {
+            return `${wholeYears}y ${extraMonths}m`;
+        }
+    }
+
+    // Get age category for styling
+    function getAgeCategory(ageInYears) {
+        if (!ageInYears) return '';
+        const years = parseFloat(ageInYears);
+        
+        if (years < 1) return 'infant';
+        if (years < 3) return 'toddler';
+        if (years < 13) return 'child';
+        return 'teen';
+    }
+
+    // Database connection status
+    async function checkDatabaseConnection() {
+        try {
+            const response = await fetch(`${API_BASE}/status`);
+            const status = await response.json();
+            
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (status.status === 'connected') {
+                statusElement.className = 'connection-status status-connected';
+                statusText.textContent = `✅ Database Connected (${status.totalRecords} records)`;
+                isConnectedToDatabase = true;
+            } else {
+                statusElement.className = 'connection-status status-disconnected';
+                statusText.textContent = '❌ Database Connection Failed - Using Fallback Data';
+                isConnectedToDatabase = false;
+            }
+        } catch (error) {
+            console.error('Error checking database status:', error);
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            statusElement.className = 'connection-status status-disconnected';
+            statusText.textContent = '❌ Database Offline - Using Fallback Data';
+            isConnectedToDatabase = false;
+        }
+    }
+
+    // Load data from database or fallback
+    async function loadData() {
+        try {
+            if (isConnectedToDatabase) {
+                const response = await fetch(`${API_BASE}/cases`);
+                const dbData = await response.json();
+                
+                // Transform database data to match expected format
+                allData = dbData.map(row => ({
+                    'cvw code': row.cvw_code,
+                    'Record Type': row.record_type,
+                    'Date Reported': new Date(row.date_reported),
+                    'District': row.district,
+                    'CVW Gender': row.cvw_gender,
+                    'CVW Age': row.cvw_age || 0,
+                    'Offender Gender': row.offender_gender || '',
+                    'Offender Age': row.offender_age || 0,
+                    'Crime Type': row.crime_type,
+                    'Disability': row.disability || 'NON',
+                    'Services Rendered': row.services_rendered || '',
+                    'Relationship to CV': row.relationship_to_cv || ''
+                }));
+                
+                console.log('✅ Data loaded from database:', allData.length, 'records');
+            } else {
+                // Fallback to embedded data
+                loadFallbackData();
+            }
+            
+            filteredData = [...allData];
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            loadFallbackData();
+        }
+    }
+
+    // Generate next case ID from database
+    async function generateCaseId() {
+        const recordType = document.getElementById('recordType').value;
+        const caseIdInput = document.getElementById('caseId');
+        
+        if (!recordType || !selectedAgency) {
+            caseIdInput.value = '';
+            return;
+        }
+        
+        if (isConnectedToDatabase) {
+            try {
+                const response = await fetch(`${API_BASE}/next-case-id/${recordType}?agency=${selectedAgency}`);
+                const data = await response.json();
+                caseIdInput.value = data.nextCaseId;
+            } catch (error) {
+                console.error('Error generating case ID:', error);
+                // Fallback to local generation
+                generateLocalCaseId(recordType);
+            }
+        } else {
+            generateLocalCaseId(recordType);
+        }
+    }
+
+    function generateLocalCaseId(recordType) {
+        if (!selectedAgency) {
+            document.getElementById('caseId').value = '';
+            return;
+        }
+
+        const suffix = recordType === 'Victim' ? 'CV' : 'CW';
+        const prefix = `${selectedAgency}-${suffix}`;
+        
+        const existingIds = allData
+            .filter(record => record['cvw code'].startsWith(prefix))
+            .map(record => {
+                const match = record['cvw code'].match(/(\d+)$/);
+                return match ? parseInt(match[1]) : 0;
+            });
+        
+        const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+        document.getElementById('caseId').value = `${prefix}${nextNumber}`;
+    }
+
+    // Add new record to database
+    async function addRecord(recordData) {
+        if (isConnectedToDatabase) {
+            try {
+                console.log('🚀 Attempting to save to database:', recordData);
+                
+                const requestBody = {
+                    cvw_code: recordData.caseId,
+                    record_type: recordData.recordType,
+                    date_reported: recordData.dateReported,
+                    district: recordData.district,
+                    cvw_gender: recordData.cvwGender,
+                    cvw_age: parseFloat(recordData.cvwAge) || null,
+                    offender_gender: recordData.offenderGender || null,
+                    offender_age: parseInt(recordData.offenderAge) || null,
+                    crime_type: recordData.crimeType,
+                    disability: recordData.disability || 'NON',
+                    services_rendered: recordData.servicesRendered || null,
+                    relationship_to_cv: recordData.relationshipToCv || null
+                };
+                
+                console.log('📤 Request body:', requestBody);
+                
+                const response = await fetch(`${API_BASE}/cases`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('📥 Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Server response:', errorText);
+                    throw new Error(`Server error ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Database save successful:', result);
+                
+                // Reload data to get latest from database
+                await loadData();
+                
+                return result;
+            } catch (error) {
+                console.error('❌ Database error:', error);
+                console.log('📋 Falling back to local storage');
+                
+                // Fall back to local addition
+                addRecordLocally(recordData);
+                
+                // Show user the database error but still save locally
+                showErrorMessage(`⚠️ Database save failed: ${error.message}. Record saved locally instead.`);
+                return { message: 'Record saved locally due to database error' };
+            }
+        } else {
+            addRecordLocally(recordData);
+            return { message: 'Record added locally (database offline)' };
+        }
+    }
+
+    function addRecordLocally(recordData) {
+        console.log('📱 Adding record locally for mobile/offline use:', recordData);
+        
+        const newRecord = {
+            'cvw code': recordData.caseId,
+            'Record Type': recordData.recordType,
+            'Date Reported': new Date(recordData.dateReported),
+            'District': recordData.district,
+            'CVW Gender': recordData.cvwGender,
+            'CVW Age': parseFloat(recordData.cvwAge) || 0,
+            'Offender Gender': recordData.offenderGender || '',
+            'Offender Age': parseInt(recordData.offenderAge) || 0,
+            'Crime Type': recordData.crimeType,
+            'Disability': recordData.disability || 'NON',
+            'Services Rendered': recordData.servicesRendered || '',
+            'Relationship to CV': recordData.relationshipToCv || ''
+        };
+        
+        allData.push(newRecord);
+        filteredData = [...allData];
+        
+        // Save to localStorage for persistence
+        saveDataToLocalStorage();
+        
+        // Force update for mobile
+        if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+            updateFilters();
+            updateDashboard();
+        }
+        
+        console.log('💾 Record saved locally. Total records:', allData.length);
+    }
+
+    // Save data to localStorage for persistence
+    function saveDataToLocalStorage() {
+        try {
+            const dataToSave = allData.map(record => ({
+                ...record,
+                'Date Reported': record['Date Reported'].toISOString() // Convert date to string for storage
+            }));
+            localStorage.setItem('cvw_dashboard_data', JSON.stringify(dataToSave));
+            console.log('💾 Data saved to localStorage:', allData.length, 'records');
+            
+            // Also save a backup with timestamp for mobile
+            const backupKey = `cvw_backup_${Date.now()}`;
+            localStorage.setItem(backupKey, JSON.stringify(dataToSave));
+            
+            // Keep only last 5 backups to avoid storage overflow
+            const allKeys = Object.keys(localStorage).filter(key => key.startsWith('cvw_backup_'));
+            if (allKeys.length > 5) {
+                allKeys.sort().slice(0, allKeys.length - 5).forEach(key => {
+                    localStorage.removeItem(key);
+                });
+            }
+            
+        } catch (error) {
+            console.error('❌ Error saving to localStorage:', error);
+            alert('⚠️ Storage error - your device may be low on storage space. Please clear some space and try again.');
+        }
+    }
+
+    // Load data from localStorage
+    function loadDataFromLocalStorage() {
+        try {
+            const savedData = localStorage.getItem('cvw_dashboard_data');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                return parsedData.map(record => ({
+                    ...record,
+                    'Date Reported': new Date(record['Date Reported']) // Convert back to Date object
+                }));
+            }
+            return null;
+        } catch (error) {
+            console.error('Error loading from localStorage:', error);
+            return null;
+        }
+    }
+
+    // Fallback CSV data parsing
+    function loadFallbackData() {
+        // First try to load from localStorage
+        const savedData = loadDataFromLocalStorage();
+        if (savedData && savedData.length > 0) {
+            allData = savedData;
+            console.log('💾 Data loaded from localStorage:', allData.length, 'records');
+            return;
+        }
+
+        // If no saved data, use default fallback data
+        const csvData = `cvw code,Record Type,Date Reported,District,CVW Gender,CVW Age,Offender Gender,Offender Age,Crime Type,Disability,Services Rendered,Relationship to CV
+NPA-CV1,Victim,1/4/2025,Lusaka,MALE,5,FEMALE,25,ASSAULT ON A CHILD,NON,MEDICAL REPORT,STRANGER
+NPA-CV2,Victim,2/2/2025,Lusaka,FEMALE,8,MALE,30,PHYSICAL ABUSE,PHYSICAL,MEDICAL + COUNSELLING,STRANGER
+MOH-CV3,Victim,1/27/2025,Solwezi,FEMALE,10,MALE,40,SEXUAL ASSAULT,MENTAL,MEDICAL + COUNSELLING,LANDLORD
+ZP-CV4,Victim,3/11/2025,Lusaka,FEMALE,12,MALE,50,RAPE,MENTAL+PHYSICAL,MEDICAL + COUNSELLING,FATHER
+NPA-CW5,Witness,2/7/2025,Katete,MALE,15,FEMALE,60,RAPE,NON,COUNSELLING,FRIEND
+MOH-CV6,Victim,1/7/2025,Chipata,FEMALE,0.5,FEMALE,20,CHILD NEGLECT,NON,COUNSELLING,FRIEND
+ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + COUNSELLING,STRANGER`;
+const lines = csvData.trim().split('\n');
+        const headers = lines[0].split(',');
+        const rawData = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index] || '';
+            });
+            rawData.push(row);
+        }
+
+        allData = rawData.map(row => ({
+            ...row,
+            'CVW Gender': row['CVW Gender'].replace('FEMAL', 'FEMALE'),
+            'Offender Gender': row['Offender Gender'].replace('FEMAL', 'FEMALE'),
+            'CVW Age': parseFloat(row['CVW Age']) || 0,
+            'Offender Age': parseFloat(row['Offender Age']) || 0,
+            'Date Reported': new Date(row['Date Reported'])
+        }));
+
+        console.log('📋 Fallback data loaded:', allData.length, 'records');
+        
+        // Save the initial data to localStorage
+        saveDataToLocalStorage();
+    }
+
+    function updateFilters() {
+        // Update district filter
+        const districts = [...new Set(allData.map(d => d.District))].sort();
+        const districtSelect = document.getElementById('districtFilter');
+        const currentValue = districtSelect.value;
+        
+        districtSelect.innerHTML = '<option value="">All Districts</option>';
+        districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        });
+        districtSelect.value = currentValue;
+
+        // Update crime type filter
+        const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
+        const crimeSelect = document.getElementById('crimeTypeFilter');
+        const currentCrimeValue = crimeSelect.value;
+        
+        crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
+        crimeTypes.forEach(crime => {
+            const option = document.createElement('option');
+            option.value = crime;
+            option.textContent = crime;
+            crimeSelect.appendChild(option);
+        });
+        crimeSelect.value = currentCrimeValue;
+
+        // Update services filter  
+        const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
+        const servicesSelect = document.getElementById('servicesFilter');
+        const currentServicesValue = servicesSelect.value;
+        
+        servicesSelect.innerHTML = '<option value="">All Services</option>';
+        services.forEach(service => {
+            const option = document.createElement('option');
+            option.value = service;
+            option.textContent = service;
+            servicesSelect.appendChild(option);
+        });
+        servicesSelect.value = currentServicesValue;
+    }
+
+    function setupFilters() {
+        updateFilters();
+
+        // Add event listeners
+        document.getElementById('districtFilter').addEventListener('change', applyFilters);
+        document.getElementById('recordTypeFilter').addEventListener('change', applyFilters);
+        document.getElementById('crimeTypeFilter').addEventListener('change', applyFilters);
+        document.getElementById('genderFilter').addEventListener('change', applyFilters);
+        document.getElementById('servicesFilter').addEventListener('change', applyFilters);
+        document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
+        document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+    }
+
+    function applyFilters() {
+        const districtFilter = document.getElementById('districtFilter').value;
+        const recordTypeFilter = document.getElementById('recordTypeFilter').value;
+        const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
+        const genderFilter = document.getElementById('genderFilter').value;
+        const servicesFilter = document.getElementById('servicesFilter').value;
+        const dateFromFilter = document.getElementById('dateFromFilter').value;
+        const dateToFilter = document.getElementById('dateToFilter').value;
+
+        filteredData = allData.filter(row => {
+            const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
+                             (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
+            
+            return (!districtFilter || row.District === districtFilter) &&
+                   (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
+                   (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
+                   (!genderFilter || row['CVW Gender'] === genderFilter) &&
+                   (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
+                   dateMatch;
+        });
+
+        updateDashboard();
+    }
+
+    function resetFilters() {
+        document.getElementById('districtFilter').value = '';
+        document.getElementById('recordTypeFilter').value = '';
+        document.getElementById('crimeTypeFilter').value = '';
+        document.getElementById('genderFilter').value = '';
+        document.getElementById('servicesFilter').value = '';
+        document.getElementById('dateFromFilter').value = '';
+        document.getElementById('dateToFilter').value = '';
+        filteredData = [...allData];
+        updateDashboard();
+    }
+
+    function updateKPIs() {
+        const totalCases = filteredData.length;
+        const victimCases = filteredData.filter(d => d['Record Type'] === 'Victim').length;
+        const witnessCases = filteredData.filter(d => d['Record Type'] === 'Witness').length;
+        const avgAge = filteredData.filter(d => d['CVW Age'] > 0).reduce((sum, d) => sum + d['CVW Age'], 0) / filteredData.filter(d => d['CVW Age'] > 0).length || 0;
+
+        document.getElementById('totalCases').textContent = totalCases;
+        document.getElementById('victimCases').textContent = victimCases;
+        document.getElementById('witnessCases').textContent = witnessCases;
+        document.getElementById('avgAge').textContent = formatAgeDisplay(avgAge);
+    }
+
+    function createChart(canvasId, type, data, options = {}) {
+        try {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.error(`Canvas element ${canvasId} not found`);
+                return;
+            }
+            
+            const context = ctx.getContext('2d');
+            
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded');
+                ctx.parentElement.innerHTML = '<p style="text-align: center; color: #666;">Chart loading error</p>';
+                return;
+            }
+
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            };
+
+            charts[canvasId] = new Chart(context, {
+                type: type,
+                data: data,
+                options: { ...defaultOptions, ...options }
+            });
+
+        } catch (error) {
+            console.error(`Error creating chart ${canvasId}:`, error);
+            const canvas = document.getElementById(canvasId);
+            if (canvas && canvas.parentElement) {
+                canvas.parentElement.innerHTML = '<p style="text-align: center; color: #666;">Chart error</p>';
+            }
+        }
+    }
+
+    function updateCharts() {
+        // District chart
+        const districtCounts = {};
+        filteredData.forEach(d => {
+            districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+        });
+
+        createChart('districtChart', 'bar', {
+            labels: Object.keys(districtCounts),
+            datasets: [{
+                label: 'Cases',
+                data: Object.values(districtCounts),
+                backgroundColor: colors.gradient,
+                borderColor: colors.primary,
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        });
+
+        // Crime type chart
+        const crimeCounts = {};
+        filteredData.forEach(d => {
+            crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+        });
+
+        createChart('crimeChart', 'doughnut', {
+            labels: Object.keys(crimeCounts),
+            datasets: [{
+                data: Object.values(crimeCounts),
+                backgroundColor: colors.gradient,
+                borderColor: colors.primary,
+                borderWidth: 2
+            }]
+        });
+
+        // Enhanced Age distribution with better groupings
+        const ageRanges = { 'Infants (0-11m)': 0, 'Toddlers (1-2y)': 0, 'Children (3-12y)': 0, 'Teens (13-18y)': 0 };
+        filteredData.filter(d => d['CVW Age'] > 0).forEach(d => {
+            const age = d['CVW Age'];
+            if (age < 1) ageRanges['Infants (0-11m)']++;
+            else if (age < 3) ageRanges['Toddlers (1-2y)']++;
+            else if (age < 13) ageRanges['Children (3-12y)']++;
+            else ageRanges['Teens (13-18y)']++;
+        });
+
+        createChart('ageChart', 'bar', {
+            labels: Object.keys(ageRanges),
+            datasets: [{
+                label: 'Cases',
+                data: Object.values(ageRanges),
+                backgroundColor: ['#fee2e2', '#fed7aa', '#dcfce7', '#dbeafe'],
+                borderColor: ['#dc2626', '#ea580c', '#059669', '#2563eb'],
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        });
+
+        // Gender distribution
+        const genderCounts = {};
+        filteredData.forEach(d => {
+            genderCounts[d['CVW Gender']] = (genderCounts[d['CVW Gender']] || 0) + 1;
+        });
+
+        createChart('genderChart', 'pie', {
+            labels: Object.keys(genderCounts),
+            datasets: [{
+                data: Object.values(genderCounts),
+                backgroundColor: colors.gradient.slice(0, Object.keys(genderCounts).length),
+                borderColor: colors.primary.slice(0, Object.keys(genderCounts).length),
+                borderWidth: 2
+            }]
+        });
+
+        // Time series chart
+        const monthCounts = {};
+        filteredData.forEach(d => {
+            const month = d['Date Reported'].toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            monthCounts[month] = (monthCounts[month] || 0) + 1;
+        });
+
+        createChart('timeChart', 'line', {
+            labels: Object.keys(monthCounts),
+            datasets: [{
+                label: 'Cases',
+                data: Object.values(monthCounts),
+                borderColor: colors.primary[0],
+                backgroundColor: colors.gradient[0],
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        }, {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        });
+
+        // Services distribution
+        const servicesCounts = {};
+        filteredData.forEach(d => {
+            const service = d['Services Rendered'] || 'Not Specified';
+            servicesCounts[service] = (servicesCounts[service] || 0) + 1;
+        });
+
+        createChart('servicesChart', 'doughnut', {
+            labels: Object.keys(servicesCounts),
+            datasets: [{
+                data: Object.values(servicesCounts),
+                backgroundColor: colors.gradient,
+                borderColor: colors.primary,
+                borderWidth: 2
+            }]
+        });
+
+        // Relationship analysis
+        const relationshipCounts = {};
+        filteredData.forEach(d => {
+            const relationship = d['Relationship to CV'] || 'Not Specified';
+            relationshipCounts[relationship] = (relationshipCounts[relationship] || 0) + 1;
+        });
+
+        createChart('relationshipChart', 'bar', {
+            labels: Object.keys(relationshipCounts),
+            datasets: [{
+                label: 'Cases',
+                data: Object.values(relationshipCounts),
+                backgroundColor: colors.gradient,
+                borderColor: colors.primary,
+                borderWidth: 2
+            }]
+        }, {
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
+        });
+    }
+
+    // Enhanced table display with readable ages
+    function updateTable() {
+        const tbody = document.getElementById('caseTableBody');
+        tbody.innerHTML = '';
+
+        const displayData = filteredData.slice(0, 50);
+
+        displayData.forEach(row => {
+            const ageDisplay = formatAgeDisplay(row['CVW Age']);
+            const ageCategory = getAgeCategory(row['CVW Age']);
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row['cvw code']}</td>
+                <td><span class="status-badge ${row['Record Type'].toLowerCase()}-badge">${row['Record Type']}</span></td>
+                <td>${row['Date Reported'].toLocaleDateString()}</td>
+                <td>${row['District']}</td>
+                <td>${row['CVW Gender']}</td>
+                <td><span class="age-display ${ageCategory}">${ageDisplay}</span></td>
+                <td>${row['Crime Type']}</td>
+                <td>${row['Disability']}</td>
+                <td>${row['Services Rendered']}</td>
+                <td>${row['Relationship to CV']}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (filteredData.length > 50) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="10" style="text-align: center; font-style: italic; color: #666;">Showing first 50 of ${filteredData.length} records</td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    function updateDashboard() {
+        updateKPIs();
+        updateCharts();
+        updateTable();
+    }
+
+    // Modal functions
+    function openAddRecordModal() {
+        // Check permissions
+        if (!hasPermission('add')) {
+            alert('❌ You do not have permission to add records.');
+            return;
+        }
+        
+        // Check if agency is selected
+        if (!selectedAgency) {
+            alert('⚠️ Please select a reporting agency first.');
+            return;
+        }
+        
+        console.log('📱 Opening add record modal on mobile device');
+        
+        document.getElementById('addRecordModal').style.display = 'block';
+        document.getElementById('dateReported').value = new Date().toISOString().split('T')[0];
+        document.getElementById('caseId').value = '';
+        
+        // Update modal title to show selected agency
+        const agencyNames = {
+            'NPA': 'National Prosecution Authority',
+            'MOH': 'Ministry of Health', 
+            'ZP': 'Zambia Police'
+        };
+        document.querySelector('.modal-title').innerHTML = `➕ Add New Case Record - ${agencyNames[selectedAgency]}`;
+        
+        // Mobile-specific adjustments
+        if (window.innerWidth <= 768) {
+            document.body.style.overflow = 'hidden';
+            const modal = document.getElementById('addRecordModal');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '9999';
+        }
+    }
+
+    function closeAddRecordModal() {
+        console.log('📱 Closing add record modal');
+        
+        document.getElementById('addRecordModal').style.display = 'none';
+        document.getElementById('addRecordForm').reset();
+        hideMessages();
+        
+        // Reset age input styling
+        const ageInput = document.getElementById('cvwAge');
+        if (ageInput) {
+            ageInput.style.borderColor = '#dee2e6';
+            ageInput.style.backgroundColor = 'white';
+        }
+        
+        // Reset mobile-specific adjustments
+        if (window.innerWidth <= 768) {
+            document.body.style.overflow = 'auto';
+}
+// Reset agency selection for mobile users who might switch
+        updateRelationshipLabel();
+    }
+
+    function showDashboardView() {
+        document.querySelector('.kpi-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showSuccessMessage(message) {
+        const successMsg = document.getElementById('successMessage');
+        successMsg.textContent = message;
+        successMsg.style.display = 'block';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+    }
+
+    function showErrorMessage(message) {
+        const errorMsg = document.getElementById('errorMessage');
+        errorMsg.textContent = message;
+        errorMsg.style.display = 'block';
+        setTimeout(() => {
+            errorMsg.style.display = 'none';
+        }, 5000);
+    }
+
+    function hideMessages() {
+        document.getElementById('successMessage').style.display = 'none';
+        document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    // Clear all data function
+    function clearAllData() {
+        // Check permissions
+        if (!hasPermission('admin')) {
+            alert('❌ You do not have permission to clear data.');
+            return;
+        }
+        
+        if (confirm('⚠️ Are you sure you want to clear ALL data? This cannot be undone!')) {
+            localStorage.removeItem('cvw_dashboard_data');
+            allData = [];
+            filteredData = [];
+            updateDashboard();
+            alert('✅ All data cleared successfully!');
+            
+            // Reload fallback data
+            loadFallbackData();
+            filteredData = [...allData];
+            updateFilters();
+            updateDashboard();
+        }
+    }
+
+    // Initialize dashboard
+    async function initializeDashboard() {
+        try {
+            console.log('🚀 Initializing CVW Dashboard...');
+            
+            // Check database connection first
+            await checkDatabaseConnection();
+            
+            // Load data (from database or fallback)
+            await loadData();
+            
+            // Setup UI
+            setupFilters();
+            updateDashboard();
+            
+            console.log('✅ Dashboard initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Error initializing dashboard:', error);
+            
+            // Final fallback - show error state
+            const container = document.querySelector('.dashboard-container');
+            if (container && allData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #e74c3c;">
+                        <h2>⚠️ Dashboard Loading Error</h2>
+                        <p>Unable to load dashboard data. Please check your connection and refresh the page.</p>
+                        <p><small>Error: ${error.message}</small></p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            🔄 Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('addRecordModal');
+        if (event.target == modal) {
+            closeAddRecordModal();
+        }
+    }
+
+    // Auto-refresh connection status every 30 seconds
+    setInterval(checkDatabaseConnection, 30000);
 </script>
 </body>
 </html></parameter>
 </invoke>
 </artifacts>
-
