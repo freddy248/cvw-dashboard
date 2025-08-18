@@ -1,14 +1,4 @@
-    function updateUserInterface() {
-        if (!currentUser) return;
-
-        // Update user info bar
-        document.getElementById('userName').textContent = currentUser.name;
-        document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
-        document.getElementById('userAvatar').textContent = currentUser.avatar;
-        
-        // Add role-based styling
-        const userInfoBar = document.getElementById('userInfoBar');
-        userInfoBar.className =<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -252,6 +242,23 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: #2c3e50;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .victim-badge {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .witness-badge {
+            background: #dbeafe;
+            color: #2563eb;
         }
 
         .result-details {
@@ -555,6 +562,10 @@
             gap: 8px;
         }
 
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
         .add-record-btn {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
@@ -604,15 +615,11 @@
             font-weight: bold;
             cursor: pointer;
             transition: color 0.3s ease;
+            float: right;
         }
 
         .close:hover {
             color: #e74c3c;
-        }
-
-        /* Other styles simplified for space */
-        .filters-section, .kpi-section, .charts-grid, .table-container {
-            margin-bottom: 30px;
         }
 
         .kpi-card {
@@ -623,21 +630,60 @@
             text-align: center;
         }
 
-        .success-message, .error-message {
-            padding: 12px 20px;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            z-index: 2000;
             display: none;
+            font-weight: 600;
         }
 
-        .success-message {
+        .notification.success {
             background: #d1fae5;
             color: #059669;
+            border: 1px solid #10b981;
         }
 
-        .error-message {
+        .notification.error {
             background: #fee2e2;
             color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
     </style>
 </head>
@@ -699,9 +745,9 @@
                 <p class="zambia-label">Zambia</p>
                 <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
                 
-                <div id="connectionStatus" class="connection-status">
-                    <div class="status-indicator"></div>
-                    <span id="statusText">Checking database connection...</span>
+                <div id="connectionStatus" class="connection-status status-connected">
+                    <div class="status-indicator" style="background: #059669;"></div>
+                    <span id="statusText">Database Connected</span>
                 </div>
             </div>
 
@@ -759,28 +805,19 @@
                     🗑️ Clear Data
                 </button>
             </div>
-
-            <!-- Dashboard sections (KPIs, Charts, etc.) will be shown/hidden based on role -->
-            <div id="filtersSection" class="filters-section hidden">
-                <!-- Filters content -->
-            </div>
-            
-            <div id="kpiSection" class="kpi-section hidden">
-                <!-- KPI cards -->
-            </div>
-            
-            <div id="chartsSection" class="charts-grid hidden">
-                <!-- Charts -->
-            </div>
-            
-            <div id="tableSection" class="table-container hidden">
-                <!-- Data table -->
-            </div>
             
             <div id="reporterOnlyContent" class="hidden">
-                <div class="access-denied">
+                <div class="access-denied" style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
                     <h2>📝 Reporter Dashboard</h2>
                     <p>Welcome! You have access to add new case records and search existing ones.</p>
+                </div>
+            </div>
+
+            <!-- Data Display for Admin/Viewer -->
+            <div id="dataDisplay" class="hidden">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;">📋 Current Records</h3>
+                <div id="dataTable" style="background: white; padding: 20px; border-radius: 15px; overflow-x: auto;">
+                    <!-- Data table will be inserted here -->
                 </div>
             </div>
         </div>
@@ -789,7 +826,57 @@
     <!-- Add Record Modal -->
     <div id="addRecordModal" class="modal">
         <div class="modal-content">
-            <!-- Modal content will be here -->
+            <span class="close" onclick="closeAddRecordModal()">&times;</span>
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">➕ Add New Case Record</h2>
+            <form id="addRecordForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Disability Status *</label>
+                        <select class="form-select" id="disability" required>
+                            <option value="">Select Disability Status</option>
+                            <option value="NON">None</option>
+                            <option value="PHYSICAL">Physical</option>
+                            <option value="MENTAL">Mental</option>
+                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Services Rendered *</label>
+                        <select class="form-select" id="servicesRendered" required>
+                            <option value="">Select Service</option>
+                            <option value="MEDICAL REPORT">Medical Report</option>
+                            <option value="COUNSELLING">Counselling</option>
+                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
+                            <option value="LEGAL AID">Legal Aid</option>
+                            <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
+                            <option value="SHELTER">Shelter</option>
+                            <option value="REFERRAL TO SPECIALIST">Referral to Specialist</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Relationship to CV *</label>
+                    <select class="form-select" id="relationshipToCV" required>
+                        <option value="">Select Relationship</option>
+                        <option value="FATHER">Father</option>
+                        <option value="MOTHER">Mother</option>
+                        <option value="STEP-FATHER">Step-Father</option>
+                        <option value="STEP-MOTHER">Step-Mother</option>
+                        <option value="UNCLE">Uncle</option>
+                        <option value="AUNT">Aunt</option>
+                        <option value="FRIEND">Friend</option>
+                        <option value="STRANGER">Stranger</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="NEIGHBOR">Neighbor</option>
+                    </select>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="action-btn add-record-btn">💾 Save Record</button>
+                    <button type="button" class="action-btn" style="background: #6c757d; margin-left: 10px;" onclick="closeAddRecordModal()">❌ Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -837,6 +924,12 @@
             }
         };
 
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSampleData();
+            setupEventListeners();
+        });
+
         // Initialize sample data
         function initializeSampleData() {
             allData = [
@@ -878,6 +971,100 @@
                 }
             ];
             filteredData = [...allData];
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Add record form
+            document.getElementById('addRecordForm').addEventListener('submit', handleAddRecord);
+            
+            // Search input enter key
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchRecord();
+                }
+            });
+        }
+
+        // Login functionality
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = users[username];
+                showDashboard();
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Show dashboard after login
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            updateUserInterface();
+        }
+
+        // Update user interface based on role
+        function updateUserInterface() {
+            if (!currentUser) return;
+
+            // Update user info bar
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
+            document.getElementById('userAvatar').textContent = currentUser.avatar;
+            
+            // Add role-based styling
+            const userInfoBar = document.getElementById('userInfoBar');
+            userInfoBar.className = `user-info-bar role-${currentUser.role}`;
+
+            // Show/hide features based on role
+            const addRecordBtn = document.getElementById('addRecordBtn');
+            const agencySelection = document.getElementById('agencySelection');
+            const dataDisplay = document.getElementById('dataDisplay');
+            const reporterContent = document.getElementById('reporterOnlyContent');
+
+            if (currentUser.role === 'admin' || currentUser.role === 'reporter') {
+                agencySelection.classList.remove('hidden');
+                if (currentUser.role === 'admin') {
+                    dataDisplay.classList.remove('hidden');
+                    displayDataTable();
+                }
+            }
+
+            if (currentUser.role === 'viewer') {
+                dataDisplay.classList.remove('hidden');
+                displayDataTable();
+            }
+
+            if (currentUser.role === 'reporter') {
+                reporterContent.classList.remove('hidden');
+                dataDisplay.classList.add('hidden');
+            }
+        }
+
+        // Agency selection
+        function selectAgency(agency) {
+            selectedAgency = agency;
+            
+            // Update visual selection
+            document.querySelectorAll('.agency-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+            
+            // Enable add record button
+            document.getElementById('addRecordBtn').disabled = false;
+            
+            showNotification(`Selected agency: ${agency}`, 'success');
         }
 
         // Search functions
@@ -972,4 +1159,271 @@
                         </div>
                     </div>
                 `;
-            }); 
+            });
+            
+            searchResults.innerHTML = html;
+            searchResults.classList.add('active');
+        }
+
+        function appendService(resultIndex) {
+            const selectElement = document.getElementById(`serviceSelect_${resultIndex}`);
+            const selectedService = selectElement.value;
+            
+            if (!selectedService) {
+                showNotification('Please select a service to add', 'error');
+                return;
+            }
+
+            const record = searchResultsData[resultIndex];
+            const currentServices = record['Services Rendered'];
+            
+            // Update the record
+            if (currentServices === 'None' || !currentServices) {
+                record['Services Rendered'] = selectedService;
+            } else {
+                record['Services Rendered'] = currentServices + ' + ' + selectedService;
+            }
+
+            // Update the original data
+            const originalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
+            if (originalIndex !== -1) {
+                allData[originalIndex] = { ...record };
+            }
+
+            showNotification(`Service "${selectedService}" added successfully!`, 'success');
+            
+            // Refresh the search results
+            displaySearchResults(searchResultsData);
+            
+            // Refresh data table if visible
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                displayDataTable();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').classList.remove('active');
+            searchResultsData = [];
+        }
+
+        // Add record modal functions
+        function openAddRecordModal() {
+            if (!selectedAgency) {
+                showNotification('Please select an agency first', 'error');
+                return;
+            }
+            document.getElementById('addRecordModal').style.display = 'block';
+        }
+
+        function closeAddRecordModal() {
+            document.getElementById('addRecordModal').style.display = 'none';
+            document.getElementById('addRecordForm').reset();
+        }
+
+        // Handle add record form submission
+        function handleAddRecord(e) {
+            e.preventDefault();
+            
+            if (!selectedAgency) {
+                showNotification('Please select an agency first', 'error');
+                return;
+            }
+
+            // Generate case ID
+            const recordType = document.getElementById('recordType').value;
+            const typeCode = recordType === 'Victim' ? 'CV' : 'CW';
+            const existingCodes = allData
+                .filter(r => r['cvw code'].startsWith(selectedAgency))
+                .map(r => parseInt(r['cvw code'].split(typeCode)[1]) || 0);
+            const nextNumber = Math.max(...existingCodes, 0) + 1;
+            const caseId = `${selectedAgency}-${typeCode}${nextNumber}`;
+
+            // Create new record
+            const newRecord = {
+                'cvw code': caseId,
+                'Record Type': recordType,
+                'Date Reported': new Date(document.getElementById('dateReported').value),
+                'District': document.getElementById('district').value,
+                'CVW Gender': document.getElementById('cvwGender').value,
+                'CVW Age': parseInt(document.getElementById('cvwAge').value),
+                'Crime Type': document.getElementById('crimeType').value,
+                'Disability': document.getElementById('disability').value,
+                'Services Rendered': document.getElementById('servicesRendered').value,
+                'Relationship to CV': document.getElementById('relationshipToCV').value
+            };
+
+            // Add to data
+            allData.push(newRecord);
+            filteredData = [...allData];
+
+            showNotification(`Record ${caseId} added successfully!`, 'success');
+            closeAddRecordModal();
+            
+            // Refresh data table if visible
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                displayDataTable();
+            }
+        }
+
+        // Display data table
+        function displayDataTable() {
+            const tableContainer = document.getElementById('dataTable');
+            
+            if (allData.length === 0) {
+                tableContainer.innerHTML = '<p style="text-align: center; color: #6c757d;">No records found</p>';
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Case ID</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Type</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Date</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">District</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Gender</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Age</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Crime Type</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Services</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            allData.forEach(record => {
+                html += `
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: 600;">${record['cvw code']}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">
+                            <span class="status-badge ${record['Record Type'].toLowerCase()}-badge">${record['Record Type']}</span>
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['Date Reported'].toLocaleDateString()}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['District']}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['CVW Gender']}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['CVW Age']}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['Crime Type']}</td>
+                        <td style="padding: 10px; border: 1px solid #dee2e6;">${record['Services Rendered']}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            tableContainer.innerHTML = html;
+        }
+
+        // Dashboard view function
+        function showDashboardView() {
+            const dataDisplay = document.getElementById('dataDisplay');
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                dataDisplay.classList.remove('hidden');
+                displayDataTable();
+            } else {
+                showNotification('Access denied: Insufficient permissions', 'error');
+            }
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                allData = [];
+                filteredData = [];
+                initializeSampleData();
+                showNotification('All data cleared and sample data restored', 'success');
+                
+                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                    displayDataTable();
+                }
+            }
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            selectedAgency = null;
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('addRecordModal');
+            if (event.target === modal) {
+                closeAddRecordModal();
+            }
+        });
+    </script>
+</body>
+</html>form-label">Record Type *</label>
+                        <select class="form-select" id="recordType" required>
+                            <option value="">Select Type</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date Reported *</label>
+                        <input type="date" class="form-input" id="dateReported" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">District *</label>
+                        <select class="form-select" id="district" required>
+                            <option value="">Select District</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Katete">Katete</option>
+                            <option value="Ndola">Ndola</option>
+                            <option value="Kitwe">Kitwe</option>
+                            <option value="Kabwe">Kabwe</option>
+                            <option value="Livingstone">Livingstone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVW Gender *</label>
+                        <select class="form-select" id="cvwGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">CVW Age *</label>
+                        <input type="number" class="form-input" id="cvwAge" min="0" max="17" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Crime Type *</label>
+                        <select class="form-select" id="crimeType" required>
+                            <option value="">Select Crime Type</option>
+                            <option value="RAPE">Rape</option>
+                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                            <option value="DEFILEMENT">Defilement</option>
+                            <option value="CHILD ABUSE">Child Abuse</option>
+                            <option value="TRAFFICKING">Trafficking</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="
