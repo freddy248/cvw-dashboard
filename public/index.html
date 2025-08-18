@@ -1026,28 +1026,42 @@
             const userInfoBar = document.getElementById('userInfoBar');
             userInfoBar.className = `user-info-bar role-${currentUser.role}`;
 
-            // Show/hide features based on role
+            // Get UI elements
             const addRecordBtn = document.getElementById('addRecordBtn');
+            const searchRecordsBtn = document.getElementById('searchRecordsBtn');
+            const viewDashboardBtn = document.getElementById('viewDashboardBtn');
             const agencySelection = document.getElementById('agencySelection');
             const dataDisplay = document.getElementById('dataDisplay');
             const reporterContent = document.getElementById('reporterOnlyContent');
 
-            if (currentUser.role === 'admin' || currentUser.role === 'reporter') {
+            // Reset all elements to hidden first
+            agencySelection.classList.add('hidden');
+            dataDisplay.classList.add('hidden');
+            reporterContent.classList.add('hidden');
+
+            // Configure based on role
+            if (currentUser.role === 'admin') {
+                // Admin: Full access
                 agencySelection.classList.remove('hidden');
-                if (currentUser.role === 'admin') {
-                    dataDisplay.classList.remove('hidden');
-                    displayDataTable();
-                }
-            }
-
-            if (currentUser.role === 'viewer') {
                 dataDisplay.classList.remove('hidden');
+                addRecordBtn.style.display = 'flex';
+                searchRecordsBtn.style.display = 'flex';
+                viewDashboardBtn.style.display = 'flex';
                 displayDataTable();
-            }
-
-            if (currentUser.role === 'reporter') {
+            } else if (currentUser.role === 'viewer') {
+                // Viewer: Only view data, no search, no add
+                dataDisplay.classList.remove('hidden');
+                addRecordBtn.style.display = 'none';
+                searchRecordsBtn.style.display = 'none';
+                viewDashboardBtn.style.display = 'flex';
+                displayDataTable();
+            } else if (currentUser.role === 'reporter') {
+                // Reporter: Add records and search only
+                agencySelection.classList.remove('hidden');
                 reporterContent.classList.remove('hidden');
-                dataDisplay.classList.add('hidden');
+                addRecordBtn.style.display = 'flex';
+                searchRecordsBtn.style.display = 'flex';
+                viewDashboardBtn.style.display = 'none';
             }
         }
 
@@ -1069,6 +1083,12 @@
 
         // Search functions
         function toggleSearchSection() {
+            // Only allow search for admin and reporter roles
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'reporter')) {
+                showNotification('Access denied: Search not available for your role', 'error');
+                return;
+            }
+            
             const searchSection = document.getElementById('searchSection');
             searchSection.style.display = searchSection.style.display === 'none' ? 'block' : 'none';
             if (searchSection.style.display === 'block') {
@@ -1315,10 +1335,11 @@
 
         // Dashboard view function
         function showDashboardView() {
-            const dataDisplay = document.getElementById('dataDisplay');
             if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                const dataDisplay = document.getElementById('dataDisplay');
                 dataDisplay.classList.remove('hidden');
                 displayDataTable();
+                showNotification('Dashboard data refreshed', 'success');
             } else {
                 showNotification('Access denied: Insufficient permissions', 'error');
             }
