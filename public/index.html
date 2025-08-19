@@ -1301,12 +1301,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
             margin: 0;
             position: relative;
         }
 
-        /* User Info Bar */
+        /* Main dashboard wrapper */
+        #mainDashboard {
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* User Info Bar - at the very top */
         .user-info-bar {
             background: rgba(255, 255, 255, 0.9);
             padding: 10px 20px;
@@ -1317,10 +1323,12 @@
             align-items: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             position: relative;
-            z-index: 100;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Dashboard header spacing fix */
+        /* Dashboard container - immediately after user bar */
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -1330,9 +1338,11 @@
             backdrop-filter: blur(10px);
             padding: 30px;
             position: relative;
-            z-index: 10;
+            width: 100%;
+            box-sizing: border-box;
         }
 
+        /* Header - at the top of dashboard container */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -1343,18 +1353,20 @@
             position: relative;
         }
 
-        /* Login Screen Styles */
+        /* Login container positioned properly */
         .login-container {
             max-width: 400px;
-            margin: 10% auto;
+            margin: 10vh auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             padding: 40px;
             text-align: center;
+            position: relative;
         }
 
+        /* Login Screen Styles */
         .login-header {
             margin-bottom: 30px;
         }
