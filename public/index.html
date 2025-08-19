@@ -349,8 +349,19 @@
 
         // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 App starting...');
+            
+            // Initialize sample data
             initializeSampleData();
             setupEventListeners();
+            
+            // CRITICAL: Ensure everything is hidden initially
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('actionButtons').classList.add('hidden');
+            document.getElementById('addRecordBtn').classList.add('hidden');
+            document.getElementById('searchRecordsBtn').classList.add('hidden');
+            document.getElementById('viewDashboardBtn').classList.add('hidden');
+            document.getElementById('clearDataBtn').classList.add('hidden');
             
             // Check for existing session
             const session = localStorage.getItem('cvw_session');
@@ -359,6 +370,7 @@
                     currentUser = JSON.parse(session);
                     updateUserInterface();
                     showDashboard();
+                    console.log('✅ Restored session for:', currentUser.role);
                 } catch (e) {
                     localStorage.removeItem('cvw_session');
                     showLoginScreen();
@@ -454,8 +466,28 @@
 
         // Show login screen
         function showLoginScreen() {
+            console.log('🔐 Showing login screen');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('hidden');
+            
+            // Ensure ALL dashboard elements are hidden
+            document.getElementById('actionButtons').classList.add('hidden');
+            document.getElementById('addRecordBtn').classList.add('hidden');
+            document.getElementById('searchRecordsBtn').classList.add('hidden');
+            document.getElementById('viewDashboardBtn').classList.add('hidden');
+            document.getElementById('clearDataBtn').classList.add('hidden');
+            document.getElementById('agencySelection').classList.add('hidden');
+            document.getElementById('filtersSection').classList.add('hidden');
+            document.getElementById('kpiSection').classList.add('hidden');
+            document.getElementById('chartsSection').classList.add('hidden');
+            document.getElementById('tableSection').classList.add('hidden');
+            document.getElementById('reporterOnlyContent').classList.add('hidden');
+            document.getElementById('searchSection').classList.add('hidden');
+            
+            // Clear any form data
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').style.display = 'none';
         }
 
         // Update user interface based on role
@@ -474,11 +506,17 @@
             // Configure based on role
             if (currentUser.role === 'admin') {
                 // Admin: Full access
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.remove('hidden');
                 document.getElementById('addRecordBtn').style.display = 'flex';
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
                 document.getElementById('searchRecordsBtn').style.display = 'flex';
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
                 document.getElementById('viewDashboardBtn').style.display = 'flex';
+                document.getElementById('clearDataBtn').classList.remove('hidden');
                 document.getElementById('clearDataBtn').style.display = 'flex';
                 document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('searchSection').classList.add('hidden'); // Hidden by default
                 document.getElementById('filtersSection').classList.remove('hidden');
                 document.getElementById('kpiSection').classList.remove('hidden');
                 document.getElementById('chartsSection').classList.remove('hidden');
@@ -488,12 +526,18 @@
                 // Initialize dashboard
                 initializeDashboard();
             } else if (currentUser.role === 'viewer') {
-                // Viewer: View only, no search
+                // Viewer: View only, NO SEARCH
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.add('hidden');
                 document.getElementById('addRecordBtn').style.display = 'none';
+                document.getElementById('searchRecordsBtn').classList.add('hidden');
                 document.getElementById('searchRecordsBtn').style.display = 'none';
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
                 document.getElementById('viewDashboardBtn').style.display = 'flex';
+                document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('clearDataBtn').style.display = 'none';
                 document.getElementById('agencySelection').classList.add('hidden');
+                document.getElementById('searchSection').classList.add('hidden'); // Always hidden for viewer
                 document.getElementById('filtersSection').classList.remove('hidden');
                 document.getElementById('kpiSection').classList.remove('hidden');
                 document.getElementById('chartsSection').classList.remove('hidden');
@@ -504,11 +548,17 @@
                 initializeDashboard();
             } else if (currentUser.role === 'reporter') {
                 // Reporter: Add records and search only
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.remove('hidden');
                 document.getElementById('addRecordBtn').style.display = 'flex';
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
                 document.getElementById('searchRecordsBtn').style.display = 'flex';
+                document.getElementById('viewDashboardBtn').classList.add('hidden');
                 document.getElementById('viewDashboardBtn').style.display = 'none';
+                document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('clearDataBtn').style.display = 'none';
                 document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('searchSection').classList.add('hidden'); // Hidden by default
                 document.getElementById('filtersSection').classList.add('hidden');
                 document.getElementById('kpiSection').classList.add('hidden');
                 document.getElementById('chartsSection').classList.add('hidden');
@@ -825,6 +875,16 @@
             const dateFromFilter = document.getElementById('dateFromFilter').value;
             const dateToFilter = document.getElementById('dateToFilter').value;
 
+            console.log('🔍 Applying filters...', {
+                district: districtFilter,
+                recordType: recordTypeFilter,
+                crimeType: crimeTypeFilter,
+                gender: genderFilter,
+                services: servicesFilter,
+                dateFrom: dateFromFilter,
+                dateTo: dateToFilter
+            });
+
             filteredData = allData.filter(row => {
                 const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
                                  (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
@@ -837,6 +897,7 @@
                        dateMatch;
             });
 
+            console.log('📊 Filtered data:', filteredData.length, 'records');
             updateDashboard();
         }
 
@@ -913,6 +974,13 @@
         }
 
         function updateCharts() {
+            console.log('📈 Creating charts with', filteredData.length, 'records');
+            
+            if (filteredData.length === 0) {
+                console.warn('⚠️ No data for charts');
+                return;
+            }
+
             // District chart
             const districtCounts = {};
             filteredData.forEach(d => {
@@ -1041,6 +1109,8 @@
             }, {
                 indexAxis: 'y'
             });
+
+            console.log('✅ All charts created successfully');
         }
 
         function updateTable() {
@@ -1592,7 +1662,16 @@
             display: inline-block;
         }
 
-        /* Dashboard Styles */
+        /* Dashboard header spacing fix */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -1601,13 +1680,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             padding: 30px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
+            margin-top: 0;
         }
 
         .header h1 {
@@ -2152,8 +2225,8 @@
                 </div>
             </div>
 
-            <!-- Search Section -->
-            <div class="search-section" id="searchSection">
+            <!-- Search Section (Admin and Reporter only) -->
+            <div class="search-section hidden" id="searchSection">
                 <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
                 <div class="search-container">
                     <div class="search-input-group">
