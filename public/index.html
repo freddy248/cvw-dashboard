@@ -1,4 +1,251 @@
-<!DOCTYPE html>
+        // Initialize dashboard for admin/viewer
+        function initializeDashboard() {
+            console.log('🚀 Initializing dashboard...');
+            
+            // Wait for Chart.js to load
+            setTimeout(() => {
+                setupFilters();
+                updateDashboard();
+                console.log('✅ Dashboard initialized with', allData.length, 'records');
+            }, 100);
+        }
+
+        // Setup filters
+        function setupFilters() {
+            console.log('🔧 Setting up filters...');
+            updateFilters();
+
+            // Add event listeners with proper binding
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) {
+                districtFilter.removeEventListener('change', applyFilters);
+                districtFilter.addEventListener('change', applyFilters);
+            }
+            if (recordTypeFilter) {
+                recordTypeFilter.removeEventListener('change', applyFilters);
+                recordTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (crimeTypeFilter) {
+                crimeTypeFilter.removeEventListener('change', applyFilters);
+                crimeTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (genderFilter) {
+                genderFilter.removeEventListener('change', applyFilters);
+                genderFilter.addEventListener('change', applyFilters);
+            }
+            if (servicesFilter) {
+                servicesFilter.removeEventListener('change', applyFilters);
+                servicesFilter.addEventListener('change', applyFilters);
+            }
+            if (dateFromFilter) {
+                dateFromFilter.removeEventListener('change', applyFilters);
+                dateFromFilter.addEventListener('change', applyFilters);
+            }
+            if (dateToFilter) {
+                dateToFilter.removeEventListener('change', applyFilters);
+                dateToFilter.addEventListener('change', applyFilters);
+            }
+            
+            console.log('✅ Filters setup complete');
+        }
+
+        // Update filter options based on data
+        function updateFilters() {
+            // Update district filter
+            const districts = [...new Set(allData.map(d => d.District))].sort();
+            const districtSelect = document.getElementById('districtFilter');
+            const currentValue = districtSelect.value;
+            
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+            districtSelect.value = currentValue;
+
+            // Update crime type filter
+            const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
+            const crimeSelect = document.getElementById('crimeTypeFilter');
+            const currentCrimeValue = crimeSelect.value;
+            
+            crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
+            crimeTypes.forEach(crime => {
+                const option = document.createElement('option');
+                option.value = crime;
+                option.textContent = crime;
+                crimeSelect.appendChild(option);
+            });
+            crimeSelect.value = currentCrimeValue;
+
+            // Update services filter  
+            const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
+            const servicesSelect = document.getElementById('servicesFilter');
+            const currentServicesValue = servicesSelect.value;
+            
+            servicesSelect.innerHTML = '<option value="">All Services</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service;
+                option.textContent = service;
+                servicesSelect.appendChild(option);
+            });
+            servicesSelect.value = currentServicesValue;
+        }
+
+        // Apply filters to data
+        function applyFilters() {
+            const districtFilter = document.getElementById('districtFilter').value;
+            const recordTypeFilter = document.getElementById('recordTypeFilter').value;
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const servicesFilter = document.getElementById('servicesFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+
+            console.log('🔍 Applying filters...', {
+                district: districtFilter,
+                recordType: recordTypeFilter,
+                crimeType: crimeTypeFilter,
+                gender: genderFilter,
+                services: servicesFilter,
+                dateFrom: dateFromFilter,
+                dateTo: dateToFilter
+            });
+
+            filteredData = allData.filter(row => {
+                const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
+                                 (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
+                
+                return (!districtFilter || row.District === districtFilter) &&
+                       (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
+                       (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
+                       (!genderFilter || row['CVW Gender'] === genderFilter) &&
+                       (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
+                       dateMatch;
+            });
+
+            console.log('📊 Filtered data:', filteredData.length, 'records');
+            updateDashboard();
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            console.log('🔄 Resetting filters...');
+            
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) districtFilter.value = '';
+            if (recordTypeFilter) recordTypeFilter.value = '';
+            if (crimeTypeFilter) crimeTypeFilter.value = '';
+            if (genderFilter) genderFilter.value = '';
+            if (servicesFilter) servicesFilter.value = '';
+            if (dateFromFilter) dateFromFilter.value = '';
+            if (dateToFilter) dateToFilter.value = '';
+            
+            filteredData = [...allData];
+            console.log('📊 Reset to show all', filteredData.length, 'records');
+            updateDashboard();
+        }
+
+        // Update dashboard with current data
+        function updateDashboard() {
+            console.log('📊 Updating dashboard with', filteredData.length, 'filtered records');
+            
+            if (filteredData.length === 0) {
+                console.warn('⚠️ No data available for dashboard');
+                updateKPIsEmpty();
+                updateChartsEmpty();
+                updateTableEmpty();
+                return;
+            }
+            
+            updateKPIs();
+            
+            // Wait a bit for DOM to be ready before creating charts
+            setTimeout(() => {
+                updateCharts();
+                updateTable();
+                console.log('✅ Dashboard update complete');
+            }, 50);
+        }
+
+        // Create or update a chart
+        function createChart(canvasId, type, data, options = {}) {
+            try {
+                const ctx = document.getElementById(canvasId);
+                if (!ctx) {
+                    console.error(`Canvas element ${canvasId} not found`);
+                    return;
+                }
+                
+                const context = ctx.getContext('2d');
+                
+                if (charts[canvasId]) {
+                    charts[canvasId].destroy();
+                }
+
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js not loaded');
+                    return;
+                }
+
+                const defaultOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                };
+
+                charts[canvasId] = new Chart(context, {
+                    type: type,
+                    data: data,
+                    options: { ...defaultOptions, ...options }
+                });
+
+            } catch (error) {
+                console.error(`Error creating chart ${canvasId}:`, error);
+                const canvas = document.getElementById(canvasId);
+                if (canvas && canvas.parentElement) {
+                    canvas.parentElement.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Chart loading error</p>';
+                }
+            }
+        }
+
+        // Update all charts
+        function updateCharts() {
+            console.log('📈 Creating charts with', filteredData.length, 'records');
+            
+            if (filteredData.length === 0) {
+                console.warn('⚠️ No data for charts');
+                return;
+            }
+
+            // District chart
+            const districtCounts = {};
+            filteredData.forEach(d => {
+                districtCounts[d.District] =<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -501,6 +748,59 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .filter-group select,
+        .date-input {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .reset-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.3);
+        }
+
         .kpi-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -535,6 +835,93 @@
             opacity: 0.9;
             font-weight: 500;
         }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .chart-canvas {
+            max-height: 300px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ecf0f1;
+            transition: background-color 0.2s ease;
+        }
+
+        .data-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .victim-badge { background: #fee2e2; color: #dc2626; }
+        .witness-badge { background: #dbeafe; color: #2563eb; }
 
         /* Utility Classes */
         .hidden { 
@@ -628,6 +1015,65 @@
                 margin: 5% auto;
                 width: 95%;
                 padding: 30px 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                padding: 15px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .kpi-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .kpi-card {
+                padding: 20px 15px;
+            }
+
+            .kpi-value {
+                font-size: 2rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                gap: 15px;
+            }
+
+            .chart-container {
+                padding: 10px;
+            }
+
+            .filters-section {
+                padding: 15px;
+            }
+
+            .action-btn {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
             }
         }
     </style>
@@ -757,11 +1203,59 @@
                             </button>
                         </div>
 
-                        <!-- Dashboard sections (KPIs, Charts, etc.) will be shown/hidden based on role -->
+                        <!-- Filters Section -->
                         <div id="filtersSection" class="filters-section hidden">
-                            <!-- Filters content -->
+                            <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔧 Data Filters</h3>
+                            <div class="filters-grid">
+                                <div class="filter-group">
+                                    <label for="districtFilter">District</label>
+                                    <select id="districtFilter">
+                                        <option value="">All Districts</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="recordTypeFilter">Record Type</label>
+                                    <select id="recordTypeFilter">
+                                        <option value="">All Types</option>
+                                        <option value="Victim">Victim</option>
+                                        <option value="Witness">Witness</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="crimeTypeFilter">Crime Type</label>
+                                    <select id="crimeTypeFilter">
+                                        <option value="">All Crime Types</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="genderFilter">Gender</label>
+                                    <select id="genderFilter">
+                                        <option value="">All Genders</option>
+                                        <option value="MALE">Male</option>
+                                        <option value="FEMALE">Female</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="dateFromFilter">Date From</label>
+                                    <input type="date" id="dateFromFilter" class="date-input">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="dateToFilter">Date To</label>
+                                    <input type="date" id="dateToFilter" class="date-input">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="servicesFilter">Services Rendered</label>
+                                    <select id="servicesFilter">
+                                        <option value="">All Services</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <button class="reset-btn" onclick="resetFilters()">🔄 Reset Filters</button>
+                                </div>
+                            </div>
                         </div>
                         
+                        <!-- KPI Section -->
                         <div id="kpiSection" class="kpi-section hidden">
                             <div class="kpi-card">
                                 <div class="kpi-value" id="totalCases">0</div>
@@ -781,12 +1275,63 @@
                             </div>
                         </div>
                         
+                        <!-- Charts Section -->
                         <div id="chartsSection" class="charts-grid hidden">
-                            <!-- Charts will be added here -->
+                            <div class="chart-container">
+                                <div class="chart-title">Cases by District</div>
+                                <canvas id="districtChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">Crime Types Distribution</div>
+                                <canvas id="crimeChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">Age Distribution</div>
+                                <canvas id="ageChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">Gender Distribution</div>
+                                <canvas id="genderChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">Cases Over Time</div>
+                                <canvas id="timeChart" class="chart-canvas"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-title">Services Rendered Distribution</div>
+                                <canvas id="servicesChart" class="chart-canvas"></canvas>
+                            </div>
                         </div>
                         
+                        <!-- Table Section -->
                         <div id="tableSection" class="table-container hidden">
-                            <!-- Data table -->
+                            <div class="chart-title">Case Details</div>
+                            <div class="table-wrapper">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Case ID</th>
+                                            <th>Type</th>
+                                            <th>Date</th>
+                                            <th>District</th>
+                                            <th>Gender</th>
+                                            <th>Age</th>
+                                            <th>Crime Type</th>
+                                            <th>Disability</th>
+                                            <th>Services</th>
+                                            <th>Relationship</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="caseTableBody">
+                                        <!-- Data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         
                         <div id="reporterOnlyContent" class="hidden">
@@ -811,6 +1356,13 @@
         let currentUser = null;
         let selectedAgency = null;
         let searchResultsData = [];
+        let charts = {};
+
+        // Color schemes for charts
+        const colors = {
+            primary: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+            gradient: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(240, 147, 251, 0.8)', 'rgba(245, 87, 108, 0.8)', 'rgba(79, 172, 254, 0.8)', 'rgba(0, 242, 254, 0.8)']
+        };
 
         // User accounts
         const users = {
@@ -862,6 +1414,16 @@
             }
         });
 
+        // Auto-initialize dashboard for existing sessions
+        window.addEventListener('load', function() {
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                setTimeout(() => {
+                    console.log('🔄 Auto-initializing dashboard...');
+                    initializeDashboard();
+                }, 1000);
+            }
+        });
+
         // Initialize sample data
         function initializeSampleData() {
             allData = [
@@ -900,6 +1462,42 @@
                     'Disability': 'MENTAL+PHYSICAL',
                     'Services Rendered': 'MEDICAL + COUNSELLING',
                     'Relationship to CV': 'FATHER'
+                },
+                {
+                    'cvw code': 'NPA-CV2',
+                    'Record Type': 'Victim',
+                    'Date Reported': new Date('2025-01-15'),
+                    'District': 'Ndola',
+                    'CVW Gender': 'FEMALE',
+                    'CVW Age': 8,
+                    'Crime Type': 'DEFILEMENT',
+                    'Disability': 'NON',
+                    'Services Rendered': 'LEGAL AID',
+                    'Relationship to CV': 'UNCLE'
+                },
+                {
+                    'cvw code': 'MOH-CW3',
+                    'Record Type': 'Witness',
+                    'Date Reported': new Date('2025-02-20'),
+                    'District': 'Kitwe',
+                    'CVW Gender': 'MALE',
+                    'CVW Age': 10,
+                    'Crime Type': 'CHILD ABUSE',
+                    'Disability': 'PHYSICAL',
+                    'Services Rendered': 'PSYCHOSOCIAL SUPPORT',
+                    'Relationship to CV': 'NEIGHBOR'
+                },
+                {
+                    'cvw code': 'ZP-CV6',
+                    'Record Type': 'Victim',
+                    'Date Reported': new Date('2025-03-01'),
+                    'District': 'Livingstone',
+                    'CVW Gender': 'FEMALE',
+                    'CVW Age': 14,
+                    'Crime Type': 'TRAFFICKING',
+                    'Disability': 'NON',
+                    'Services Rendered': 'SHELTER',
+                    'Relationship to CV': 'STRANGER'
                 }
             ];
             filteredData = [...allData];
@@ -978,7 +1576,10 @@
                 document.getElementById('viewDashboardBtn').classList.remove('hidden');
                 document.getElementById('clearDataBtn').classList.remove('hidden');
                 document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('filtersSection').classList.remove('hidden');
                 document.getElementById('kpiSection').classList.remove('hidden');
+                document.getElementById('chartsSection').classList.remove('hidden');
+                document.getElementById('tableSection').classList.remove('hidden');
                 document.getElementById('reporterOnlyContent').classList.add('hidden');
                 
                 // Initialize dashboard
@@ -991,7 +1592,10 @@
                 document.getElementById('viewDashboardBtn').classList.remove('hidden');
                 document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('agencySelection').classList.add('hidden');
+                document.getElementById('filtersSection').classList.remove('hidden');
                 document.getElementById('kpiSection').classList.remove('hidden');
+                document.getElementById('chartsSection').classList.remove('hidden');
+                document.getElementById('tableSection').classList.remove('hidden');
                 document.getElementById('reporterOnlyContent').classList.add('hidden');
                 
                 // Initialize dashboard
@@ -1004,7 +1608,10 @@
                 document.getElementById('viewDashboardBtn').classList.add('hidden');
                 document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('filtersSection').classList.add('hidden');
                 document.getElementById('kpiSection').classList.add('hidden');
+                document.getElementById('chartsSection').classList.add('hidden');
+                document.getElementById('tableSection').classList.add('hidden');
                 document.getElementById('reporterOnlyContent').classList.remove('hidden');
             }
 
@@ -1017,8 +1624,405 @@
         // Initialize dashboard for admin/viewer
         function initializeDashboard() {
             console.log('🚀 Initializing dashboard...');
+            
+            // Wait for Chart.js to load
+            setTimeout(() => {
+                setupFilters();
+                updateDashboard();
+                console.log('✅ Dashboard initialized with', allData.length, 'records');
+            }, 100);
+        }
+
+        // Setup filters
+        function setupFilters() {
+            console.log('🔧 Setting up filters...');
+            updateFilters();
+
+            // Add event listeners with proper binding
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) {
+                districtFilter.removeEventListener('change', applyFilters);
+                districtFilter.addEventListener('change', applyFilters);
+            }
+            if (recordTypeFilter) {
+                recordTypeFilter.removeEventListener('change', applyFilters);
+                recordTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (crimeTypeFilter) {
+                crimeTypeFilter.removeEventListener('change', applyFilters);
+                crimeTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (genderFilter) {
+                genderFilter.removeEventListener('change', applyFilters);
+                genderFilter.addEventListener('change', applyFilters);
+            }
+            if (servicesFilter) {
+                servicesFilter.removeEventListener('change', applyFilters);
+                servicesFilter.addEventListener('change', applyFilters);
+            }
+            if (dateFromFilter) {
+                dateFromFilter.removeEventListener('change', applyFilters);
+                dateFromFilter.addEventListener('change', applyFilters);
+            }
+            if (dateToFilter) {
+                dateToFilter.removeEventListener('change', applyFilters);
+                dateToFilter.addEventListener('change', applyFilters);
+            }
+            
+            console.log('✅ Filters setup complete');
+        }
+
+        // Update filter options based on data
+        function updateFilters() {
+            // Update district filter
+            const districts = [...new Set(allData.map(d => d.District))].sort();
+            const districtSelect = document.getElementById('districtFilter');
+            const currentValue = districtSelect.value;
+            
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+            districtSelect.value = currentValue;
+
+            // Update crime type filter
+            const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
+            const crimeSelect = document.getElementById('crimeTypeFilter');
+            const currentCrimeValue = crimeSelect.value;
+            
+            crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
+            crimeTypes.forEach(crime => {
+                const option = document.createElement('option');
+                option.value = crime;
+                option.textContent = crime;
+                crimeSelect.appendChild(option);
+            });
+            crimeSelect.value = currentCrimeValue;
+
+            // Update services filter  
+            const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
+            const servicesSelect = document.getElementById('servicesFilter');
+            const currentServicesValue = servicesSelect.value;
+            
+            servicesSelect.innerHTML = '<option value="">All Services</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service;
+                option.textContent = service;
+                servicesSelect.appendChild(option);
+            });
+            servicesSelect.value = currentServicesValue;
+        }
+
+        // Apply filters to data
+        function applyFilters() {
+            const districtFilter = document.getElementById('districtFilter').value;
+            const recordTypeFilter = document.getElementById('recordTypeFilter').value;
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const servicesFilter = document.getElementById('servicesFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+
+            console.log('🔍 Applying filters...', {
+                district: districtFilter,
+                recordType: recordTypeFilter,
+                crimeType: crimeTypeFilter,
+                gender: genderFilter,
+                services: servicesFilter,
+                dateFrom: dateFromFilter,
+                dateTo: dateToFilter
+            });
+
+            filteredData = allData.filter(row => {
+                const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
+                                 (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
+                
+                return (!districtFilter || row.District === districtFilter) &&
+                       (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
+                       (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
+                       (!genderFilter || row['CVW Gender'] === genderFilter) &&
+                       (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
+                       dateMatch;
+            });
+
+            console.log('📊 Filtered data:', filteredData.length, 'records');
+            updateDashboard();
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            console.log('🔄 Resetting filters...');
+            
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) districtFilter.value = '';
+            if (recordTypeFilter) recordTypeFilter.value = '';
+            if (crimeTypeFilter) crimeTypeFilter.value = '';
+            if (genderFilter) genderFilter.value = '';
+            if (servicesFilter) servicesFilter.value = '';
+            if (dateFromFilter) dateFromFilter.value = '';
+            if (dateToFilter) dateToFilter.value = '';
+            
+            filteredData = [...allData];
+            console.log('📊 Reset to show all', filteredData.length, 'records');
+            updateDashboard();
+        }
+
+        // Update dashboard with current data
+        function updateDashboard() {
+            console.log('📊 Updating dashboard with', filteredData.length, 'filtered records');
+            
+            if (filteredData.length === 0) {
+                console.warn('⚠️ No data available for dashboard');
+                updateKPIsEmpty();
+                updateChartsEmpty();
+                updateTableEmpty();
+                return;
+            }
+            
             updateKPIs();
-            console.log('✅ Dashboard initialized with', allData.length, 'records');
+            
+            // Wait a bit for DOM to be ready before creating charts
+            setTimeout(() => {
+                updateCharts();
+                updateTable();
+                console.log('✅ Dashboard update complete');
+            }, 50);
+        }
+
+        // Create or update a chart
+        function createChart(canvasId, type, data, options = {}) {
+            try {
+                const ctx = document.getElementById(canvasId);
+                if (!ctx) {
+                    console.error(`Canvas element ${canvasId} not found`);
+                    return;
+                }
+                
+                const context = ctx.getContext('2d');
+                
+                if (charts[canvasId]) {
+                    charts[canvasId].destroy();
+                }
+
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js not loaded');
+                    return;
+                }
+
+                const defaultOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                };
+
+                charts[canvasId] = new Chart(context, {
+                    type: type,
+                    data: data,
+                    options: { ...defaultOptions, ...options }
+                });
+
+            } catch (error) {
+                console.error(`Error creating chart ${canvasId}:`, error);
+                const canvas = document.getElementById(canvasId);
+                if (canvas && canvas.parentElement) {
+                    canvas.parentElement.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Chart loading error</p>';
+                }
+            }
+        }
+
+        // Update all charts
+        function updateCharts() {
+            console.log('📈 Creating charts with', filteredData.length, 'records');
+            
+            if (filteredData.length === 0) {
+                console.warn('⚠️ No data for charts');
+                return;
+            }
+
+            // District chart
+            const districtCounts = {};
+            filteredData.forEach(d => {
+                districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+            });
+
+            createChart('districtChart', 'bar', {
+                labels: Object.keys(districtCounts),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(districtCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+
+            // Crime type chart
+            const crimeCounts = {};
+            filteredData.forEach(d => {
+                crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+            });
+
+            createChart('crimeChart', 'doughnut', {
+                labels: Object.keys(crimeCounts),
+                datasets: [{
+                    data: Object.values(crimeCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2
+                }]
+            });
+
+            // Age distribution
+            const ageRanges = { '0-5': 0, '6-10': 0, '11-15': 0, '16-18': 0 };
+            filteredData.filter(d => d['CVW Age'] > 0).forEach(d => {
+                const age = d['CVW Age'];
+                if (age <= 5) ageRanges['0-5']++;
+                else if (age <= 10) ageRanges['6-10']++;
+                else if (age <= 15) ageRanges['11-15']++;
+                else ageRanges['16-18']++;
+            });
+
+            createChart('ageChart', 'bar', {
+                labels: Object.keys(ageRanges),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(ageRanges),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+
+            // Gender distribution
+            const genderCounts = {};
+            filteredData.forEach(d => {
+                genderCounts[d['CVW Gender']] = (genderCounts[d['CVW Gender']] || 0) + 1;
+            });
+
+            createChart('genderChart', 'pie', {
+                labels: Object.keys(genderCounts),
+                datasets: [{
+                    data: Object.values(genderCounts),
+                    backgroundColor: colors.gradient.slice(0, Object.keys(genderCounts).length),
+                    borderColor: colors.primary.slice(0, Object.keys(genderCounts).length),
+                    borderWidth: 2
+                }]
+            });
+
+            // Time series chart
+            const monthCounts = {};
+            filteredData.forEach(d => {
+                const month = d['Date Reported'].toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                monthCounts[month] = (monthCounts[month] || 0) + 1;
+            });
+
+            createChart('timeChart', 'line', {
+                labels: Object.keys(monthCounts),
+                datasets: [{
+                    label: 'Cases',
+                    data: Object.values(monthCounts),
+                    borderColor: colors.primary[0],
+                    backgroundColor: colors.gradient[0],
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            });
+
+            // Services distribution
+            const servicesCounts = {};
+            filteredData.forEach(d => {
+                const service = d['Services Rendered'] || 'Not Specified';
+                servicesCounts[service] = (servicesCounts[service] || 0) + 1;
+            });
+
+            createChart('servicesChart', 'doughnut', {
+                labels: Object.keys(servicesCounts),
+                datasets: [{
+                    data: Object.values(servicesCounts),
+                    backgroundColor: colors.gradient,
+                    borderColor: colors.primary,
+                    borderWidth: 2
+                }]
+            });
+
+            console.log('✅ All charts created successfully');
+        }
+
+        // Update data table
+        function updateTable() {
+            const tbody = document.getElementById('caseTableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row['cvw code']}</td>
+                    <td><span class="status-badge ${row['Record Type'].toLowerCase()}-badge">${row['Record Type']}</span></td>
+                    <td>${row['Date Reported'].toLocaleDateString()}</td>
+                    <td>${row['District']}</td>
+                    <td>${row['CVW Gender']}</td>
+                    <td>${row['CVW Age']}</td>
+                    <td>${row['Crime Type']}</td>
+                    <td>${row['Disability']}</td>
+                    <td>${row['Services Rendered']}</td>
+                    <td>${row['Relationship to CV']}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Handle empty states
+        function updateKPIsEmpty() {
+            document.getElementById('totalCases').textContent = '0';
+            document.getElementById('victimCases').textContent = '0';
+            document.getElementById('witnessCases').textContent = '0';
+            document.getElementById('avgAge').textContent = '0';
+        }
+
+        function updateChartsEmpty() {
+            // Clear all charts
+            Object.keys(charts).forEach(chartId => {
+                if (charts[chartId]) {
+                    charts[chartId].destroy();
+                    delete charts[chartId];
+                }
+            });
+        }
+
+        function updateTableEmpty() {
+            const tbody = document.getElementById('caseTableBody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #666; padding: 20px;">No records match the current filters</td></tr>';
+            }
         }
 
         // Agency selection
