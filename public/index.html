@@ -854,16 +854,48 @@
         }
 
         function setupFilters() {
+            console.log('🔧 Setting up filters...');
             updateFilters();
 
-            // Add event listeners
-            document.getElementById('districtFilter').addEventListener('change', applyFilters);
-            document.getElementById('recordTypeFilter').addEventListener('change', applyFilters);
-            document.getElementById('crimeTypeFilter').addEventListener('change', applyFilters);
-            document.getElementById('genderFilter').addEventListener('change', applyFilters);
-            document.getElementById('servicesFilter').addEventListener('change', applyFilters);
-            document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
-            document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+            // Add event listeners with proper binding
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) {
+                districtFilter.removeEventListener('change', applyFilters);
+                districtFilter.addEventListener('change', applyFilters);
+            }
+            if (recordTypeFilter) {
+                recordTypeFilter.removeEventListener('change', applyFilters);
+                recordTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (crimeTypeFilter) {
+                crimeTypeFilter.removeEventListener('change', applyFilters);
+                crimeTypeFilter.addEventListener('change', applyFilters);
+            }
+            if (genderFilter) {
+                genderFilter.removeEventListener('change', applyFilters);
+                genderFilter.addEventListener('change', applyFilters);
+            }
+            if (servicesFilter) {
+                servicesFilter.removeEventListener('change', applyFilters);
+                servicesFilter.addEventListener('change', applyFilters);
+            }
+            if (dateFromFilter) {
+                dateFromFilter.removeEventListener('change', applyFilters);
+                dateFromFilter.addEventListener('change', applyFilters);
+            }
+            if (dateToFilter) {
+                dateToFilter.removeEventListener('change', applyFilters);
+                dateToFilter.addEventListener('change', applyFilters);
+            }
+            
+            console.log('✅ Filters setup complete');
         }
 
         function applyFilters() {
@@ -902,14 +934,26 @@
         }
 
         function resetFilters() {
-            document.getElementById('districtFilter').value = '';
-            document.getElementById('recordTypeFilter').value = '';
-            document.getElementById('crimeTypeFilter').value = '';
-            document.getElementById('genderFilter').value = '';
-            document.getElementById('servicesFilter').value = '';
-            document.getElementById('dateFromFilter').value = '';
-            document.getElementById('dateToFilter').value = '';
+            console.log('🔄 Resetting filters...');
+            
+            const districtFilter = document.getElementById('districtFilter');
+            const recordTypeFilter = document.getElementById('recordTypeFilter');
+            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const servicesFilter = document.getElementById('servicesFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+
+            if (districtFilter) districtFilter.value = '';
+            if (recordTypeFilter) recordTypeFilter.value = '';
+            if (crimeTypeFilter) crimeTypeFilter.value = '';
+            if (genderFilter) genderFilter.value = '';
+            if (servicesFilter) servicesFilter.value = '';
+            if (dateFromFilter) dateFromFilter.value = '';
+            if (dateToFilter) dateToFilter.value = '';
+            
             filteredData = [...allData];
+            console.log('📊 Reset to show all', filteredData.length, 'records');
             updateDashboard();
         }
 
@@ -1141,6 +1185,10 @@
             // Only update if we have data
             if (filteredData.length === 0) {
                 console.warn('⚠️ No data available for dashboard');
+                // Show empty state
+                updateKPIsEmpty();
+                updateChartsEmpty();
+                updateTableEmpty();
                 return;
             }
             
@@ -1150,7 +1198,32 @@
             setTimeout(() => {
                 updateCharts();
                 updateTable();
+                console.log('✅ Dashboard update complete');
             }, 50);
+        }
+
+        function updateKPIsEmpty() {
+            document.getElementById('totalCases').textContent = '0';
+            document.getElementById('victimCases').textContent = '0';
+            document.getElementById('witnessCases').textContent = '0';
+            document.getElementById('avgAge').textContent = '0';
+        }
+
+        function updateChartsEmpty() {
+            // Clear all charts
+            Object.keys(charts).forEach(chartId => {
+                if (charts[chartId]) {
+                    charts[chartId].destroy();
+                    delete charts[chartId];
+                }
+            });
+        }
+
+        function updateTableEmpty() {
+            const tbody = document.getElementById('caseTableBody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #666; padding: 20px;">No records match the current filters</td></tr>';
+            }
         }
 
         function showDashboardView() {
@@ -1229,6 +1302,45 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            margin: 0;
+            position: relative;
+        }
+
+        /* User Info Bar */
+        .user-info-bar {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Dashboard header spacing fix */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            margin-top: 0;
+            padding-top: 0;
+            position: relative;
         }
 
         /* Login Screen Styles */
@@ -1662,26 +1774,62 @@
             display: inline-block;
         }
 
-        /* Dashboard header spacing fix */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            margin-top: 0;
-            padding-top: 0;
+        /* User Info Bar */
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            margin-top: 0;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Role-based styling */
+        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
+        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
 
         .header h1 {
             color: #2c3e50;
