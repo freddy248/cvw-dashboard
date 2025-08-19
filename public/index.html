@@ -1,1305 +1,4 @@
-            <!-- Agency Selection -->
-            <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
-                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
-                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                    <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')">
-                        <div class="agency-icon">⚖️</div>
-                        <div class="agency-name">National Prosecution Authority</div>
-                        <div class="agency-code">NPA</div>
-                    </button>
-                    <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')">
-                        <div class="agency-icon">🏥</div>
-                        <div class="agency-name">Ministry of Health</div>
-                        <div class="agency-code">MOH</div>
-                    </button>
-                    <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')">
-                        <div class="agency-icon">👮</div>
-                        <div class="agency-name">Zambia Police</div>
-                        <div class="agency-code">ZP</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons" id="actionButtons">
-                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled>
-                    ➕ Add New Record
-                </button>
-                <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="display: none;">
-                    🔍 Search Records
-                </button>
-                <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
-                    📈 View Dashboard
-                </button>
-                <button class="action-btn" id="clearDataBtn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);" onclick="clearAllData()">
-                    🗑️ Clear Data
-                </button>
-            </div>
-
-            <!-- Filters Section -->
-            <div class="filters-section hidden" id="filtersSection">
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label for="districtFilter">District</label>
-                        <select id="districtFilter">
-                            <option value="">All Districts</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="recordTypeFilter">Record Type</label>
-                        <select id="recordTypeFilter">
-                            <option value="">All Types</option>
-                            <option value="Victim">Victim</option>
-                            <option value="Witness">Witness</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="crimeTypeFilter">Crime Type</label>
-                        <select id="crimeTypeFilter">
-                            <option value="">All Crime Types</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="genderFilter">Gender</label>
-                        <select id="genderFilter">
-                            <option value="">All Genders</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateFromFilter">Date From</label>
-                        <input type="date" id="dateFromFilter" class="date-input">
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateToFilter">Date To</label>
-                        <input type="date" id="dateToFilter" class="date-input">
-                    </div>
-                    <div class="filter-group">
-                        <label for="servicesFilter">Services Rendered</label>
-                        <select id="servicesFilter">
-                            <option value="">All Services</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button class="reset-btn" onclick="resetFilters()">🔄 Reset Filters</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- KPI Section -->
-            <div class="kpi-section hidden" id="kpiSection">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="totalCases">0</div>
-                    <div class="kpi-label">Total Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="victimCases">0</div>
-                    <div class="kpi-label">Victim Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="witnessCases">0</div>
-                    <div class="kpi-label">Witness Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="avgAge">0</div>
-                    <div class="kpi-label">Average Age</div>
-                </div>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="charts-grid hidden" id="chartsSection">
-                <div class="chart-container">
-                    <div class="chart-title">Cases by District</div>
-                    <canvas id="districtChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Crime Types Distribution</div>
-                    <canvas id="crimeChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Age Distribution</div>
-                    <canvas id="ageChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Gender Distribution</div>
-                    <canvas id="genderChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Cases Over Time</div>
-                    <canvas id="timeChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Services Rendered Distribution</div>
-                    <canvas id="servicesChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Relationship Analysis</div>
-                    <canvas id="relationshipChart" class="chart-canvas"></canvas>
-                </div>
-            </div>
-
-            <!-- Table Section -->
-            <div class="table-container full-width hidden" id="tableSection">
-                <div class="chart-title">Case Details</div>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Case ID</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>District</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Crime Type</th>
-                                <th>Disability</th>
-                                <th>Services</th>
-                                <th>Relationship</th>
-                            </tr>
-                        </thead>
-                        <tbody id="caseTableBody">
-                            <!-- Data will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div id="reporterOnlyContent" class="hidden">
-                <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
-                    <h2>📝 Reporter Dashboard</h2>
-                    <p>Welcome! You have access to add new case records and search existing ones.</p>
-                    <p><strong>Step 1:</strong> Select your reporting agency above</p>
-                    <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
-                    <p><strong>Step 3:</strong> Use "Search Records" to find and update existing cases</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Record Modal -->
-    <div id="addRecordModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAddRecordModal()">&times;</span>
-            <h2 style="color: #2c3e50; margin-bottom: 20px;">➕ Add New Case Record</h2>
-            <form id="addRecordForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Record Type *</label>
-                        <select class="form-select" id="recordType" required>
-                            <option value="">Select Type</option>
-                            <option value="Victim">Victim</option>
-                            <option value="Witness">Witness</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Date Reported *</label>
-                        <input type="date" class="form-input" id="dateReported" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">District *</label>
-                        <select class="form-select" id="district" required>
-                            <option value="">Select District</option>
-                            <option value="Lusaka">Lusaka</option>
-                            <option value="Katete">Katete</option>
-                            <option value="Ndola">Ndola</option>
-                            <option value="Kitwe">Kitwe</option>
-                            <option value="Kabwe">Kabwe</option>
-                            <option value="Livingstone">Livingstone</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">CVW Gender *</label>
-                        <select class="form-select" id="cvwGender" required>
-                            <option value="">Select Gender</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">CVW Age *</label>
-                        <input type="number" class="form-input" id="cvwAge" min="0" max="17" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Crime Type *</label>
-                        <select class="form-select" id="crimeType" required>
-                            <option value="">Select Crime Type</option>
-                            <option value="RAPE">Rape</option>
-                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
-                            <option value="DEFILEMENT">Defilement</option>
-                            <option value="CHILD ABUSE">Child Abuse</option>
-                            <option value="TRAFFICKING">Trafficking</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Disability Status *</label>
-                        <select class="form-select" id="disability" required>
-                            <option value="">Select Disability Status</option>
-                            <option value="NON">None</option>
-                            <option value="PHYSICAL">Physical</option>
-                            <option value="MENTAL">Mental</option>
-                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Services Rendered *</label>
-                        <select class="form-select" id="servicesRendered" required>
-                            <option value="">Select Service</option>
-                            <option value="MEDICAL REPORT">Medical Report</option>
-                            <option value="COUNSELLING">Counselling</option>
-                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
-                            <option value="LEGAL AID">Legal Aid</option>
-                            <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
-                            <option value="SHELTER">Shelter</option>
-                            <option value="REFERRAL TO SPECIALIST">Referral to Specialist</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Relationship to CV *</label>
-                    <select class="form-select" id="relationshipToCV" required>
-                        <option value="">Select Relationship</option>
-                        <option value="FATHER">Father</option>
-                        <option value="MOTHER">Mother</option>
-                        <option value="STEP-FATHER">Step-Father</option>
-                        <option value="STEP-MOTHER">Step-Mother</option>
-                        <option value="UNCLE">Uncle</option>
-                        <option value="AUNT">Aunt</option>
-                        <option value="FRIEND">Friend</option>
-                        <option value="STRANGER">Stranger</option>
-                        <option value="TEACHER">Teacher</option>
-                        <option value="NEIGHBOR">Neighbor</option>
-                    </select>
-                </div>
-                
-                <div style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="action-btn add-record-btn">💾 Save Record</button>
-                    <button type="button" class="action-btn" style="background: #6c757d; margin-left: 10px;" onclick="closeAddRecordModal()">❌ Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Global variables
-        let allData = [];
-        let filteredData = [];
-        let currentUser = null;
-        let selectedAgency = null;
-        let searchResultsData = [];
-        let charts = {};
-
-        // Available services
-        const availableServices = [
-            'MEDICAL REPORT',
-            'COUNSELLING',
-            'MEDICAL + COUNSELLING',
-            'LEGAL AID',
-            'PSYCHOSOCIAL SUPPORT',
-            'SHELTER',
-            'REFERRAL TO SPECIALIST'
-        ];
-
-        // User accounts
-        const users = {
-            'admin': { 
-                password: 'admin123', 
-                role: 'admin', 
-                name: 'Administrator',
-                avatar: 'A',
-                permissions: ['view', 'add', 'edit', 'delete', 'admin', 'search', 'append_services']
-            },
-            'viewer': { 
-                password: 'view123', 
-                role: 'viewer', 
-                name: 'Data Viewer',
-                avatar: 'V',
-                permissions: ['view']
-            },
-            'reporter': { 
-                password: 'report123', 
-                role: 'reporter', 
-                name: 'Case Reporter',
-                avatar: 'R',
-                permissions: ['add', 'search', 'append_services']
-            }
-        };
-
-        // Color schemes
-        const colors = {
-            primary: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
-            gradient: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(240, 147, 251, 0.8)', 'rgba(245, 87, 108, 0.8)', 'rgba(79, 172, 254, 0.8)', 'rgba(0, 242, 254, 0.8)']
-        };
-
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 App starting...');
-            
-            // Initialize sample data
-            initializeSampleData();
-            setupEventListeners();
-            
-            // CRITICAL: Ensure everything is hidden initially
-            document.getElementById('mainDashboard').classList.add('hidden');
-            document.getElementById('actionButtons').classList.add('hidden');
-            document.getElementById('addRecordBtn').classList.add('hidden');
-            document.getElementById('searchRecordsBtn').classList.add('hidden');
-            document.getElementById('viewDashboardBtn').classList.add('hidden');
-            document.getElementById('clearDataBtn').classList.add('hidden');
-            
-            // Check for existing session
-            const session = localStorage.getItem('cvw_session');
-            if (session) {
-                try {
-                    currentUser = JSON.parse(session);
-                    updateUserInterface();
-                    showDashboard();
-                    console.log('✅ Restored session for:', currentUser.role);
-                } catch (e) {
-                    localStorage.removeItem('cvw_session');
-                    showLoginScreen();
-                }
-            } else {
-                showLoginScreen();
-            }
-        });
-
-        // Initialize sample data
-        function initializeSampleData() {
-            allData = [
-                {
-                    'cvw code': 'NPA-CV1',
-                    'Record Type': 'Victim',
-                    'Date Reported': new Date('2025-01-04'),
-                    'District': 'Lusaka',
-                    'CVW Gender': 'MALE',
-                    'CVW Age': 5,
-                    'Crime Type': 'ASSAULT ON A CHILD',
-                    'Disability': 'NON',
-                    'Services Rendered': 'MEDICAL REPORT',
-                    'Relationship to CV': 'STRANGER'
-                },
-                {
-                    'cvw code': 'MOH-CW5',
-                    'Record Type': 'Witness',
-                    'Date Reported': new Date('2025-02-07'),
-                    'District': 'Katete',
-                    'CVW Gender': 'MALE',
-                    'CVW Age': 15,
-                    'Crime Type': 'RAPE',
-                    'Disability': 'NON',
-                    'Services Rendered': 'COUNSELLING',
-                    'Relationship to CV': 'FRIEND'
-                },
-                {
-                    'cvw code': 'ZP-CV4',
-                    'Record Type': 'Victim',
-                    'Date Reported': new Date('2025-03-11'),
-                    'District': 'Lusaka',
-                    'CVW Gender': 'FEMALE',
-                    'CVW Age': 12,
-                    'Crime Type': 'RAPE',
-                    'Disability': 'MENTAL+PHYSICAL',
-                    'Services Rendered': 'MEDICAL + COUNSELLING',
-                    'Relationship to CV': 'FATHER'
-                }
-            ];
-            filteredData = [...allData];
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Add record form
-            document.getElementById('addRecordForm').addEventListener('submit', handleAddRecord);
-            
-            // Search input enter key
-            document.getElementById('searchInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchRecord();
-                }
-            });
-        }
-
-        // Login functionality
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('loginError');
-            
-            if (users[username] && users[username].password === password) {
-                currentUser = users[username];
-                localStorage.setItem('cvw_session', JSON.stringify(currentUser));
-                showDashboard();
-                errorDiv.style.display = 'none';
-            } else {
-                errorDiv.style.display = 'block';
-            }
-        }
-
-        // Show dashboard after login
-        function showDashboard() {
-            console.log('📊 Showing dashboard for:', currentUser.role);
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainDashboard').classList.remove('hidden');
-            
-            // Force the dashboard to the top
-            document.getElementById('mainDashboard').style.position = 'absolute';
-            document.getElementById('mainDashboard').style.top = '0';
-            document.getElementById('mainDashboard').style.left = '0';
-            document.getElementById('mainDashboard').style.right = '0';
-            document.getElementById('mainDashboard').style.width = '100%';
-            
-            updateUserInterface();
-        }
-
-        // Show login screen
-        function showLoginScreen() {
-            console.log('🔐 Showing login screen');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('mainDashboard').classList.add('hidden');
-            
-            // Force the login screen to the top
-            document.getElementById('loginScreen').style.position = 'absolute';
-            document.getElementById('loginScreen').style.top = '0';
-            document.getElementById('loginScreen').style.left = '0';
-            document.getElementById('loginScreen').style.right = '0';
-            document.getElementById('loginScreen').style.width = '100%';
-            
-            // Ensure ALL dashboard elements are hidden
-            document.getElementById('actionButtons').classList.add('hidden');
-            document.getElementById('addRecordBtn').classList.add('hidden');
-            document.getElementById('searchRecordsBtn').classList.add('hidden');
-            document.getElementById('viewDashboardBtn').classList.add('hidden');
-            document.getElementById('clearDataBtn').classList.add('hidden');
-            document.getElementById('agencySelection').classList.add('hidden');
-            document.getElementById('filtersSection').classList.add('hidden');
-            document.getElementById('kpiSection').classList.add('hidden');
-            document.getElementById('chartsSection').classList.add('hidden');
-            document.getElementById('tableSection').classList.add('hidden');
-            document.getElementById('reporterOnlyContent').classList.add('hidden');
-            document.getElementById('searchSection').classList.add('hidden');
-            
-            // Clear any form data
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('loginError').style.display = 'none';
-        }
-
-        // Update user interface based on role
-        function updateUserInterface() {
-            if (!currentUser) return;
-
-            // Update user info bar
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
-            document.getElementById('userAvatar').textContent = currentUser.avatar;
-            
-            // Add role-based styling
-            const userInfoBar = document.getElementById('userInfoBar');
-            userInfoBar.className = `user-info-bar role-${currentUser.role}`;
-
-            // Configure based on role
-            if (currentUser.role === 'admin') {
-                // Admin: Full access
-                document.getElementById('actionButtons').classList.remove('hidden');
-                document.getElementById('addRecordBtn').classList.remove('hidden');
-                document.getElementById('addRecordBtn').style.display = 'flex';
-                document.getElementById('searchRecordsBtn').classList.remove('hidden');
-                document.getElementById('searchRecordsBtn').style.display = 'flex';
-                document.getElementById('viewDashboardBtn').classList.remove('hidden');
-                document.getElementById('viewDashboardBtn').style.display = 'flex';
-                document.getElementById('clearDataBtn').classList.remove('hidden');
-                document.getElementById('clearDataBtn').style.display = 'flex';
-                document.getElementById('agencySelection').classList.remove('hidden');
-                document.getElementById('searchSection').classList.add('hidden'); // Hidden by default
-                document.getElementById('filtersSection').classList.remove('hidden');
-                document.getElementById('kpiSection').classList.remove('hidden');
-                document.getElementById('chartsSection').classList.remove('hidden');
-                document.getElementById('tableSection').classList.remove('hidden');
-                document.getElementById('reporterOnlyContent').classList.add('hidden');
-                
-                // Initialize dashboard
-                initializeDashboard();
-            } else if (currentUser.role === 'viewer') {
-                // Viewer: View only, NO SEARCH
-                document.getElementById('actionButtons').classList.remove('hidden');
-                document.getElementById('addRecordBtn').classList.add('hidden');
-                document.getElementById('addRecordBtn').style.display = 'none';
-                document.getElementById('searchRecordsBtn').classList.add('hidden');
-                document.getElementById('searchRecordsBtn').style.display = 'none';
-                document.getElementById('viewDashboardBtn').classList.remove('hidden');
-                document.getElementById('viewDashboardBtn').style.display = 'flex';
-                document.getElementById('clearDataBtn').classList.add('hidden');
-                document.getElementById('clearDataBtn').style.display = 'none';
-                document.getElementById('agencySelection').classList.add('hidden');
-                document.getElementById('searchSection').classList.add('hidden'); // Always hidden for viewer
-                document.getElementById('filtersSection').classList.remove('hidden');
-                document.getElementById('kpiSection').classList.remove('hidden');
-                document.getElementById('chartsSection').classList.remove('hidden');
-                document.getElementById('tableSection').classList.remove('hidden');
-                document.getElementById('reporterOnlyContent').classList.add('hidden');
-                
-                // Initialize dashboard
-                initializeDashboard();
-            } else if (currentUser.role === 'reporter') {
-                // Reporter: Add records and search only
-                document.getElementById('actionButtons').classList.remove('hidden');
-                document.getElementById('addRecordBtn').classList.remove('hidden');
-                document.getElementById('addRecordBtn').style.display = 'flex';
-                document.getElementById('searchRecordsBtn').classList.remove('hidden');
-                document.getElementById('searchRecordsBtn').style.display = 'flex';
-                document.getElementById('viewDashboardBtn').classList.add('hidden');
-                document.getElementById('viewDashboardBtn').style.display = 'none';
-                document.getElementById('clearDataBtn').classList.add('hidden');
-                document.getElementById('clearDataBtn').style.display = 'none';
-                document.getElementById('agencySelection').classList.remove('hidden');
-                document.getElementById('searchSection').classList.add('hidden'); // Hidden by default
-                document.getElementById('filtersSection').classList.add('hidden');
-                document.getElementById('kpiSection').classList.add('hidden');
-                document.getElementById('chartsSection').classList.add('hidden');
-                document.getElementById('tableSection').classList.add('hidden');
-                document.getElementById('reporterOnlyContent').classList.remove('hidden');
-            }
-
-            // Reset agency selection and button state
-            selectedAgency = null;
-            document.getElementById('addRecordBtn').disabled = true;
-            document.querySelectorAll('.agency-btn').forEach(btn => btn.classList.remove('selected'));
-        }
-
-        // Initialize dashboard for admin/viewer
-        function initializeDashboard() {
-            console.log('🚀 Initializing dashboard...');
-            
-            // Wait for Chart.js to load
-            setTimeout(() => {
-                setupFilters();
-                updateDashboard();
-                console.log('✅ Dashboard initialized with', allData.length, 'records');
-            }, 100);
-        }
-
-        // Agency selection
-        function selectAgency(agency) {
-            selectedAgency = agency;
-            
-            // Update visual selection
-            document.querySelectorAll('.agency-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
-            
-            // Enable add record button
-            document.getElementById('addRecordBtn').disabled = false;
-            
-            showNotification(`Selected agency: ${agency}`, 'success');
-        }
-
-        // Search functions
-        function toggleSearchSection() {
-            // Only allow search for admin and reporter roles
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'reporter')) {
-                showNotification('Access denied: Search not available for your role', 'error');
-                return;
-            }
-            
-            const searchSection = document.getElementById('searchSection');
-            if (searchSection.style.display === 'none' || searchSection.style.display === '') {
-                searchSection.style.display = 'block';
-                document.getElementById('searchInput').focus();
-            } else {
-                searchSection.style.display = 'none';
-                clearSearch();
-            }
-        }
-
-        function searchRecord() {
-            const searchInput = document.getElementById('searchInput').value.trim().toUpperCase();
-            const searchResults = document.getElementById('searchResults');
-            
-            if (!searchInput) {
-                searchResults.innerHTML = '<p style="color: #dc2626;">⚠️ Please enter a Case ID to search</p>';
-                searchResults.classList.add('active');
-                return;
-            }
-
-            const results = allData.filter(record => 
-                record['cvw code'].toUpperCase() === searchInput
-            );
-
-            if (results.length === 0) {
-                searchResults.innerHTML = `<p style="color: #dc2626;">❌ No record found with Case ID: <strong>${searchInput}</strong></p>`;
-                searchResults.classList.add('active');
-                return;
-            }
-
-            searchResultsData = results;
-            displaySearchResults(results);
-        }
-
-        function displaySearchResults(results) {
-            const searchResults = document.getElementById('searchResults');
-            let html = `<h4 style="color: #2c3e50;">Found ${results.length} record(s)</h4>`;
-            
-            results.forEach((record, index) => {
-                const services = record['Services Rendered'] || 'None';
-                const servicesArray = services !== 'None' ? services.split(' + ') : [];
-                
-                html += `
-                    <div class="search-result-item">
-                        <div class="result-header">
-                            <span class="result-case-id">${record['cvw code']}</span>
-                            <span class="status-badge ${record['Record Type'].toLowerCase()}-badge">${record['Record Type']}</span>
-                        </div>
-                        <div class="result-details">
-                            <div class="result-detail">
-                                <span class="result-label">Date:</span>
-                                <span class="result-value">${record['Date Reported'].toLocaleDateString()}</span>
-                            </div>
-                            <div class="result-detail">
-                                <span class="result-label">District:</span>
-                                <span class="result-value">${record['District']}</span>
-                            </div>
-                            <div class="result-detail">
-                                <span class="result-label">Gender:</span>
-                                <span class="result-value">${record['CVW Gender']}</span>
-                            </div>
-                            <div class="result-detail">
-                                <span class="result-label">Age:</span>
-                                <span class="result-value">${record['CVW Age']} years</span>
-                            </div>
-                            <div class="result-detail">
-                                <span class="result-label">Crime Type:</span>
-                                <span class="result-value">${record['Crime Type']}</span>
-                            </div>
-                        </div>
-                        <div class="services-section">
-                            <div class="current-services">
-                                Current Services: 
-                                ${servicesArray.length > 0 ? 
-                                    servicesArray.map(s => `<span class="service-badge">${s}</span>`).join('') :
-                                    '<span style="color: #6c757d;">None</span>'
-                                }
-                            </div>
-                            <div class="add-service-container">
-                                <select class="add-service-select" id="serviceSelect_${index}">
-                                    <option value="">Select service to add...</option>
-                                    ${availableServices
-                                        .filter(service => !servicesArray.includes(service))
-                                        .map(service => `<option value="${service}">${service}</option>`)
-                                        .join('')}
-                                </select>
-                                <button class="add-service-btn" onclick="appendService(${index})">
-                                    Add Service
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            searchResults.innerHTML = html;
-            searchResults.classList.add('active');
-        }
-
-        function appendService(resultIndex) {
-            const selectElement = document.getElementById(`serviceSelect_${resultIndex}`);
-            const selectedService = selectElement.value;
-            
-            if (!selectedService) {
-                showNotification('Please select a service to add', 'error');
-                return;
-            }
-
-            const record = searchResultsData[resultIndex];
-            const currentServices = record['Services Rendered'];
-            
-            // Update the record
-            if (currentServices === 'None' || !currentServices) {
-                record['Services Rendered'] = selectedService;
-            } else {
-                record['Services Rendered'] = currentServices + ' + ' + selectedService;
-            }
-
-            // Update the original data
-            const originalIndex = allData.findIndex(r => r['cvw code'] === record['cvw code']);
-            if (originalIndex !== -1) {
-                allData[originalIndex] = { ...record };
-            }
-
-            showNotification(`Service "${selectedService}" added successfully!`, 'success');
-            
-            // Refresh the search results
-            displaySearchResults(searchResultsData);
-            
-            // Refresh data table if visible
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                updateFilters();
-                updateDashboard();
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').classList.remove('active');
-            searchResultsData = [];
-        }
-
-        // Add record modal functions
-        function openAddRecordModal() {
-            if (!selectedAgency) {
-                showNotification('Please select an agency first', 'error');
-                return;
-            }
-            document.getElementById('addRecordModal').style.display = 'block';
-        }
-
-        function closeAddRecordModal() {
-            document.getElementById('addRecordModal').style.display = 'none';
-            document.getElementById('addRecordForm').reset();
-        }
-
-        // Handle add record form submission
-        function handleAddRecord(e) {
-            e.preventDefault();
-            
-            if (!selectedAgency) {
-                showNotification('Please select an agency first', 'error');
-                return;
-            }
-
-            // Generate case ID
-            const recordType = document.getElementById('recordType').value;
-            const typeCode = recordType === 'Victim' ? 'CV' : 'CW';
-            const existingCodes = allData
-                .filter(r => r['cvw code'].startsWith(selectedAgency))
-                .map(r => parseInt(r['cvw code'].split(typeCode)[1]) || 0);
-            const nextNumber = Math.max(...existingCodes, 0) + 1;
-            // Create new record
-            const newRecord = {
-                'cvw code': caseId,
-                'Record Type': recordType,
-                'Date Reported': new Date(document.getElementById('dateReported').value),
-                'District': document.getElementById('district').value,
-                'CVW Gender': document.getElementById('cvwGender').value,
-                'CVW Age': parseInt(document.getElementById('cvwAge').value),
-                'Crime Type': document.getElementById('crimeType').value,
-                'Disability': document.getElementById('disability').value,
-                'Services Rendered': document.getElementById('servicesRendered').value,
-                'Relationship to CV': document.getElementById('relationshipToCV').value
-            };
-
-            // Add to data
-            allData.push(newRecord);
-            filteredData = [...allData];
-
-            showNotification(`Record ${caseId} added successfully!`, 'success');
-            closeAddRecordModal();
-            
-            // Refresh data table if visible
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                updateFilters();
-                updateDashboard();
-            }
-        }
-
-        // Dashboard functions
-        function updateFilters() {
-            // Update district filter
-            const districts = [...new Set(allData.map(d => d.District))].sort();
-            const districtSelect = document.getElementById('districtFilter');
-            const currentValue = districtSelect.value;
-            
-            districtSelect.innerHTML = '<option value="">All Districts</option>';
-            districts.forEach(district => {
-                const option = document.createElement('option');
-                option.value = district;
-                option.textContent = district;
-                districtSelect.appendChild(option);
-            });
-            districtSelect.value = currentValue;
-
-            // Update crime type filter
-            const crimeTypes = [...new Set(allData.map(d => d['Crime Type']))].sort();
-            const crimeSelect = document.getElementById('crimeTypeFilter');
-            const currentCrimeValue = crimeSelect.value;
-            
-            crimeSelect.innerHTML = '<option value="">All Crime Types</option>';
-            crimeTypes.forEach(crime => {
-                const option = document.createElement('option');
-                option.value = crime;
-                option.textContent = crime;
-                crimeSelect.appendChild(option);
-            });
-            crimeSelect.value = currentCrimeValue;
-
-            // Update services filter  
-            const services = [...new Set(allData.map(d => d['Services Rendered']).filter(s => s))].sort();
-            const servicesSelect = document.getElementById('servicesFilter');
-            const currentServicesValue = servicesSelect.value;
-            
-            servicesSelect.innerHTML = '<option value="">All Services</option>';
-            services.forEach(service => {
-                const option = document.createElement('option');
-                option.value = service;
-                option.textContent = service;
-                servicesSelect.appendChild(option);
-            });
-            servicesSelect.value = currentServicesValue;
-        }
-
-        function setupFilters() {
-            console.log('🔧 Setting up filters...');
-            updateFilters();
-
-            // Add event listeners with proper binding
-            const districtFilter = document.getElementById('districtFilter');
-            const recordTypeFilter = document.getElementById('recordTypeFilter');
-            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
-            const genderFilter = document.getElementById('genderFilter');
-            const servicesFilter = document.getElementById('servicesFilter');
-            const dateFromFilter = document.getElementById('dateFromFilter');
-            const dateToFilter = document.getElementById('dateToFilter');
-
-            if (districtFilter) {
-                districtFilter.removeEventListener('change', applyFilters);
-                districtFilter.addEventListener('change', applyFilters);
-            }
-            if (recordTypeFilter) {
-                recordTypeFilter.removeEventListener('change', applyFilters);
-                recordTypeFilter.addEventListener('change', applyFilters);
-            }
-            if (crimeTypeFilter) {
-                crimeTypeFilter.removeEventListener('change', applyFilters);
-                crimeTypeFilter.addEventListener('change', applyFilters);
-            }
-            if (genderFilter) {
-                genderFilter.removeEventListener('change', applyFilters);
-                genderFilter.addEventListener('change', applyFilters);
-            }
-            if (servicesFilter) {
-                servicesFilter.removeEventListener('change', applyFilters);
-                servicesFilter.addEventListener('change', applyFilters);
-            }
-            if (dateFromFilter) {
-                dateFromFilter.removeEventListener('change', applyFilters);
-                dateFromFilter.addEventListener('change', applyFilters);
-            }
-            if (dateToFilter) {
-                dateToFilter.removeEventListener('change', applyFilters);
-                dateToFilter.addEventListener('change', applyFilters);
-            }
-            
-            console.log('✅ Filters setup complete');
-        }
-
-        function applyFilters() {
-            const districtFilter = document.getElementById('districtFilter').value;
-            const recordTypeFilter = document.getElementById('recordTypeFilter').value;
-            const crimeTypeFilter = document.getElementById('crimeTypeFilter').value;
-            const genderFilter = document.getElementById('genderFilter').value;
-            const servicesFilter = document.getElementById('servicesFilter').value;
-            const dateFromFilter = document.getElementById('dateFromFilter').value;
-            const dateToFilter = document.getElementById('dateToFilter').value;
-
-            console.log('🔍 Applying filters...', {
-                district: districtFilter,
-                recordType: recordTypeFilter,
-                crimeType: crimeTypeFilter,
-                gender: genderFilter,
-                services: servicesFilter,
-                dateFrom: dateFromFilter,
-                dateTo: dateToFilter
-            });
-
-            filteredData = allData.filter(row => {
-                const dateMatch = (!dateFromFilter || row['Date Reported'] >= new Date(dateFromFilter)) &&
-                                 (!dateToFilter || row['Date Reported'] <= new Date(dateToFilter));
-                
-                return (!districtFilter || row.District === districtFilter) &&
-                       (!recordTypeFilter || row['Record Type'] === recordTypeFilter) &&
-                       (!crimeTypeFilter || row['Crime Type'] === crimeTypeFilter) &&
-                       (!genderFilter || row['CVW Gender'] === genderFilter) &&
-                       (!servicesFilter || row['Services Rendered'] === servicesFilter) &&
-                       dateMatch;
-            });
-
-            console.log('📊 Filtered data:', filteredData.length, 'records');
-            updateDashboard();
-        }
-
-        function resetFilters() {
-            console.log('🔄 Resetting filters...');
-            
-            const districtFilter = document.getElementById('districtFilter');
-            const recordTypeFilter = document.getElementById('recordTypeFilter');
-            const crimeTypeFilter = document.getElementById('crimeTypeFilter');
-            const genderFilter = document.getElementById('genderFilter');
-            const servicesFilter = document.getElementById('servicesFilter');
-            const dateFromFilter = document.getElementById('dateFromFilter');
-            const dateToFilter = document.getElementById('dateToFilter');
-
-            if (districtFilter) districtFilter.value = '';
-            if (recordTypeFilter) recordTypeFilter.value = '';
-            if (crimeTypeFilter) crimeTypeFilter.value = '';
-            if (genderFilter) genderFilter.value = '';
-            if (servicesFilter) servicesFilter.value = '';
-            if (dateFromFilter) dateFromFilter.value = '';
-            if (dateToFilter) dateToFilter.value = '';
-            
-            filteredData = [...allData];
-            console.log('📊 Reset to show all', filteredData.length, 'records');
-            updateDashboard();
-        }
-
-        function updateKPIs() {
-            const totalCases = filteredData.length;
-            const victimCases = filteredData.filter(d => d['Record Type'] === 'Victim').length;
-            const witnessCases = filteredData.filter(d => d['Record Type'] === 'Witness').length;
-            const avgAge = filteredData.filter(d => d['CVW Age'] > 0).reduce((sum, d) => sum + d['CVW Age'], 0) / filteredData.filter(d => d['CVW Age'] > 0).length || 0;
-
-            document.getElementById('totalCases').textContent = totalCases;
-            document.getElementById('victimCases').textContent = victimCases;
-            document.getElementById('witnessCases').textContent = witnessCases;
-            document.getElementById('avgAge').textContent = Math.round(avgAge * 10) / 10;
-        }
-
-        function createChart(canvasId, type, data, options = {}) {
-            try {
-                const ctx = document.getElementById(canvasId);
-                if (!ctx) {
-                    console.error(`Canvas element ${canvasId} not found`);
-                    return;
-                }
-                
-                const context = ctx.getContext('2d');
-                
-                if (charts[canvasId]) {
-                    charts[canvasId].destroy();
-                }
-
-                if (typeof Chart === 'undefined') {
-                    console.error('Chart.js not loaded');
-                    return;
-                }
-
-                const defaultOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
-                        }
-                    }
-                };
-
-                charts[canvasId] = new Chart(context, {
-                    type: type,
-                    data: data,
-                    options: { ...defaultOptions, ...options }
-                });
-
-            } catch (error) {
-                console.error(`Error creating chart ${canvasId}:`, error);
-                const canvas = document.getElementById(canvasId);
-                if (canvas && canvas.parentElement) {
-                    canvas.parentElement.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Chart loading error</p>';
-                }
-            }
-        }
-
-        function updateCharts() {
-            console.log('📈 Creating charts with', filteredData.length, 'records');
-            
-            if (filteredData.length === 0) {
-                console.warn('⚠️ No data for charts');
-                return;
-            }
-
-            // District chart
-            const districtCounts = {};
-            filteredData.forEach(d => {
-                districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
-            });
-
-            createChart('districtChart', 'bar', {
-                labels: Object.keys(districtCounts),
-                datasets: [{
-                    label: 'Cases',
-                    data: Object.values(districtCounts),
-                    backgroundColor: colors.gradient,
-                    borderColor: colors.primary,
-                    borderWidth: 2,
-                    borderRadius: 8
-                }]
-            });
-
-            // Crime type chart
-            const crimeCounts = {};
-            filteredData.forEach(d => {
-                crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
-            });
-
-            createChart('crimeChart', 'doughnut', {
-                labels: Object.keys(crimeCounts),
-                datasets: [{
-                    data: Object.values(crimeCounts),
-                    backgroundColor: colors.gradient,
-                    borderColor: colors.primary,
-                    borderWidth: 2
-                }]
-            });
-
-            // Age distribution
-            const ageRanges = { '0-5': 0, '6-10': 0, '11-15': 0, '16-18': 0 };
-            filteredData.filter(d => d['CVW Age'] > 0).forEach(d => {
-                const age = d['CVW Age'];
-                if (age <= 5) ageRanges['0-5']++;
-                else if (age <= 10) ageRanges['6-10']++;
-                else if (age <= 15) ageRanges['11-15']++;
-                else ageRanges['16-18']++;
-            });
-
-            createChart('ageChart', 'bar', {
-                labels: Object.keys(ageRanges),
-                datasets: [{
-                    label: 'Cases',
-                    data: Object.values(ageRanges),
-                    backgroundColor: colors.gradient,
-                    borderColor: colors.primary,
-                    borderWidth: 2,
-                    borderRadius: 8
-                }]
-            });
-
-            // Gender distribution
-            const genderCounts = {};
-            filteredData.forEach(d => {
-                genderCounts[d['CVW Gender']] = (genderCounts[d['CVW Gender']] || 0) + 1;
-            });
-
-            createChart('genderChart', 'pie', {
-                labels: Object.keys(genderCounts),
-                datasets: [{
-                    data: Object.values(genderCounts),
-                    backgroundColor: colors.gradient.slice(0, Object.keys(genderCounts).length),
-                    borderColor: colors.primary.slice(0, Object.keys(genderCounts).length),
-                    borderWidth: 2
-                }]
-            });
-
-            // Time series chart
-            const monthCounts = {};
-            filteredData.forEach(d => {
-                const month = d['Date Reported'].toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                monthCounts[month] = (monthCounts[month] || 0) + 1;
-            });
-
-            createChart('timeChart', 'line', {
-                labels: Object.keys(monthCounts),
-                datasets: [{
-                    label: 'Cases',
-                    data: Object.values(monthCounts),
-                    borderColor: colors.primary[0],
-                    backgroundColor: colors.gradient[0],
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            });
-
-            // Services distribution
-            const servicesCounts = {};
-            filteredData.forEach(d => {
-                const service = d['Services Rendered'] || 'Not Specified';
-                servicesCounts[service] = (servicesCounts[service] || 0) + 1;
-            });
-
-            createChart('servicesChart', 'doughnut', {
-                labels: Object.keys(servicesCounts),
-                datasets: [{
-                    data: Object.values(servicesCounts),
-                    backgroundColor: colors.gradient,
-                    borderColor: colors.primary,
-                    borderWidth: 2
-                }]
-            });
-
-            // Relationship analysis
-            const relationshipCounts = {};
-            filteredData.forEach(d => {
-                const relationship = d['Relationship to CV'] || 'Not Specified';
-                relationshipCounts[relationship] = (relationshipCounts[relationship] || 0) + 1;
-            });
-
-            createChart('relationshipChart', 'bar', {
-                labels: Object.keys(relationshipCounts),
-                datasets: [{
-                    label: 'Cases',
-                    data: Object.values(relationshipCounts),
-                    backgroundColor: colors.gradient,
-                    borderColor: colors.primary,
-                    borderWidth: 2
-                }]
-            }, {
-                indexAxis: 'y'
-            });
-
-            console.log('✅ All charts created successfully');
-        }
-
-        function updateTable() {
-            const tbody = document.getElementById('caseTableBody');
-            tbody.innerHTML = '';
-
-            filteredData.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row['cvw code']}</td>
-                    <td><span class="status-badge ${row['Record Type'].toLowerCase()}-badge">${row['Record Type']}</span></td>
-                    <td>${row['Date Reported'].toLocaleDateString()}</td>
-                    <td>${row['District']}</td>
-                    <td>${row['CVW Gender']}</td>
-                    <td>${row['CVW Age']}</td>
-                    <td>${row['Crime Type']}</td>
-                    <td>${row['Disability']}</td>
-                    <td>${row['Services Rendered']}</td>
-                    <td>${row['Relationship to CV']}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateDashboard() {
-            console.log('📊 Updating dashboard with', filteredData.length, 'filtered records');
-            
-            // Only update if we have data
-            if (filteredData.length === 0) {
-                console.warn('⚠️ No data available for dashboard');
-                // Show empty state
-                updateKPIsEmpty();
-                updateChartsEmpty();
-                updateTableEmpty();
-                return;
-            }
-            
-            updateKPIs();
-            
-            // Wait a bit for DOM to be ready before creating charts
-            setTimeout(() => {
-                updateCharts();
-                updateTable();
-                console.log('✅ Dashboard update complete');
-            }, 50);
-        }
-
-        function updateKPIsEmpty() {
-            document.getElementById('totalCases').textContent = '0';
-            document.getElementById('victimCases').textContent = '0';
-            document.getElementById('witnessCases').textContent = '0';
-            document.getElementById('avgAge').textContent = '0';
-        }
-
-        function updateChartsEmpty() {
-            // Clear all charts
-            Object.keys(charts).forEach(chartId => {
-                if (charts[chartId]) {
-                    charts[chartId].destroy();
-                    delete charts[chartId];
-                }
-            });
-        }
-
-        function updateTableEmpty() {
-            const tbody = document.getElementById('caseTableBody');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #666; padding: 20px;">No records match the current filters</td></tr>';
-            }
-        }
-
-        function showDashboardView() {
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                updateDashboard();
-                document.getElementById('kpiSection').scrollIntoView({ behavior: 'smooth' });
-                showNotification('Dashboard refreshed', 'success');
-            } else {
-                showNotification('Access denied: Dashboard not available for your role', 'error');
-            }
-        }
-
-        function clearAllData() {
-            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-                allData = [];
-                filteredData = [];
-                initializeSampleData();
-                showNotification('All data cleared and sample data restored', 'success');
-                
-                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                    updateFilters();
-                    updateDashboard();
-                }
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('cvw_session');
-            showLoginScreen();
-        }
-
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // Close modal when clicking outside
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('addRecordModal');
-            if (event.target === modal) {
-                closeAddRecordModal();
-            }
-        });
-
-        // Auto-initialize dashboard for existing sessions
-        window.addEventListener('load', function() {
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                setTimeout(initializeDashboard, 500);
-            }
-        });
-    </script>
-</body>
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1317,36 +16,95 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Main dashboard wrapper */
-        #mainDashboard {
-            padding: 20px;
+        /* Container for the entire layout */
+        .app-container {
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* User Info Bar - at the very top */
+        /* User Info Bar - Fixed at the very top */
         .user-info-bar {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: sticky;
             top: 0;
-            width: calc(100% - 40px);
-            margin-left: 20px;
-            margin-right: 20px;
-            box-sizing: border-box;
+            z-index: 100;
+            margin: 0;
         }
 
-        /* Dashboard container - immediately after user bar */
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Role-based styling */
+        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
+        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Dashboard Container */
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -1354,26 +112,95 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            padding: 30px;
-            position: relative;
-            width: calc(100% - 40px);
-            margin-left: 20px;
-            margin-right: 20px;
-            box-sizing: border-box;
+            padding: 0;
+            overflow: hidden;
         }
 
-        /* Header - at the top of dashboard container */
+        /* Header - Now properly positioned at the top of dashboard */
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            padding: 30px 30px 20px 30px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
             border-bottom: 3px solid #667eea;
-            margin-top: 0;
-            padding-top: 0;
-            position: relative;
+            margin: 0;
         }
 
-        /* Login container positioned properly */
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin: 5px 0;
+        }
+
+        .zambia-label {
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0 0 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .status-connected {
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .status-disconnected {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-connected .status-indicator {
+            background: #10b981;
+        }
+
+        .status-disconnected .status-indicator {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Content sections inside dashboard */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* Login Screen Styles */
         .login-container {
             max-width: 400px;
             margin: 10vh auto;
@@ -1383,11 +210,8 @@
             backdrop-filter: blur(10px);
             padding: 40px;
             text-align: center;
-            position: relative;
-            top: 0;
         }
 
-        /* Login Screen Styles */
         .login-header {
             margin-bottom: 30px;
         }
@@ -1484,6 +308,111 @@
             display: none;
         }
 
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .add-record-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .view-dashboard-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .search-records-btn {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Agency Selection Styles */
+        .agency-btn {
+            background: white;
+            border: 3px solid #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .agency-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .agency-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .agency-btn.selected .agency-code {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .agency-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .agency-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .agency-btn.selected .agency-name {
+            color: white;
+        }
+
+        .agency-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
         /* Search Section Styles */
         .search-section {
             background: linear-gradient(135deg, #e3f2fd, #bbdefb);
@@ -1563,549 +492,13 @@
             box-shadow: 0 5px 15px rgba(238, 90, 82, 0.3);
         }
 
-        .search-results {
-            margin-top: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            padding: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .search-result-item:hover {
-            background: #f8f9fa;
-            border-color: #2196f3;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .result-case-id {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .result-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .result-detail {
-            font-size: 0.9rem;
-        }
-
-        .result-label {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .result-value {
-            color: #6c757d;
-        }
-
-        .services-section {
-            background: #f0f8ff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .current-services {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .service-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #e3f2fd;
-            color: #1976d2;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-
-        .add-service-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .add-service-select {
-            flex: 1;
-            padding: 8px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .add-service-btn {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #4caf50, #45a049);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .add-service-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
-        }
-
-        .add-service-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* User Info Bar */
-        .user-info-bar {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-details {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Role-based styling */
-        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
-        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
-        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
-
-        /* Agency Selection Styles */
-        .agency-btn {
-            background: white;
-            border: 3px solid #dee2e6;
-            border-radius: 15px;
-            padding: 20px;
-            min-width: 200px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .agency-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
-        }
-
-        .agency-btn.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .agency-btn.selected .agency-code {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .agency-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .agency-name {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-
-        .agency-btn.selected .agency-name {
-            color: white;
-        }
-
-        .agency-code {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 0.9rem;
-            background: #f8f9fa;
-            color: #495057;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        /* User Info Bar */
-        .user-details {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Role-based styling */
-        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
-        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
-        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
-
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        .zambia-label {
-            font-family: 'Algerian', serif;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 10px 0;
-        }
-
-        .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .status-connected {
-            background: #d1fae5;
-            color: #059669;
-            border: 1px solid #10b981;
-        }
-
-        .status-disconnected {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #ef4444;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        .status-connected .status-indicator {
-            background: #10b981;
-        }
-
-        .status-disconnected .status-indicator {
-            background: #ef4444;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .add-record-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-
-        .view-dashboard-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .search-records-btn {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
-            color: white;
-        }
-
-        /* Disabled button styling */
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .action-btn:disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Hidden elements */
-        .hidden { 
-            display: none !important; 
-            visibility: hidden !important;
-        }
-
-        /* Ensure proper layout flow */
-        #mainDashboard {
-            padding: 20px;
-            min-height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        #loginScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 2% auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .close {
-            color: #95a5a6;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            float: right;
-        }
-
-        .close:hover {
-            color: #e74c3c;
-        }
-
+        /* Other sections */
         .filters-section {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            align-items: end;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-group label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .filter-group select,
-        .date-input {
-            padding: 10px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:focus,
-        .date-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .reset-btn {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: fit-content;
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.3);
         }
 
         .kpi-section {
@@ -2143,113 +536,12 @@
             font-weight: 500;
         }
 
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+        /* Utility Classes */
+        .hidden { 
+            display: none !important; 
         }
 
-        .chart-container {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .chart-container:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .chart-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-
-        .chart-canvas {
-            max-height: 300px;
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 10px;
-            text-align: left;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .data-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #ecf0f1;
-            transition: background-color 0.2s ease;
-        }
-
-        .data-table tr:hover td {
-            background-color: #f8f9fa;
-        }
-
-        .table-wrapper {
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .victim-badge { background: #fee2e2; color: #dc2626; }
-        .witness-badge { background: #dbeafe; color: #2563eb; }
-
-        .success-message {
-            background: #d1fae5;
-            color: #059669;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #10b981;
-            display: none;
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ef4444;
-            display: none;
-        }
-
+        /* Notification */
         .notification {
             position: fixed;
             top: 20px;
@@ -2273,58 +565,37 @@
             border: 1px solid #ef4444;
         }
 
-        /* Form styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .dashboard-container {
-                padding: 15px;
-            }
-            
             .header h1 {
                 font-size: 2rem;
             }
             
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-grid {
-                grid-template-columns: 1fr;
+            .zambia-label {
+                font-size: 20px;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
+            .user-info-bar {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
             }
 
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-                padding: 20px;
+            .main-content {
+                padding: 10px;
+            }
+
+            .dashboard-container {
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 20px 15px 15px 15px;
+            }
+
+            .dashboard-content {
+                padding: 20px 15px;
             }
 
             .action-buttons {
@@ -2336,18 +607,6 @@
             .action-btn {
                 width: 90%;
                 max-width: 300px;
-            }
-
-            .login-container {
-                margin: 5% auto;
-                width: 95%;
-                padding: 30px 20px;
-            }
-
-            .user-info-bar {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
             }
 
             .agency-btn {
@@ -2364,89 +623,555 @@
             .search-input-group {
                 min-width: auto;
             }
+
+            .login-container {
+                margin: 5% auto;
+                width: 95%;
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
-        <div class="login-header">
-            <h1>🔐 CVW Dashboard</h1>
-            <p>Zambia Child Victim & Witness Analytics</p>
-        </div>
-        
-        <div class="login-error" id="loginError">
-            ❌ Invalid username or password
-        </div>
-        
-        <form class="login-form" id="loginForm">
-            <input type="text" id="username" class="login-input" placeholder="Username" required>
-            <input type="password" id="password" class="login-input" placeholder="Password" required>
-            <button type="submit" class="login-btn">🚀 Login</button>
-        </form>
-        
-        <div class="demo-accounts">
-            <h3>📋 Demo Accounts</h3>
-            <div class="account-demo">
-                <span class="account-type">👑 Admin</span>
-                <span class="account-credentials">admin / admin123</span>
+    <div class="app-container">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-container">
+            <div class="login-header">
+                <h1>🔐 CVW Dashboard</h1>
+                <p>Zambia Child Victim & Witness Analytics</p>
             </div>
-            <div class="account-demo">
-                <span class="account-type">👀 Viewer</span>
-                <span class="account-credentials">viewer / view123</span>
+            
+            <div class="login-error" id="loginError">
+                ❌ Invalid username or password
             </div>
-            <div class="account-demo">
-                <span class="account-type">📝 Reporter</span>
-                <span class="account-credentials">reporter / report123</span>
+            
+            <form class="login-form" id="loginForm">
+                <input type="text" id="username" class="login-input" placeholder="Username" required>
+                <input type="password" id="password" class="login-input" placeholder="Password" required>
+                <button type="submit" class="login-btn">🚀 Login</button>
+            </form>
+            
+            <div class="demo-accounts">
+                <h3>📋 Demo Accounts</h3>
+                <div class="account-demo">
+                    <span class="account-type">👑 Admin</span>
+                    <span class="account-credentials">admin / admin123</span>
+                </div>
+                <div class="account-demo">
+                    <span class="account-type">👀 Viewer</span>
+                    <span class="account-credentials">viewer / view123</span>
+                </div>
+                <div class="account-demo">
+                    <span class="account-type">📝 Reporter</span>
+                    <span class="account-credentials">reporter / report123</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Container -->
+        <div id="notification" class="notification"></div>
+
+        <!-- Main Dashboard -->
+        <div id="mainDashboard" class="hidden">
+            <!-- User Info Bar - Fixed at top -->
+            <div id="userInfoBar" class="user-info-bar">
+                <div class="user-details">
+                    <div id="userAvatar" class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div id="userName" class="user-name">Administrator</div>
+                        <div id="userRole" class="user-role">Admin Account</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="dashboard-container">
+                    <!-- Header - Properly positioned at top of dashboard -->
+                    <div class="header">
+                        <h1>📊 CVW Case Reports Analytics</h1>
+                        <p class="zambia-label">Zambia</p>
+                        <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
+                        
+                        <div id="connectionStatus" class="connection-status status-connected">
+                            <div class="status-indicator"></div>
+                            <span id="statusText">Database Connected</span>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Content -->
+                    <div class="dashboard-content">
+                        <!-- Search Section (Admin and Reporter only) -->
+                        <div class="search-section" id="searchSection">
+                            <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
+                            <div class="search-container">
+                                <div class="search-input-group">
+                                    <input type="text" id="searchInput" class="search-input" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)">
+                                    <span class="search-icon">🔍</span>
+                                </div>
+                                <button class="search-btn" onclick="searchRecord()">Search</button>
+                                <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+                            </div>
+                            
+                            <div id="searchResults" class="search-results">
+                                <!-- Search results will appear here -->
+                            </div>
+                        </div>
+
+                        <!-- Agency Selection -->
+                        <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
+                            <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
+                            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                                <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')">
+                                    <div class="agency-icon">⚖️</div>
+                                    <div class="agency-name">National Prosecution Authority</div>
+                                    <div class="agency-code">NPA</div>
+                                </button>
+                                <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')">
+                                    <div class="agency-icon">🏥</div>
+                                    <div class="agency-name">Ministry of Health</div>
+                                    <div class="agency-code">MOH</div>
+                                </button>
+                                <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')">
+                                    <div class="agency-icon">👮</div>
+                                    <div class="agency-name">Zambia Police</div>
+                                    <div class="agency-code">ZP</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons" id="actionButtons">
+                            <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled>
+                                ➕ Add New Record
+                            </button>
+                            <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()">
+                                🔍 Search Records
+                            </button>
+                            <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
+                                📈 View Dashboard
+                            </button>
+                            <button class="action-btn" id="clearDataBtn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);" onclick="clearAllData()">
+                                🗑️ Clear Data
+                            </button>
+                        </div>
+
+                        <!-- Dashboard sections (KPIs, Charts, etc.) will be shown/hidden based on role -->
+                        <div id="filtersSection" class="filters-section hidden">
+                            <!-- Filters content -->
+                        </div>
+                        
+                        <div id="kpiSection" class="kpi-section hidden">
+                            <div class="kpi-card">
+                                <div class="kpi-value" id="totalCases">0</div>
+                                <div class="kpi-label">Total Cases</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-value" id="victimCases">0</div>
+                                <div class="kpi-label">Victim Cases</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-value" id="witnessCases">0</div>
+                                <div class="kpi-label">Witness Cases</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-value" id="avgAge">0</div>
+                                <div class="kpi-label">Average Age</div>
+                            </div>
+                        </div>
+                        
+                        <div id="chartsSection" class="charts-grid hidden">
+                            <!-- Charts will be added here -->
+                        </div>
+                        
+                        <div id="tableSection" class="table-container hidden">
+                            <!-- Data table -->
+                        </div>
+                        
+                        <div id="reporterOnlyContent" class="hidden">
+                            <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
+                                <h2>📝 Reporter Dashboard</h2>
+                                <p>Welcome! You have access to add new case records and search existing ones.</p>
+                                <p><strong>Step 1:</strong> Select your reporting agency above</p>
+                                <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
+                                <p><strong>Step 3:</strong> Use "Search Records" to find and update existing cases</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Notification Container -->
-    <div id="notification" class="notification"></div>
+    <script>
+        // Global variables
+        let allData = [];
+        let filteredData = [];
+        let currentUser = null;
+        let selectedAgency = null;
+        let searchResultsData = [];
 
-    <!-- Main Dashboard -->
-    <div id="mainDashboard" class="hidden">
-        <!-- User Info Bar -->
-        <div id="userInfoBar" class="user-info-bar">
-            <div class="user-details">
-                <div id="userAvatar" class="user-avatar">A</div>
-                <div class="user-info">
-                    <div id="userName" class="user-name">Administrator</div>
-                    <div id="userRole" class="user-role">Admin Account</div>
-                </div>
-            </div>
-            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        </div>
+        // User accounts
+        const users = {
+            'admin': { 
+                password: 'admin123', 
+                role: 'admin', 
+                name: 'Administrator',
+                avatar: 'A',
+                permissions: ['view', 'add', 'edit', 'delete', 'admin', 'search', 'append_services']
+            },
+            'viewer': { 
+                password: 'view123', 
+                role: 'viewer', 
+                name: 'Data Viewer',
+                avatar: 'V',
+                permissions: ['view']
+            },
+            'reporter': { 
+                password: 'report123', 
+                role: 'reporter', 
+                name: 'Case Reporter',
+                avatar: 'R',
+                permissions: ['add', 'search', 'append_services']
+            }
+        };
 
-        <div class="dashboard-container">
-            <div class="header">
-                <h1>📊 CVW Case Reports Analytics</h1>
-                <p class="zambia-label">Zambia</p>
-                <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 App starting...');
+            
+            // Initialize sample data
+            initializeSampleData();
+            setupEventListeners();
+            
+            // Check for existing session
+            const session = localStorage.getItem('cvw_session');
+            if (session) {
+                try {
+                    currentUser = JSON.parse(session);
+                    updateUserInterface();
+                    showDashboard();
+                    console.log('✅ Restored session for:', currentUser.role);
+                } catch (e) {
+                    localStorage.removeItem('cvw_session');
+                    showLoginScreen();
+                }
+            } else {
+                showLoginScreen();
+            }
+        });
+
+        // Initialize sample data
+        function initializeSampleData() {
+            allData = [
+                {
+                    'cvw code': 'NPA-CV1',
+                    'Record Type': 'Victim',
+                    'Date Reported': new Date('2025-01-04'),
+                    'District': 'Lusaka',
+                    'CVW Gender': 'MALE',
+                    'CVW Age': 5,
+                    'Crime Type': 'ASSAULT ON A CHILD',
+                    'Disability': 'NON',
+                    'Services Rendered': 'MEDICAL REPORT',
+                    'Relationship to CV': 'STRANGER'
+                },
+                {
+                    'cvw code': 'MOH-CW5',
+                    'Record Type': 'Witness',
+                    'Date Reported': new Date('2025-02-07'),
+                    'District': 'Katete',
+                    'CVW Gender': 'MALE',
+                    'CVW Age': 15,
+                    'Crime Type': 'RAPE',
+                    'Disability': 'NON',
+                    'Services Rendered': 'COUNSELLING',
+                    'Relationship to CV': 'FRIEND'
+                },
+                {
+                    'cvw code': 'ZP-CV4',
+                    'Record Type': 'Victim',
+                    'Date Reported': new Date('2025-03-11'),
+                    'District': 'Lusaka',
+                    'CVW Gender': 'FEMALE',
+                    'CVW Age': 12,
+                    'Crime Type': 'RAPE',
+                    'Disability': 'MENTAL+PHYSICAL',
+                    'Services Rendered': 'MEDICAL + COUNSELLING',
+                    'Relationship to CV': 'FATHER'
+                }
+            ];
+            filteredData = [...allData];
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Search input enter key
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchRecord();
+                }
+            });
+        }
+
+        // Login functionality
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = users[username];
+                localStorage.setItem('cvw_session', JSON.stringify(currentUser));
+                showDashboard();
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Show dashboard after login
+        function showDashboard() {
+            console.log('📊 Showing dashboard for:', currentUser.role);
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            updateUserInterface();
+        }
+
+        // Show login screen
+        function showLoginScreen() {
+            console.log('🔐 Showing login screen');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainDashboard').classList.add('hidden');
+            
+            // Clear any form data
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // Update user interface based on role
+        function updateUserInterface() {
+            if (!currentUser) return;
+
+            // Update user info bar
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
+            document.getElementById('userAvatar').textContent = currentUser.avatar;
+            
+            // Add role-based styling
+            const userInfoBar = document.getElementById('userInfoBar');
+            userInfoBar.className = `user-info-bar role-${currentUser.role}`;
+
+            // Configure based on role
+            if (currentUser.role === 'admin') {
+                // Admin: Full access
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.remove('hidden');
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
+                document.getElementById('clearDataBtn').classList.remove('hidden');
+                document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('kpiSection').classList.remove('hidden');
+                document.getElementById('reporterOnlyContent').classList.add('hidden');
                 
-                <div id="connectionStatus" class="connection-status status-connected">
-                    <div class="status-indicator"></div>
-                    <span id="statusText">Database Connected</span>
-                </div>
-            </div>
+                // Initialize dashboard
+                initializeDashboard();
+            } else if (currentUser.role === 'viewer') {
+                // Viewer: View only
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.add('hidden');
+                document.getElementById('searchRecordsBtn').classList.add('hidden');
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
+                document.getElementById('clearDataBtn').classList.add('hidden');
+                document.getElementById('agencySelection').classList.add('hidden');
+                document.getElementById('kpiSection').classList.remove('hidden');
+                document.getElementById('reporterOnlyContent').classList.add('hidden');
+                
+                // Initialize dashboard
+                initializeDashboard();
+            } else if (currentUser.role === 'reporter') {
+                // Reporter: Add records and search only
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('addRecordBtn').classList.remove('hidden');
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
+                document.getElementById('viewDashboardBtn').classList.add('hidden');
+                document.getElementById('clearDataBtn').classList.add('hidden');
+                document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('kpiSection').classList.add('hidden');
+                document.getElementById('reporterOnlyContent').classList.remove('hidden');
+            }
 
-            <!-- Search Section (Admin and Reporter only) -->
-            <div class="search-section hidden" id="searchSection">
-                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
-                <div class="search-container">
-                    <div class="search-input-group">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)">
-                        <span class="search-icon">🔍</span>
+            // Reset agency selection and button state
+            selectedAgency = null;
+            document.getElementById('addRecordBtn').disabled = true;
+            document.querySelectorAll('.agency-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        // Initialize dashboard for admin/viewer
+        function initializeDashboard() {
+            console.log('🚀 Initializing dashboard...');
+            updateKPIs();
+            console.log('✅ Dashboard initialized with', allData.length, 'records');
+        }
+
+        // Agency selection
+        function selectAgency(agency) {
+            selectedAgency = agency;
+            
+            // Update visual selection
+            document.querySelectorAll('.agency-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+            
+            // Enable add record button
+            document.getElementById('addRecordBtn').disabled = false;
+            
+            showNotification(`Selected agency: ${agency}`, 'success');
+        }
+
+        // Search functions
+        function toggleSearchSection() {
+            // Only allow search for admin and reporter roles
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'reporter')) {
+                showNotification('Access denied: Search not available for your role', 'error');
+                return;
+            }
+            
+            const searchSection = document.getElementById('searchSection');
+            if (searchSection.style.display === 'none' || searchSection.style.display === '') {
+                searchSection.style.display = 'block';
+                document.getElementById('searchInput').focus();
+            } else {
+                searchSection.style.display = 'none';
+                clearSearch();
+            }
+        }
+
+        function searchRecord() {
+            const searchInput = document.getElementById('searchInput').value.trim().toUpperCase();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!searchInput) {
+                searchResults.innerHTML = '<p style="color: #dc2626;">⚠️ Please enter a Case ID to search</p>';
+                searchResults.classList.add('active');
+                return;
+            }
+
+            const results = allData.filter(record => 
+                record['cvw code'].toUpperCase() === searchInput
+            );
+
+            if (results.length === 0) {
+                searchResults.innerHTML = `<p style="color: #dc2626;">❌ No record found with Case ID: <strong>${searchInput}</strong></p>`;
+                searchResults.classList.add('active');
+                return;
+            }
+
+            searchResultsData = results;
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            let html = `<h4 style="color: #2c3e50;">Found ${results.length} record(s)</h4>`;
+            
+            results.forEach((record, index) => {
+                html += `
+                    <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 10px; background: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem; font-weight: 600; color: #2c3e50;">${record['cvw code']}</span>
+                            <span style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; background: #dbeafe; color: #2563eb;">${record['Record Type']}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            <div><strong>Date:</strong> ${record['Date Reported'].toLocaleDateString()}</div>
+                            <div><strong>District:</strong> ${record['District']}</div>
+                            <div><strong>Gender:</strong> ${record['CVW Gender']}</div>
+                            <div><strong>Age:</strong> ${record['CVW Age']} years</div>
+                            <div><strong>Crime Type:</strong> ${record['Crime Type']}</div>
+                            <div><strong>Services:</strong> ${record['Services Rendered']}</div>
+                        </div>
                     </div>
-                    <button class="search-btn" onclick="searchRecord()">Search</button>
-                    <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
-                </div>
-                
-                <div id="searchResults" class="search-results">
-                    <!-- Search results will appear here -->
-                </div>
-            </div>
+                `;
+            });
+            
+            searchResults.innerHTML = html;
+            searchResults.style.display = 'block';
+        }
 
-            <!-- Agency Selection -->
-            <div id="agencySelection" class="filters-section hidden" style="margin-bottom
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            searchResultsData = [];
+        }
+
+        // Dashboard functions
+        function updateKPIs() {
+            const totalCases = filteredData.length;
+            const victimCases = filteredData.filter(d => d['Record Type'] === 'Victim').length;
+            const witnessCases = filteredData.filter(d => d['Record Type'] === 'Witness').length;
+            const avgAge = filteredData.filter(d => d['CVW Age'] > 0).reduce((sum, d) => sum + d['CVW Age'], 0) / filteredData.filter(d => d['CVW Age'] > 0).length || 0;
+
+            document.getElementById('totalCases').textContent = totalCases;
+            document.getElementById('victimCases').textContent = victimCases;
+            document.getElementById('witnessCases').textContent = witnessCases;
+            document.getElementById('avgAge').textContent = Math.round(avgAge * 10) / 10;
+        }
+
+        function showDashboardView() {
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                updateKPIs();
+                document.getElementById('kpiSection').scrollIntoView({ behavior: 'smooth' });
+                showNotification('Dashboard refreshed', 'success');
+            } else {
+                showNotification('Access denied: Dashboard not available for your role', 'error');
+            }
+        }
+
+        function openAddRecordModal() {
+            if (!selectedAgency) {
+                showNotification('Please select an agency first', 'error');
+                return;
+            }
+            showNotification('Add record feature would open here', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                allData = [];
+                filteredData = [];
+                initializeSampleData();
+                showNotification('All data cleared and sample data restored', 'success');
+                
+                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                    updateKPIs();
+                }
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('cvw_session');
+            showLoginScreen();
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
