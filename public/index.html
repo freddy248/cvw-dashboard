@@ -459,8 +459,17 @@
 
         // Show dashboard after login
         function showDashboard() {
+            console.log('📊 Showing dashboard for:', currentUser.role);
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainDashboard').classList.remove('hidden');
+            
+            // Force the dashboard to the top
+            document.getElementById('mainDashboard').style.position = 'absolute';
+            document.getElementById('mainDashboard').style.top = '0';
+            document.getElementById('mainDashboard').style.left = '0';
+            document.getElementById('mainDashboard').style.right = '0';
+            document.getElementById('mainDashboard').style.width = '100%';
+            
             updateUserInterface();
         }
 
@@ -469,6 +478,13 @@
             console.log('🔐 Showing login screen');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainDashboard').classList.add('hidden');
+            
+            // Force the login screen to the top
+            document.getElementById('loginScreen').style.position = 'absolute';
+            document.getElementById('loginScreen').style.top = '0';
+            document.getElementById('loginScreen').style.left = '0';
+            document.getElementById('loginScreen').style.right = '0';
+            document.getElementById('loginScreen').style.width = '100%';
             
             // Ensure ALL dashboard elements are hidden
             document.getElementById('actionButtons').classList.add('hidden');
@@ -1324,7 +1340,9 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             position: relative;
             top: 0;
-            width: 100%;
+            width: calc(100% - 40px);
+            margin-left: 20px;
+            margin-right: 20px;
             box-sizing: border-box;
         }
 
@@ -1338,7 +1356,9 @@
             backdrop-filter: blur(10px);
             padding: 30px;
             position: relative;
-            width: 100%;
+            width: calc(100% - 40px);
+            margin-left: 20px;
+            margin-right: 20px;
             box-sizing: border-box;
         }
 
@@ -1364,6 +1384,7 @@
             padding: 40px;
             text-align: center;
             position: relative;
+            top: 0;
         }
 
         /* Login Screen Styles */
@@ -1961,7 +1982,32 @@
         }
 
         /* Hidden elements */
-        .hidden { display: none !important; }
+        .hidden { 
+            display: none !important; 
+            visibility: hidden !important;
+        }
+
+        /* Ensure proper layout flow */
+        #mainDashboard {
+            padding: 20px;
+            min-height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #loginScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+        }
 
         /* Modal Styles */
         .modal {
