@@ -706,7 +706,13 @@
                     <p>Welcome! You have access to add new case records and search existing ones.</p>
                     <p><strong>Step 1:</strong> Select your reporting agency above</p>
                     <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
-                    <p><strong>Step 3:</strong> Use "Search Records" to find and update existing cases</p>
+                    <p><strong>Step 3:</strong> Use "Search Records" to find existing cases</p>
+                    <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 10px; border-left: 4px solid #2196f3;">
+                        <p style="color: #1976d2; font-weight: 600; margin: 0;">
+                            📊 Note: Dashboard analytics are not available for Reporter accounts. 
+                            Contact your administrator for data insights.
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -1056,13 +1062,19 @@
                 setTimeout(initializeDashboard, 500);
                 
             } else if (currentUser.role === 'reporter') {
-                // Reporter: Add records and search only
+                // Reporter: Add records and search only - NO dashboard access
                 document.getElementById('addRecordBtn').classList.remove('hidden');
                 document.getElementById('searchRecordsBtn').classList.remove('hidden');
                 document.getElementById('viewDashboardBtn').classList.add('hidden');
                 document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('agencySelection').classList.remove('hidden');
                 document.getElementById('reporterOnlyContent').classList.remove('hidden');
+                
+                // Hide all dashboard sections for reporters
+                document.getElementById('filtersSection').classList.add('hidden');
+                document.getElementById('kpiSection').classList.add('hidden');
+                document.getElementById('chartsSection').classList.add('hidden');
+                document.getElementById('tableSection').classList.add('hidden');
             }
 
             // Reset agency selection and button state
