@@ -849,6 +849,126 @@
         </div>
     </div>
 
+    <!-- Add Record Modal -->
+    <div id="addRecordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddRecordModal()">&times;</span>
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">➕ Add New Case Record</h2>
+            <p style="color: #666; margin-bottom: 20px;">Agency: <strong id="modalAgencyName"></strong></p>
+            
+            <form id="addRecordForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Record Type *</label>
+                        <select class="form-select" id="recordType" required>
+                            <option value="">Select Type</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date Reported *</label>
+                        <input type="date" class="form-input" id="dateReported" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">District *</label>
+                        <select class="form-select" id="district" required>
+                            <option value="">Select District</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Ndola">Ndola</option>
+                            <option value="Kitwe">Kitwe</option>
+                            <option value="Livingstone">Livingstone</option>
+                            <option value="Katete">Katete</option>
+                            <option value="Kabwe">Kabwe</option>
+                            <option value="Choma">Choma</option>
+                            <option value="Kasama">Kasama</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVW Gender *</label>
+                        <select class="form-select" id="cvwGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">CVW Age *</label>
+                        <input type="number" class="form-input" id="cvwAge" min="0" max="17" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Crime Type *</label>
+                        <select class="form-select" id="crimeType" required>
+                            <option value="">Select Crime Type</option>
+                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                            <option value="RAPE">Rape</option>
+                            <option value="DEFILEMENT">Defilement</option>
+                            <option value="CHILD ABUSE">Child Abuse</option>
+                            <option value="TRAFFICKING">Trafficking</option>
+                            <option value="SEXUAL ABUSE">Sexual Abuse</option>
+                            <option value="NEGLECT">Neglect</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Disability Status *</label>
+                        <select class="form-select" id="disability" required>
+                            <option value="">Select Disability Status</option>
+                            <option value="NON">None</option>
+                            <option value="PHYSICAL">Physical</option>
+                            <option value="MENTAL">Mental</option>
+                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Services Rendered *</label>
+                        <select class="form-select" id="servicesRendered" required>
+                            <option value="">Select Service</option>
+                            <option value="MEDICAL REPORT">Medical Report</option>
+                            <option value="COUNSELLING">Counselling</option>
+                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
+                            <option value="LEGAL AID">Legal Aid</option>
+                            <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
+                            <option value="SHELTER">Shelter</option>
+                            <option value="REFERRAL TO SPECIALIST">Referral to Specialist</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Relationship to CV *</label>
+                    <select class="form-select" id="relationshipToCV" required>
+                        <option value="">Select Relationship</option>
+                        <option value="FATHER">Father</option>
+                        <option value="MOTHER">Mother</option>
+                        <option value="STEP-FATHER">Step-Father</option>
+                        <option value="STEP-MOTHER">Step-Mother</option>
+                        <option value="UNCLE">Uncle</option>
+                        <option value="AUNT">Aunt</option>
+                        <option value="FRIEND">Friend</option>
+                        <option value="STRANGER">Stranger</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="NEIGHBOR">Neighbor</option>
+                        <option value="OTHER RELATIVE">Other Relative</option>
+                    </select>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; margin-right: 10px;">💾 Save Record</button>
+                    <button type="button" class="action-btn" style="background: #6c757d; color: white;" onclick="closeAddRecordModal()">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Global variables
         let allData = [];
