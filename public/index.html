@@ -704,9 +704,9 @@
                 <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
                     <h2>📝 Reporter Dashboard</h2>
                     <p>Welcome! You have access to add new case records and search existing ones.</p>
-                    <p><strong>Step 1:</strong> Select your reporting agency above</p>
-                    <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
-                    <p><strong>Step 3:</strong> Use "Search Records" to find existing cases</p>
+                    <p><strong>Your agency has been automatically assigned based on your account.</strong></p>
+                    <p><strong>Step 1:</strong> Click "Add New Record" to report a new case</p>
+                    <p><strong>Step 2:</strong> Use "Search Records" to find existing cases</p>
                     <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 10px; border-left: 4px solid #2196f3;">
                         <p style="color: #1976d2; font-weight: 600; margin: 0;">
                             📊 Note: Dashboard analytics are not available for Reporter accounts. 
@@ -879,21 +879,21 @@
                 avatar: 'V'
             },
             'npa_reporter': { 
-                password: 'NPA2024', 
+                password: 'npa123', 
                 role: 'reporter', 
                 name: 'NPA Case Reporter',
                 avatar: 'N',
                 agency: 'NPA'
             },
             'moh_reporter': { 
-                password: 'MOH2024', 
+                password: 'moh123', 
                 role: 'reporter', 
                 name: 'MOH Case Reporter',
                 avatar: 'M',
                 agency: 'MOH'
             },
             'zp_reporter': { 
-                password: 'ZP2024', 
+                password: 'zp123', 
                 role: 'reporter', 
                 name: 'Police Case Reporter',
                 avatar: 'P',
@@ -1004,16 +1004,21 @@
         function handleLogin(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('loginError');
+            
+            console.log('Login attempt:', username, password);
+            console.log('Available users:', Object.keys(users));
             
             if (users[username] && users[username].password === password) {
                 currentUser = users[username];
                 localStorage.setItem('cvw_session', JSON.stringify(currentUser));
+                console.log('Login successful for:', currentUser.role);
                 showDashboard();
                 errorDiv.style.display = 'none';
             } else {
+                console.log('Login failed for:', username);
                 errorDiv.style.display = 'block';
             }
         }
@@ -1065,7 +1070,7 @@
                 setTimeout(initializeDashboard, 500);
                 
             } else if (currentUser.role === 'viewer') {
-                // Viewer: View dashboard only
+                // Viewer: View dashboard only - NO add/search functions
                 document.getElementById('addRecordBtn').classList.add('hidden');
                 document.getElementById('searchRecordsBtn').classList.add('hidden');
                 document.getElementById('viewDashboardBtn').classList.remove('hidden');
@@ -1084,6 +1089,14 @@
                 document.getElementById('clearDataBtn').classList.add('hidden');
                 document.getElementById('agencySelection').classList.remove('hidden');
                 document.getElementById('reporterOnlyContent').classList.remove('hidden');
+                
+                // Auto-select agency based on user account
+                if (currentUser.agency) {
+                    setTimeout(() => {
+                        selectAgency(currentUser.agency);
+                        showNotification(`Automatically assigned to ${getAgencyFullName(currentUser.agency)}`, 'success');
+                    }, 500);
+                }
                 
                 // Hide all dashboard sections for reporters
                 document.getElementById('filtersSection').classList.add('hidden');
@@ -1482,6 +1495,16 @@
             }, 3000);
         }
 
+        // Get agency full name
+        function getAgencyFullName(agency) {
+            const agencyNames = {
+                'NPA': 'National Prosecution Authority',
+                'MOH': 'Ministry of Health',
+                'ZP': 'Zambia Police'
+            };
+            return agencyNames[agency] || agency;
+        }
+
         // Agency selection
         function selectAgency(agency) {
             selectedAgency = agency;
@@ -1579,7 +1602,43 @@
                 showNotification('Please select an agency first', 'error');
                 return;
             }
-            showNotification('Add record feature would open here - Modal functionality can be added', 'success');
+            
+            // Generate next case ID for the selected agency
+            const recordType = 'CV'; // Default to Victim, could be made selectable
+            const existingCodes = allData
+                .filter(r => r['cvw code'].startsWith(selectedAgency))
+                .map(r => {
+                    const match = r['cvw code'].match(/\d+$/);
+                    return match ? parseInt(match[0]) : 0;
+                });
+            const nextNumber = Math.max(...existingCodes, 0) + 1;
+            const newCaseId = `${selectedAgency}-${recordType}${nextNumber}`;
+            
+            // Simulate adding a new record
+            const newRecord = {
+                'cvw code': newCaseId,
+                'Record Type': 'Victim',
+                'Date Reported': new Date(),
+                'District': 'Lusaka', // Default, would be selectable in full form
+                'CVW Gender': 'FEMALE',
+                'CVW Age': 10,
+                'Crime Type': 'ASSAULT ON A CHILD',
+                'Disability': 'NON',
+                'Services Rendered': 'MEDICAL REPORT',
+                'Relationship to CV': 'STRANGER'
+            };
+            
+            // Add to data
+            allData.push(newRecord);
+            filteredData = [...allData];
+            
+            showNotification(`New record ${newCaseId} added successfully! (Demo - would open full form in real system)`, 'success');
+            
+            // Update dashboard if user has access
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                updateFilters();
+                updateDashboard();
+            }
         }
 
         // Clear all data function
