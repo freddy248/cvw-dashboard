@@ -645,7 +645,7 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons" id="actionButtons">
-                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; opacity: 1;">
                     ➕ Add New Record
                 </button>
                 <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
@@ -1090,14 +1090,21 @@
                 document.getElementById('agencySelection').classList.remove('hidden');
                 document.getElementById('reporterOnlyContent').classList.remove('hidden');
                 
-                // Auto-select agency based on user account
+                // Auto-select agency based on user account and enable add button immediately
                 if (currentUser.agency) {
+                    selectedAgency = currentUser.agency; // Set the global variable
+                    
                     setTimeout(() => {
                         selectAgency(currentUser.agency);
-                        showNotification(`Automatically assigned to ${getAgencyFullName(currentUser.agency)}`, 'success');
-                        // Ensure the add button is enabled after agency selection
-                        document.getElementById('addRecordBtn').disabled = false;
-                    }, 500);
+                        // Force enable the add button
+                        const addBtn = document.getElementById('addRecordBtn');
+                        if (addBtn) {
+                            addBtn.disabled = false;
+                            addBtn.style.opacity = '1';
+                            addBtn.style.cursor = 'pointer';
+                        }
+                        showNotification(`Automatically assigned to ${getAgencyFullName(currentUser.agency)} - Ready to add records!`, 'success');
+                    }, 100);
                 }
                 
                 // Hide all dashboard sections for reporters
@@ -1607,14 +1614,26 @@
 
         // Add record modal function
         function openAddRecordModal() {
-            console.log('Add record clicked. Selected agency:', selectedAgency);
+            console.log('=== ADD RECORD DEBUG ===');
+            console.log('Current user:', currentUser);
+            console.log('Selected agency:', selectedAgency);
+            console.log('Button clicked!');
+            
+            // For reporters, use their assigned agency if selectedAgency is not set
+            if (currentUser && currentUser.role === 'reporter' && currentUser.agency && !selectedAgency) {
+                selectedAgency = currentUser.agency;
+                console.log('Using reporter agency:', selectedAgency);
+            }
             
             if (!selectedAgency) {
-                showNotification('Please select an agency first', 'error');
+                console.log('No agency selected!');
+                showNotification('❌ Error: No agency selected. Please contact administrator.', 'error');
                 return;
             }
             
             try {
+                console.log('Generating new case for agency:', selectedAgency);
+                
                 // Generate next case ID for the selected agency
                 const recordType = 'CV'; // Default to Victim, could be made selectable
                 const existingCodes = allData
@@ -1652,19 +1671,20 @@
                 allData.push(newRecord);
                 filteredData = [...allData];
                 
-                console.log('New record added:', newRecord);
+                console.log('New record added successfully:', newRecord);
                 
-                showNotification(`✅ New record ${newCaseId} added successfully!\nType: ${newRecord['Record Type']}\nDistrict: ${newRecord['District']}\nAge: ${newRecord['CVW Age']} years`, 'success');
+                showNotification(`✅ SUCCESS! New case ${newCaseId} added!\n📋 Type: ${newRecord['Record Type']}\n📍 District: ${newRecord['District']}\n👤 Age: ${newRecord['CVW Age']} years old ${newRecord['CVW Gender'].toLowerCase()}`, 'success');
                 
-                // Update dashboard if user has access
-                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                // Update dashboard if admin is logged in and viewing
+                if (currentUser && currentUser.role === 'admin') {
+                    console.log('Updating dashboard data...');
                     updateFilters();
                     updateDashboard();
                 }
                 
             } catch (error) {
-                console.error('Error adding record:', error);
-                showNotification('Error adding record. Please try again.', 'error');
+                console.error('ERROR adding record:', error);
+                showNotification('❌ Error adding record: ' + error.message, 'error');
             }
         }
 
