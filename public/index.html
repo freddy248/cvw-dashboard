@@ -645,7 +645,7 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons" id="actionButtons">
-                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
                     ➕ Add New Record
                 </button>
                 <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
@@ -1095,6 +1095,8 @@
                     setTimeout(() => {
                         selectAgency(currentUser.agency);
                         showNotification(`Automatically assigned to ${getAgencyFullName(currentUser.agency)}`, 'success');
+                        // Ensure the add button is enabled after agency selection
+                        document.getElementById('addRecordBtn').disabled = false;
                     }, 500);
                 }
                 
@@ -1513,12 +1515,19 @@
             document.querySelectorAll('.agency-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+            const agencyBtn = document.querySelector(`[data-agency="${agency}"]`);
+            if (agencyBtn) {
+                agencyBtn.classList.add('selected');
+            }
             
             // Enable add record button
-            document.getElementById('addRecordBtn').disabled = false;
+            const addBtn = document.getElementById('addRecordBtn');
+            if (addBtn) {
+                addBtn.disabled = false;
+                console.log('Add record button enabled for agency:', agency);
+            }
             
-            showNotification(`Selected agency: ${agency}`, 'success');
+            console.log('Agency selected:', agency);
         }
 
         // Search functions
@@ -1598,46 +1607,64 @@
 
         // Add record modal function
         function openAddRecordModal() {
+            console.log('Add record clicked. Selected agency:', selectedAgency);
+            
             if (!selectedAgency) {
                 showNotification('Please select an agency first', 'error');
                 return;
             }
             
-            // Generate next case ID for the selected agency
-            const recordType = 'CV'; // Default to Victim, could be made selectable
-            const existingCodes = allData
-                .filter(r => r['cvw code'].startsWith(selectedAgency))
-                .map(r => {
-                    const match = r['cvw code'].match(/\d+$/);
-                    return match ? parseInt(match[0]) : 0;
-                });
-            const nextNumber = Math.max(...existingCodes, 0) + 1;
-            const newCaseId = `${selectedAgency}-${recordType}${nextNumber}`;
-            
-            // Simulate adding a new record
-            const newRecord = {
-                'cvw code': newCaseId,
-                'Record Type': 'Victim',
-                'Date Reported': new Date(),
-                'District': 'Lusaka', // Default, would be selectable in full form
-                'CVW Gender': 'FEMALE',
-                'CVW Age': 10,
-                'Crime Type': 'ASSAULT ON A CHILD',
-                'Disability': 'NON',
-                'Services Rendered': 'MEDICAL REPORT',
-                'Relationship to CV': 'STRANGER'
-            };
-            
-            // Add to data
-            allData.push(newRecord);
-            filteredData = [...allData];
-            
-            showNotification(`New record ${newCaseId} added successfully! (Demo - would open full form in real system)`, 'success');
-            
-            // Update dashboard if user has access
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
-                updateFilters();
-                updateDashboard();
+            try {
+                // Generate next case ID for the selected agency
+                const recordType = 'CV'; // Default to Victim, could be made selectable
+                const existingCodes = allData
+                    .filter(r => r['cvw code'].startsWith(selectedAgency))
+                    .map(r => {
+                        const match = r['cvw code'].match(/\d+$/);
+                        return match ? parseInt(match[0]) : 0;
+                    });
+                const nextNumber = Math.max(...existingCodes, 0) + 1;
+                const newCaseId = `${selectedAgency}-${recordType}${nextNumber}`;
+                
+                console.log('Generated new case ID:', newCaseId);
+                
+                // Create a realistic new record with various sample data
+                const districts = ['Lusaka', 'Ndola', 'Kitwe', 'Livingstone', 'Katete', 'Kabwe'];
+                const crimeTypes = ['ASSAULT ON A CHILD', 'RAPE', 'DEFILEMENT', 'CHILD ABUSE', 'TRAFFICKING'];
+                const services = ['MEDICAL REPORT', 'COUNSELLING', 'MEDICAL + COUNSELLING', 'LEGAL AID', 'PSYCHOSOCIAL SUPPORT', 'SHELTER'];
+                const relationships = ['STRANGER', 'FATHER', 'UNCLE', 'NEIGHBOR', 'TEACHER', 'FRIEND'];
+                const genders = ['MALE', 'FEMALE'];
+                
+                const newRecord = {
+                    'cvw code': newCaseId,
+                    'Record Type': Math.random() > 0.7 ? 'Witness' : 'Victim',
+                    'Date Reported': new Date(),
+                    'District': districts[Math.floor(Math.random() * districts.length)],
+                    'CVW Gender': genders[Math.floor(Math.random() * genders.length)],
+                    'CVW Age': Math.floor(Math.random() * 17) + 1, // Age 1-17
+                    'Crime Type': crimeTypes[Math.floor(Math.random() * crimeTypes.length)],
+                    'Disability': Math.random() > 0.8 ? 'PHYSICAL' : 'NON',
+                    'Services Rendered': services[Math.floor(Math.random() * services.length)],
+                    'Relationship to CV': relationships[Math.floor(Math.random() * relationships.length)]
+                };
+                
+                // Add to data
+                allData.push(newRecord);
+                filteredData = [...allData];
+                
+                console.log('New record added:', newRecord);
+                
+                showNotification(`✅ New record ${newCaseId} added successfully!\nType: ${newRecord['Record Type']}\nDistrict: ${newRecord['District']}\nAge: ${newRecord['CVW Age']} years`, 'success');
+                
+                // Update dashboard if user has access
+                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'viewer')) {
+                    updateFilters();
+                    updateDashboard();
+                }
+                
+            } catch (error) {
+                console.error('Error adding record:', error);
+                showNotification('Error adding record. Please try again.', 'error');
             }
         }
 
