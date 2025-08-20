@@ -297,6 +297,32 @@
             transform: none !important;
         }
 
+        /* Search Section */
+        .search-section {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Agency Selection */
+        .agency-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea !important;
+        }
+
+        .agency-btn.selected {
+            border-color: #667eea !important;
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+        }
+
+        .agency-btn.selected div {
+            color: white !important;
+        }
+
         /* KPI Section */
         .kpi-section {
             display: grid;
@@ -619,9 +645,69 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons" id="actionButtons">
-                <button class="action-btn view-dashboard-btn" onclick="showDashboardView()">
+                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" disabled style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                    ➕ Add New Record
+                </button>
+                <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
+                    🔍 Search Records
+                </button>
+                <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
                     📈 View Dashboard
                 </button>
+                <button class="action-btn clear-data-btn" id="clearDataBtn" onclick="clearAllData()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white;">
+                    🗑️ Clear Data
+                </button>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section" id="searchSection" style="display: none;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px; position: relative;">
+                        <input type="text" id="searchInput" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)" 
+                               style="width: 100%; padding: 12px 45px 12px 15px; border: 2px solid #dee2e6; border-radius: 10px; font-size: 15px;">
+                        <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #2196f3; font-size: 20px;">🔍</span>
+                    </div>
+                    <button onclick="searchRecord()" style="padding: 12px 24px; background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Search</button>
+                    <button onclick="clearSearch()" style="padding: 12px 24px; background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Clear</button>
+                </div>
+                
+                <div id="searchResults" style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; display: none;">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <!-- Agency Selection -->
+            <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">⚖️</div>
+                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;">National Prosecution Authority</div>
+                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;">NPA</div>
+                    </button>
+                    <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🏥</div>
+                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;">Ministry of Health</div>
+                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;">MOH</div>
+                    </button>
+                    <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">👮</div>
+                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;">Zambia Police</div>
+                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;">ZP</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reporter Only Content -->
+            <div id="reporterOnlyContent" class="hidden">
+                <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
+                    <h2>📝 Reporter Dashboard</h2>
+                    <p>Welcome! You have access to add new case records and search existing ones.</p>
+                    <p><strong>Step 1:</strong> Select your reporting agency above</p>
+                    <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
+                    <p><strong>Step 3:</strong> Use "Search Records" to find and update existing cases</p>
+                </div>
             </div>
 
             <!-- Filters Section -->
@@ -763,6 +849,8 @@
         let filteredData = [];
         let currentUser = null;
         let charts = {};
+        let selectedAgency = null;
+        let searchResultsData = [];
 
         // Color schemes for charts
         const colors = {
@@ -882,6 +970,13 @@
         // Setup event listeners
         function setupEventListeners() {
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Search input enter key
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchRecord();
+                }
+            });
         }
 
         // Login functionality
@@ -935,10 +1030,45 @@
             const userInfoBar = document.getElementById('userInfoBar');
             userInfoBar.className = `user-info-bar role-${currentUser.role}`;
 
-            // For admin and viewer, initialize dashboard after login
-            if (currentUser.role === 'admin' || currentUser.role === 'viewer') {
+            // Configure interface based on role
+            if (currentUser.role === 'admin') {
+                // Admin: Full access to everything
+                document.getElementById('addRecordBtn').classList.remove('hidden');
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
+                document.getElementById('clearDataBtn').classList.remove('hidden');
+                document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('reporterOnlyContent').classList.add('hidden');
+                
+                // Initialize dashboard for admin
                 setTimeout(initializeDashboard, 500);
+                
+            } else if (currentUser.role === 'viewer') {
+                // Viewer: View dashboard only
+                document.getElementById('addRecordBtn').classList.add('hidden');
+                document.getElementById('searchRecordsBtn').classList.add('hidden');
+                document.getElementById('viewDashboardBtn').classList.remove('hidden');
+                document.getElementById('clearDataBtn').classList.add('hidden');
+                document.getElementById('agencySelection').classList.add('hidden');
+                document.getElementById('reporterOnlyContent').classList.add('hidden');
+                
+                // Initialize dashboard for viewer
+                setTimeout(initializeDashboard, 500);
+                
+            } else if (currentUser.role === 'reporter') {
+                // Reporter: Add records and search only
+                document.getElementById('addRecordBtn').classList.remove('hidden');
+                document.getElementById('searchRecordsBtn').classList.remove('hidden');
+                document.getElementById('viewDashboardBtn').classList.add('hidden');
+                document.getElementById('clearDataBtn').classList.add('hidden');
+                document.getElementById('agencySelection').classList.remove('hidden');
+                document.getElementById('reporterOnlyContent').classList.remove('hidden');
             }
+
+            // Reset agency selection and button state
+            selectedAgency = null;
+            document.getElementById('addRecordBtn').disabled = true;
+            document.querySelectorAll('.agency-btn').forEach(btn => btn.classList.remove('selected'));
         }
 
         // Initialize dashboard for admin/viewer
@@ -1323,6 +1453,125 @@
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 3000);
+        }
+
+        // Agency selection
+        function selectAgency(agency) {
+            selectedAgency = agency;
+            
+            // Update visual selection
+            document.querySelectorAll('.agency-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-agency="${agency}"]`).classList.add('selected');
+            
+            // Enable add record button
+            document.getElementById('addRecordBtn').disabled = false;
+            
+            showNotification(`Selected agency: ${agency}`, 'success');
+        }
+
+        // Search functions
+        function toggleSearchSection() {
+            // Only allow search for admin and reporter roles
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'reporter')) {
+                showNotification('Access denied: Search not available for your role', 'error');
+                return;
+            }
+            
+            const searchSection = document.getElementById('searchSection');
+            if (searchSection.style.display === 'none' || searchSection.style.display === '') {
+                searchSection.style.display = 'block';
+                document.getElementById('searchInput').focus();
+            } else {
+                searchSection.style.display = 'none';
+                clearSearch();
+            }
+        }
+
+        function searchRecord() {
+            const searchInput = document.getElementById('searchInput').value.trim().toUpperCase();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!searchInput) {
+                searchResults.innerHTML = '<p style="color: #dc2626;">⚠️ Please enter a Case ID to search</p>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            const results = allData.filter(record => 
+                record['cvw code'].toUpperCase() === searchInput
+            );
+
+            if (results.length === 0) {
+                searchResults.innerHTML = `<p style="color: #dc2626;">❌ No record found with Case ID: <strong>${searchInput}</strong></p>`;
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResultsData = results;
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            let html = `<h4 style="color: #2c3e50;">Found ${results.length} record(s)</h4>`;
+            
+            results.forEach((record, index) => {
+                html += `
+                    <div style="padding: 15px; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 10px; background: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem; font-weight: 600; color: #2c3e50;">${record['cvw code']}</span>
+                            <span style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; background: #dbeafe; color: #2563eb;">${record['Record Type']}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            <div><strong>Date:</strong> ${record['Date Reported'].toLocaleDateString()}</div>
+                            <div><strong>District:</strong> ${record['District']}</div>
+                            <div><strong>Gender:</strong> ${record['CVW Gender']}</div>
+                            <div><strong>Age:</strong> ${record['CVW Age']} years</div>
+                            <div><strong>Crime Type:</strong> ${record['Crime Type']}</div>
+                            <div><strong>Services:</strong> ${record['Services Rendered']}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            searchResults.innerHTML = html;
+            searchResults.style.display = 'block';
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            searchResultsData = [];
+        }
+
+        // Add record modal function
+        function openAddRecordModal() {
+            if (!selectedAgency) {
+                showNotification('Please select an agency first', 'error');
+                return;
+            }
+            showNotification('Add record feature would open here - Modal functionality can be added', 'success');
+        }
+
+        // Clear all data function
+        function clearAllData() {
+            if (currentUser && currentUser.role === 'admin') {
+                if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                    allData = [];
+                    filteredData = [];
+                    initializeSampleData();
+                    showNotification('All data cleared and sample data restored', 'success');
+                    
+                    if (currentUser.role === 'admin' || currentUser.role === 'viewer') {
+                        updateFilters();
+                        updateDashboard();
+                    }
+                }
+            } else {
+                showNotification('Access denied: Only admins can clear data', 'error');
+            }
         }
     </script>
 </body>
