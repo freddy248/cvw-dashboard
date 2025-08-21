@@ -1589,14 +1589,14 @@
             
             if (ageInput && ageUnit) {
                 // Remove existing event listeners to avoid duplicates
-                ageUnit.removeEventListener('change', handleAgeUnitChange);
-                ageInput.removeEventListener('input', handleAgeInputValidation);
+                ageUnit.onchange = null;
+                ageInput.oninput = null;
                 
-                // Add new event listeners
-                ageUnit.addEventListener('change', handleAgeUnitChange);
-                ageInput.addEventListener('input', handleAgeInputValidation);
+                // Add new event listeners using onchange/oninput for better compatibility
+                ageUnit.onchange = handleAgeUnitChange;
+                ageInput.oninput = handleAgeInputValidation;
                 
-                console.log('✅ Age input handlers successfully attached');
+                console.log('✅ Age input handlers successfully attached using onchange/oninput');
             } else {
                 console.log('❌ Age input elements not found');
             }
@@ -1615,6 +1615,7 @@
                 // Highlight for months input
                 ageInput.style.borderColor = '#dc2626';
                 ageInput.style.backgroundColor = '#fef2f2';
+                ageInput.style.borderWidth = '2px';
                 console.log('✅ Switched to months mode - input highlighted red');
             } else if (unit === 'years') {
                 ageInput.max = '18';
@@ -1623,6 +1624,7 @@
                 // Reset styling for years
                 ageInput.style.borderColor = '#dee2e6';
                 ageInput.style.backgroundColor = 'white';
+                ageInput.style.borderWidth = '2px';
                 console.log('✅ Switched to years mode - input reset to normal');
             } else {
                 ageInput.max = '120';
@@ -1630,6 +1632,7 @@
                 ageInput.title = '';
                 ageInput.style.borderColor = '#dee2e6';
                 ageInput.style.backgroundColor = 'white';
+                ageInput.style.borderWidth = '2px';
             }
             
             // Clear the input when unit changes
@@ -1924,10 +1927,38 @@ ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + C
             
             // CRITICAL: Setup enhanced features after modal is visible
             setTimeout(() => {
+                console.log('🔧 Initializing enhanced features...');
                 setupAgeInputHandlers();
                 updateRelationshipLabel();
-                console.log('✅ Enhanced features initialized');
-            }, 100);
+                
+                // Auto-generate case ID when modal opens if record type is already set
+                const recordType = document.getElementById('recordType').value;
+                if (recordType) {
+                    generateCaseId();
+                }
+                
+                // Test if elements exist
+                const ageInput = document.getElementById('cvwAge');
+                const ageUnit = document.getElementById('ageUnit');
+                const relationshipLabel = document.getElementById('relationshipLabel');
+                const caseIdInput = document.getElementById('caseId');
+                
+                console.log('📋 Form elements check:', {
+                    ageInput: !!ageInput,
+                    ageUnit: !!ageUnit,
+                    relationshipLabel: !!relationshipLabel,
+                    caseIdInput: !!caseIdInput
+                });
+                
+                // Test age input styling
+                if (ageUnit) {
+                    console.log('🧪 Testing age unit change to months...');
+                    ageUnit.value = 'months';
+                    ageUnit.dispatchEvent(new Event('change'));
+                }
+                
+                console.log('✅ Enhanced features initialization complete');
+            }, 200);
             
             // Mobile-specific adjustments
             if (window.innerWidth <= 768) {
