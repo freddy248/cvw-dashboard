@@ -1214,166 +1214,131 @@
             </div>
 
             <form id="addRecordForm">
-                <!-- Case Information Section -->
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding: 10px; background: #e8f4fd; border-radius: 8px; border-left: 4px solid #2196f3;">
-                        📋 Case Information
-                    </h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="caseId">Case ID</label>
-                            <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly>
-                            <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="recordType">Record Type *</label>
-                            <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();">
-                                <option value="">Select Type</option>
-                                <option value="Victim">Victim</option>
-                                <option value="Witness">Witness</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="dateReported">Date Reported *</label>
-                            <input type="date" id="dateReported" name="dateReported" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="district">District *</label>
-                            <select id="district" name="district" required>
-                                <option value="">Select District</option>
-                                <option value="Lusaka">Lusaka</option>
-                                <option value="Kitwe">Kitwe</option>
-                                <option value="Solwezi">Solwezi</option>
-                                <option value="Katete">Katete</option>
-                                <option value="Chipata">Chipata</option>
-                                <option value="Mansa">Mansa</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="crimeType">Crime Type *</label>
-                            <select id="crimeType" name="crimeType" required>
-                                <option value="">Select Crime Type</option>
-                                <option value="ASSAULT ON A CHILD">Assault on a Child</option>
-                                <option value="PHYSICAL ABUSE">Physical Abuse</option>
-                                <option value="SEXUAL ASSAULT">Sexual Assault</option>
-                                <option value="RAPE">Rape</option>
-                                <option value="CHILD NEGLECT">Child Neglect</option>
-                                <option value="DEFILEMENT">Defilement</option>
-                                <option value="ONLINE SEXUAL EXPLOITATION">Online Sexual Exploitation</option>
-                            </select>
-                        </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="caseId">Case ID</label>
+                        <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly>
+                        <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
                     </div>
-                </div>
-
-                <!-- Child/Victim/Witness Information Section -->
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding: 10px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #4caf50;">
-                        👶 Child/Victim/Witness Information
-                    </h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="cvwGender">CVW Gender *</label>
-                            <select id="cvwGender" name="cvwGender" required>
-                                <option value="">Select Gender</option>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cvwAge">CVW Age *</label>
-                            <div class="age-input-container">
-                                <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required>
-                                <select id="ageUnit" name="ageUnit" required>
-                                    <option value="">Select Unit</option>
-                                    <option value="years">Years</option>
-                                    <option value="months">Months</option>
-                                </select>
-                            </div>
-                            <small class="age-help-text">
-                                💡 Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
-                            </small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="disability">CVW Disability Status</label>
-                            <select id="disability" name="disability">
-                                <option value="NON">None</option>
-                                <option value="PHYSICAL">Physical</option>
-                                <option value="MENTAL">Mental</option>
-                                <option value="MENTAL+PHYSICAL">Mental + Physical</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="servicesRendered">Services Rendered</label>
-                            <select id="servicesRendered" name="servicesRendered">
-                                <option value="">Select Services</option>
-                                <option value="MEDICAL REPORT">Medical Report</option>
-                                <option value="COUNSELLING">Counselling</option>
-                                <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
-                            </select>
-                        </div>
+                    
+                    <div class="form-group">
+                        <label for="recordType">Record Type *</label>
+                        <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();">
+                            <option value="">Select Type</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
                     </div>
-                </div>
-
-                <!-- Offender Information Section -->
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding: 10px; background: #ffeaea; border-radius: 8px; border-left: 4px solid #f44336;">
-                        ⚠️ Offender Information
-                    </h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="offenderGender">Offender Gender</label>
-                            <select id="offenderGender" name="offenderGender">
-                                <option value="">Select Gender</option>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
+                    
+                    <div class="form-group">
+                        <label for="dateReported">Date Reported *</label>
+                        <input type="date" id="dateReported" name="dateReported" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="district">District *</label>
+                        <select id="district" name="district" required>
+                            <option value="">Select District</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Kitwe">Kitwe</option>
+                            <option value="Solwezi">Solwezi</option>
+                            <option value="Katete">Katete</option>
+                            <option value="Chipata">Chipata</option>
+                            <option value="Mansa">Mansa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cvwGender">CVW Gender *</label>
+                        <select id="cvwGender" name="cvwGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    
+                    <!-- DISABILITY RIGHT AFTER CVW GENDER -->
+                    <div class="form-group">
+                        <label for="disability">CVW Disability Status</label>
+                        <select id="disability" name="disability">
+                            <option value="NON">None</option>
+                            <option value="PHYSICAL">Physical</option>
+                            <option value="MENTAL">Mental</option>
+                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
+                        </select>
+                    </div>
+                    
+                    <!-- CVW AGE WITH YEARS/MONTHS -->
+                    <div class="form-group">
+                        <label for="cvwAge">CVW Age *</label>
+                        <div class="age-input-container">
+                            <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required>
+                            <select id="ageUnit" name="ageUnit" required>
+                                <option value="">Select Unit</option>
+                                <option value="years">Years</option>
+                                <option value="months">Months</option>
                             </select>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="offenderAge">Offender Age</label>
-                            <input type="number" id="offenderAge" name="offenderAge" min="0" max="120" placeholder="Enter offender's age (if known)">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="relationshipToCv" id="relationshipLabel">Relationship to Child</label>
-                            <select id="relationshipToCv" name="relationshipToCv">
-                                <option value="">Select Relationship</option>
-                                <option value="STRANGER">Stranger</option>
-                                <option value="FRIEND">Friend</option>
-                                <option value="FATHER">Father</option>
-                                <option value="MOTHER">Mother</option>
-                                <option value="LANDLORD">Landlord</option>
-                                <option value="NEIGHBOR">Neighbor</option>
-                                <option value="RELATIVE">Relative</option>
-                                <option value="TEACHER">Teacher</option>
-                                <option value="CAREGIVER">Caregiver</option>
-                                <option value="STEPFATHER">Stepfather</option>
-                                <option value="STEPMOTHER">Stepmother</option>
-                                <option value="UNCLE">Uncle</option>
-                                <option value="AUNT">Aunt</option>
-                                <option value="COUSIN">Cousin</option>
-                                <option value="GRANDFATHER">Grandfather</option>
-                                <option value="GRANDMOTHER">Grandmother</option>
-                                <option value="EMPLOYER">Employer</option>
-                                <option value="KNOWN PERSON">Known Person</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin-top: 10px;">
-                                <p style="margin: 0; color: #856404; font-size: 0.9rem;">
-                                    <strong>📝 Note:</strong> Offender information is optional but helps with case analysis. 
-                                    If the offender is unknown or if this information is not available, you can leave these fields blank.
-                                </p>
-                            </div>
-                        </div>
+                        <small class="age-help-text">
+                            💡 Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
+                        </small>
+                    </div>
+                    
+                    <!-- SERVICES RENDERED RIGHT AFTER CVW AGE -->
+                    <div class="form-group">
+                        <label for="servicesRendered">Services Rendered</label>
+                        <select id="servicesRendered" name="servicesRendered">
+                            <option value="">Select Services</option>
+                            <option value="MEDICAL REPORT">Medical Report</option>
+                            <option value="COUNSELLING">Counselling</option>
+                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offenderGender">Offender Gender</label>
+                        <select id="offenderGender" name="offenderGender">
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    
+                    <!-- CRIME TYPE RIGHT AFTER OFFENDER GENDER -->
+                    <div class="form-group">
+                        <label for="crimeType">Crime Type *</label>
+                        <select id="crimeType" name="crimeType" required>
+                            <option value="">Select Crime Type</option>
+                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                            <option value="PHYSICAL ABUSE">Physical Abuse</option>
+                            <option value="SEXUAL ASSAULT">Sexual Assault</option>
+                            <option value="RAPE">Rape</option>
+                            <option value="CHILD NEGLECT">Child Neglect</option>
+                            <option value="DEFILEMENT">Defilement</option>
+                            <option value="ONLINE SEXUAL EXPLOITATION">Online Sexual Exploitation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offenderAge">Offender Age</label>
+                        <input type="number" id="offenderAge" name="offenderAge" min="0" placeholder="Offender Age">
+                    </div>
+                    
+                    <!-- DYNAMIC RELATIONSHIP FIELD RIGHT AFTER OFFENDER AGE -->
+                    <div class="form-group">
+                        <label for="relationshipToCv" id="relationshipLabel">Relationship to Child</label>
+                        <select id="relationshipToCv" name="relationshipToCv">
+                            <option value="">Select Relationship</option>
+                            <option value="STRANGER">Stranger</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="FATHER">Father</option>
+                            <option value="MOTHER">Mother</option>
+                            <option value="LANDLORD">Landlord</option>
+                            <option value="NEIGHBOR">Neighbor</option>
+                            <option value="RELATIVE">Relative</option>
+                            <option value="TEACHER">Teacher</option>
+                            <option value="CAREGIVER">Caregiver</option>
+                        </select>
                     </div>
                 </div>
                 
