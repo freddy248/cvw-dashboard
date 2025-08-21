@@ -1585,51 +1585,74 @@
             const ageInput = document.getElementById('cvwAge');
             const ageUnit = document.getElementById('ageUnit');
             
+            console.log('🔧 Setting up age input handlers...', {ageInput: !!ageInput, ageUnit: !!ageUnit});
+            
             if (ageInput && ageUnit) {
-                ageUnit.addEventListener('change', function() {
-                    const unit = this.value;
-                    
-                    if (unit === 'months') {
-                        ageInput.max = '60'; // 5 years max in months
-                        ageInput.placeholder = 'Enter months (0-60)';
-                        ageInput.title = 'Enter age in months (0-60 months = 0-5 years)';
-                        // Highlight for months input
-                        ageInput.style.borderColor = '#dc2626';
-                        ageInput.style.backgroundColor = '#fef2f2';
-                    } else if (unit === 'years') {
-                        ageInput.max = '18';
-                        ageInput.placeholder = 'Enter years (0-18)';
-                        ageInput.title = 'Enter age in years (0-18 years)';
-                        // Reset styling for years
-                        ageInput.style.borderColor = '#dee2e6';
-                        ageInput.style.backgroundColor = 'white';
-                    } else {
-                        ageInput.max = '120';
-                        ageInput.placeholder = 'Enter age';
-                        ageInput.title = '';
-                        ageInput.style.borderColor = '#dee2e6';
-                        ageInput.style.backgroundColor = 'white';
-                    }
-                    
-                    // Clear the input when unit changes
-                    ageInput.value = '';
-                });
-
-                // Validate age input based on unit
-                ageInput.addEventListener('input', function() {
-                    const unit = ageUnit.value;
-                    const value = parseFloat(this.value);
-                    
-                    if (unit === 'months' && value > 60) {
-                        this.setCustomValidity('Maximum 60 months (5 years). Use "Years" for older children.');
-                    } else if (unit === 'years' && value > 18) {
-                        this.setCustomValidity('Maximum 18 years for CVW cases.');
-                    } else if (value < 0) {
-                        this.setCustomValidity('Age cannot be negative.');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                });
+                // Remove existing event listeners to avoid duplicates
+                ageUnit.removeEventListener('change', handleAgeUnitChange);
+                ageInput.removeEventListener('input', handleAgeInputValidation);
+                
+                // Add new event listeners
+                ageUnit.addEventListener('change', handleAgeUnitChange);
+                ageInput.addEventListener('input', handleAgeInputValidation);
+                
+                console.log('✅ Age input handlers successfully attached');
+            } else {
+                console.log('❌ Age input elements not found');
+            }
+        }
+        
+        function handleAgeUnitChange() {
+            const ageInput = document.getElementById('cvwAge');
+            const unit = this.value;
+            
+            console.log('🔄 Age unit changed to:', unit);
+            
+            if (unit === 'months') {
+                ageInput.max = '60'; // 5 years max in months
+                ageInput.placeholder = 'Enter months (0-60)';
+                ageInput.title = 'Enter age in months (0-60 months = 0-5 years)';
+                // Highlight for months input
+                ageInput.style.borderColor = '#dc2626';
+                ageInput.style.backgroundColor = '#fef2f2';
+                console.log('✅ Switched to months mode - input highlighted red');
+            } else if (unit === 'years') {
+                ageInput.max = '18';
+                ageInput.placeholder = 'Enter years (0-18)';
+                ageInput.title = 'Enter age in years (0-18 years)';
+                // Reset styling for years
+                ageInput.style.borderColor = '#dee2e6';
+                ageInput.style.backgroundColor = 'white';
+                console.log('✅ Switched to years mode - input reset to normal');
+            } else {
+                ageInput.max = '120';
+                ageInput.placeholder = 'Enter age';
+                ageInput.title = '';
+                ageInput.style.borderColor = '#dee2e6';
+                ageInput.style.backgroundColor = 'white';
+            }
+            
+            // Clear the input when unit changes
+            ageInput.value = '';
+        }
+        
+        function handleAgeInputValidation() {
+            const ageUnit = document.getElementById('ageUnit');
+            const unit = ageUnit.value;
+            const value = parseFloat(this.value);
+            
+            if (unit === 'months' && value > 60) {
+                this.setCustomValidity('Maximum 60 months (5 years). Use "Years" for older children.');
+                console.log('⚠️ Age validation: months > 60');
+            } else if (unit === 'years' && value > 18) {
+                this.setCustomValidity('Maximum 18 years for CVW cases.');
+                console.log('⚠️ Age validation: years > 18');
+            } else if (value < 0) {
+                this.setCustomValidity('Age cannot be negative.');
+                console.log('⚠️ Age validation: negative age');
+            } else {
+                this.setCustomValidity('');
+                console.log('✅ Age validation: passed');
             }
         }
 
@@ -1694,12 +1717,22 @@
             const recordType = document.getElementById('recordType').value;
             const relationshipLabel = document.getElementById('relationshipLabel');
             
+            console.log('🔄 Updating relationship label for record type:', recordType);
+            
+            if (!relationshipLabel) {
+                console.log('❌ Relationship label element not found');
+                return;
+            }
+            
             if (recordType === 'Victim') {
                 relationshipLabel.textContent = 'Relationship to Victim';
+                console.log('✅ Updated to: Relationship to Victim');
             } else if (recordType === 'Witness') {
                 relationshipLabel.textContent = 'Relationship to Witness';
+                console.log('✅ Updated to: Relationship to Witness');
             } else {
                 relationshipLabel.textContent = 'Relationship to Child';
+                console.log('✅ Updated to: Relationship to Child');
             }
         }
 
@@ -1708,8 +1741,11 @@
             const recordType = document.getElementById('recordType').value;
             const caseIdInput = document.getElementById('caseId');
             
+            console.log('🔄 Generating case ID for:', {recordType, selectedAgency});
+            
             if (!recordType || !selectedAgency) {
                 caseIdInput.value = '';
+                console.log('❌ Cannot generate case ID - missing recordType or selectedAgency');
                 return;
             }
 
@@ -1724,7 +1760,10 @@
                 });
             
             const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-            caseIdInput.value = `${prefix}${nextNumber}`;
+            const newCaseId = `${prefix}${nextNumber}`;
+            caseIdInput.value = newCaseId;
+            
+            console.log('✅ Generated case ID:', newCaseId);
         }
 
         // Add new record locally
@@ -1882,6 +1921,13 @@ ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + C
                 'ZP': 'Zambia Police'
             };
             document.querySelector('.modal-title').innerHTML = `➕ Add New Case Record - ${agencyNames[selectedAgency]}`;
+            
+            // CRITICAL: Setup enhanced features after modal is visible
+            setTimeout(() => {
+                setupAgeInputHandlers();
+                updateRelationshipLabel();
+                console.log('✅ Enhanced features initialized');
+            }, 100);
             
             // Mobile-specific adjustments
             if (window.innerWidth <= 768) {
@@ -2194,8 +2240,18 @@ ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + C
                 }
             });
 
-            // Setup age input handlers
+            // Setup age input handlers - CRITICAL: This must be called!
             setupAgeInputHandlers();
+            
+            // Also setup when modal opens to ensure elements exist
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'addRecordBtn') {
+                    setTimeout(() => {
+                        setupAgeInputHandlers();
+                        updateRelationshipLabel();
+                    }, 100);
+                }
+            });
             
             // Form submission for adding records
             document.getElementById('addRecordForm').addEventListener('submit', async function(e) {
