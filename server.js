@@ -1,3 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVW Case Reports Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-container {
+            max-width: 400px;
+            margin: 10vh auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-accounts {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .demo-accounts h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .account-demo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .account-demo:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .account-type {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .account-credentials {
+            color: #6c757d;
+            font-family: monospace;
+        }
+
+        .login-error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Dashboard */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .zambia-label {
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0 0 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* User Info Bar */
+        .user-info-bar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Role-based styling */
+        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
+        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .view-dashboard-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Agency Selection */
+        .agency-btn {
+            background: white;
+            border: 3px solid #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .agency-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea !important;
+        }
+
+        .agency-btn.selected {
+            border-color: #667eea !important;
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+        }
+
+        .agency-btn.selected .agency-name {
+            color: white !important;
+        }
+
+        .agency-btn.selected .agency-code {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .agency-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .agency-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .agency-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .close {
+            color: #95a5a6;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .cancel-btn {
+            padding: 12px 24px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .submit-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #10b981;
+            display: none;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ef4444;
+            display: none;
+        }
+
+        /* Enhanced Age Input Styling */
+        .age-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .age-input-container input {
+            flex: 2;
+        }
+
+        .age-input-container select {
+            flex: 1;
+        }
+
+        /* Age display in tables with color coding */
+        .age-display {
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .age-display.infant {
+            background-color: #fee2e2;
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .age-display.toddler {
+            background-color: #fed7aa;
+            color: #ea580c;
+            font-weight: 600;
+        }
+
+        .age-display.child {
+            background-color: #dcfce7;
+            color: #059669;
+        }
+
+        .age-display.teen {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        /* Highlight months selection */
+        select option[value="months"] {
+            background-color: #fef2f2;
+            font-weight: 600;
+        }
+
+        /* Form validation styling */
+        input:invalid {
+            border-color: #ef4444;
+        }
+
+        input:valid {
+            border-color: #10b981;
+        }
+
+        .age-help-text {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* KPI Section */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .chart-canvas {
+            max-height: 300px;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .filter-group select,
+        .date-input {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .reset-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.3);
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ecf0f1;
+            transition: background-color 0.2s ease;
+        }
+
+        .data-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .victim-badge { background: #fee2e2; color: #dc2626; }
+        .witness-badge { background: #dbeafe; color: #2563eb; }
+
+        /* Utility Classes */
+        .hidden { 
+            display: none !important; 
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            display: none;
+            font-weight: 600;
+            max-width: 400px;
+            word-wrap: break-word;
+            white-space: pre-line;
+        }
+
+        .notification.success {
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .notification.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .zambia-label {
+                font-size: 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 15px;
+                border-radius: 0;
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .modal {
+                padding: 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .action-btn {
+                width: 90%;
+                max-width: 300px;
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .age-input-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .age-input-container input,
+            .age-input-container select {
+                flex: none;
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 15px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+
+            .user-info-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            #agencySelection {
+                margin-bottom: 10px;
+            }
+
+            #agencySelection > div {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .agency-btn {
+                min-width: auto;
+                width: 100%;
+                padding: 25px 15px;
+                font-size: 14px;
+            }
+
+            .login-container {
+                margin: 5% auto;
+                width: 95%;
+                padding: 30px 20px;
+            }
+
+            .submit-btn, .cancel-btn {
+                padding: 15px 25px;
+                font-size: 16px;
+                min-height: 50px;
+            }
+
+            /* Mobile form improvements */
+            .form-group label {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .modal-title {
+                font-size: 1.3rem;
+                line-height: 1.4;
+            }
+
+            /* Ensure tap targets are at least 44px */
+            button, .action-btn, .agency-btn {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            /* Prevent zoom on input focus for iOS */
+            input, select, textarea {
+                font-size: 16px !important;
+                transform-origin: left top;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+
+            .login-container {
+                margin: 5% auto;
+                width: 95%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-header">
+            <h1>🔐 CVW Dashboard</h1>
+            <p>Zambia Child Victim & Witness Analytics</p>
+        </div>
+        
+        <div class="login-error" id="loginError">
+            ❌ Invalid username or password
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <input type="text" id="username" class="login-input" placeholder="Username" required>
+            <input type="password" id="password" class="login-input" placeholder="Password" required>
+            <button type="submit" class="login-btn">🚀 Login</button>
+        </form>
+        
+        <div class="demo-accounts">
+            <h3>📋 Demo Accounts</h3>
+            <div class="account-demo" onclick="quickLogin('admin', 'admin123')">
+                <span class="account-type">👑 Admin</span>
+                <span class="account-credentials">admin / admin123</span>
+            </div>
+            <div class="account-demo" onclick="quickLogin('viewer', 'view123')">
+                <span class="account-type">👀 Viewer</span>
+                <span class="account-credentials">viewer / view123</span>
+            </div>
+            <div class="account-demo" onclick="quickLogin('reporter', 'report123')">
+                <span class="account-type">📝 Reporter</span>
+                <span class="account-credentials">reporter / report123</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" class="hidden">
+        <!-- User Info Bar -->
+        <div id="userInfoBar" class="user-info-bar">
+            <div class="user-details">
+                <div id="userAvatar" class="user-avatar">A</div>
+                <div class="user-info">
+                    <div id="userName" class="user-name">Administrator</div>
+                    <div id="userRole" class="user-role">Admin Account</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+
+        <div class="dashboard-container">
+            <!-- Header -->
+            <div class="header">
+                <h1>📊 CVW Case Reports Analytics</h1>
+                <p class="zambia-label">Zambia</p>
+                <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
+                
+                <div class="connection-status">
+                    <div class="status-indicator"></div>
+                    <span>Database Connected</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white;" disabled>
+                    ➕ Add New Record
+                </button>
+                <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
+                    🔍 Search Records
+                </button>
+                <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
+                    📈 View Dashboard
+                </button>
+                <button class="action-btn clear-data-btn" id="clearDataBtn" onclick="clearAllData()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white;">
+                    🗑️ Clear Data
+                </button>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section" id="searchSection" style="display: none;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px; position: relative;">
+                        <input type="text" id="searchInput" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)" 
+                               style="width: 100%; padding: 12px 45px 12px 15px; border: 2px solid #dee2e6; border-radius: 10px; font-size: 15px;">
+                        <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #2196f3; font-size: 20px;">🔍</span>
+                    </div>
+                    <button onclick="searchRecord()" style="padding: 12px 24px; background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Search</button>
+                    <button onclick="clearSearch()" style="padding: 12px 24px; background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Clear</button>
+                </div>
+                
+                <div id="searchResults" style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; display: none;">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <!-- Agency Selection -->
+            <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')">
+                        <div class="agency-icon">⚖️</div>
+                        <div class="agency-name">National Prosecution Authority</div>
+                        <div class="agency-code">NPA</div>
+                    </button>
+                    <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')">
+                        <div class="agency-icon">🏥</div>
+                        <div class="agency-name">Ministry of Health</div>
+                        <div class="agency-code">MOH</div>
+                    </button>
+                    <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')">
+                        <div class="agency-icon">👮</div>
+                        <div class="agency-name">Zambia Police</div>
+                        <div class="agency-code">ZP</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reporter Only Content -->
+            <div id="reporterOnlyContent" class="hidden">
+                <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
+                    <h2>📝 Reporter Dashboard</h2>
+                    <p>Welcome! You have access to add new case records and search existing ones.</p>
+                    <p><strong>Select your agency above, then you can start adding records.</strong></p>
+                    <p><strong>Step 1:</strong> Click on your agency above</p>
+                    <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
+                    <p><strong>Step 3:</strong> Use "Search Records" to find existing cases</p>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-top: 20px;">
+                        <strong>Case ID Prefixes:</strong><br>
+                        • <strong>NPA-CV/CW:</strong> National Prosecution Authority<br>
+                        • <strong>MOH-CV/CW:</strong> Ministry of Health<br>
+                        • <strong>ZP-CV/CW:</strong> Zambia Police
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section (Hidden for Reporter) -->
+            <div class="filters-section" id="filtersSection">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="districtFilter">District</label>
+                        <select id="districtFilter">
+                            <option value="">All Districts</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="recordTypeFilter">Record Type</label>
+                        <select id="recordTypeFilter">
+                            <option value="">All Types</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="crimeTypeFilter">Crime Type</label>
+                        <select id="crimeTypeFilter">
+                            <option value="">All Crime Types</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="genderFilter">Gender</label>
+                        <select id="genderFilter">
+                            <option value="">All Genders</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateFromFilter">Date From</label>
+                        <input type="date" id="dateFromFilter" class="date-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateToFilter">Date To</label>
+                        <input type="date" id="dateToFilter" class="date-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="servicesFilter">Services Rendered</label>
+                        <select id="servicesFilter">
+                            <option value="">All Services</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="reset-btn" onclick="resetFilters()">🔄 Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Section (Hidden for Reporter) -->
+            <div class="kpi-section" id="kpiSection">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="totalCases">0</div>
+                    <div class="kpi-label">Total Cases</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="victimCases">0</div>
+                    <div class="kpi-label">Victim Cases</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="witnessCases">0</div>
+                    <div class="kpi-label">Witness Cases</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="avgAge">0</div>
+                    <div class="kpi-label">Average Age</div>
+                </div>
+            </div>
+
+            <!-- Charts Section (Hidden for Reporter) -->
+            <div class="charts-grid" id="chartsSection">
+                <div class="chart-container">
+                    <div class="chart-title">Cases by District</div>
+                    <canvas id="districtChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Crime Types Distribution</div>
+                    <canvas id="crimeChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Age Distribution</div>
+                    <canvas id="ageChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Gender Distribution</div>
+                    <canvas id="genderChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Cases Over Time</div>
+                    <canvas id="timeChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Services Rendered Distribution</div>
+                    <canvas id="servicesChart" class="chart-canvas"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Relationship Analysis</div>
+                    <canvas id="relationshipChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Table Section (Hidden for Reporter) -->
+            <div class="table-container full-width" id="tableSection">
+                <div class="chart-title">Case Details</div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>District</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Crime Type</th>
+                                <th>Disability</th>
+                                <th>Services</th>
+                                <th>Relationship</th>
+                            </tr>
+                        </thead>
+                        <tbody id="caseTableBody">
+                            <tr>
+                                <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+                                    Loading case data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Record Modal -->
+    <div id="addRecordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">➕ Add New Case Record</h2>
+                <span class="close" onclick="closeAddRecordModal()">&times;</span>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                ✅ Record added successfully!
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                ❌ Please fill in all required fields.
+            </div>
+
+            <form id="addRecordForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="caseId">Case ID</label>
+                        <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly>
+                        <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recordType">Record Type *</label>
+                        <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();">
+                            <option value="">Select Type</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateReported">Date Reported *</label>
+                        <input type="date" id="dateReported" name="dateReported" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="district">District *</label>
+                        <select id="district" name="district" required>
+                            <option value="">Select District</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Kitwe">Kitwe</option>
+                            <option value="Solwezi">Solwezi</option>
+                            <option value="Katete">Katete</option>
+                            <option value="Chipata">Chipata</option>
+                            <option value="Mansa">Mansa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cvwGender">CVW Gender *</label>
+                        <select id="cvwGender" name="cvwGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    
+                    <!-- DISABILITY RIGHT AFTER CVW GENDER -->
+                    <div class="form-group">
+                        <label for="disability">CVW Disability Status</label>
+                        <select id="disability" name="disability">
+                            <option value="NON">None</option>
+                            <option value="PHYSICAL">Physical</option>
+                            <option value="MENTAL">Mental</option>
+                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
+                        </select>
+                    </div>
+                    
+                    <!-- CVW AGE WITH YEARS/MONTHS -->
+                    <div class="form-group">
+                        <label for="cvwAge">CVW Age *</label>
+                        <div class="age-input-container">
+                            <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required>
+                            <select id="ageUnit" name="ageUnit" required>
+                                <option value="">Select Unit</option>
+                                <option value="years">Years</option>
+                                <option value="months">Months</option>
+                            </select>
+                        </div>
+                        <small class="age-help-text">
+                            💡 Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
+                        </small>
+                    </div>
+                    
+                    <!-- SERVICES RENDERED RIGHT AFTER CVW AGE -->
+                    <div class="form-group">
+                        <label for="servicesRendered">Services Rendered</label>
+                        <select id="servicesRendered" name="servicesRendered">
+                            <option value="">Select Services</option>
+                            <option value="MEDICAL REPORT">Medical Report</option>
+                            <option value="COUNSELLING">Counselling</option>
+                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offenderGender">Offender Gender</label>
+                        <select id="offenderGender" name="offenderGender">
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    
+                    <!-- CRIME TYPE RIGHT AFTER OFFENDER GENDER -->
+                    <div class="form-group">
+                        <label for="crimeType">Crime Type *</label>
+                        <select id="crimeType" name="crimeType" required>
+                            <option value="">Select Crime Type</option>
+                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                            <option value="PHYSICAL ABUSE">Physical Abuse</option>
+                            <option value="SEXUAL ASSAULT">Sexual Assault</option>
+                            <option value="RAPE">Rape</option>
+                            <option value="CHILD NEGLECT">Child Neglect</option>
+                            <option value="DEFILEMENT">Defilement</option>
+                            <option value="ONLINE SEXUAL EXPLOITATION">Online Sexual Exploitation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offenderAge">Offender Age</label>
+                        <input type="number" id="offenderAge" name="offenderAge" min="0" placeholder="Offender Age">
+                    </div>
+                    
+                    <!-- DYNAMIC RELATIONSHIP FIELD RIGHT AFTER OFFENDER AGE -->
+                    <div class="form-group">
+                        <label for="relationshipToCv" id="relationshipLabel">Relationship to Child</label>
+                        <select id="relationshipToCv" name="relationshipToCv">
+                            <option value="">Select Relationship</option>
+                            <option value="STRANGER">Stranger</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="FATHER">Father</option>
+                            <option value="MOTHER">Mother</option>
+                            <option value="LANDLORD">Landlord</option>
+                            <option value="NEIGHBOR">Neighbor</option>
+                            <option value="RELATIVE">Relative</option>
+                            <option value="TEACHER">Teacher</option>
+                            <option value="CAREGIVER">Caregiver</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeAddRecordModal()">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let allData = [];
         let filteredData = [];
@@ -914,1359 +2306,4 @@ ZP-CW7,Witness,2/10/2025,Mansa,MALE,0.75,MALE,30,DEFILEMENT,PHYSICAL,MEDICAL + C
         }
     </script>
 </body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVW Case Reports Analytics Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        /* Login Screen */
-        .login-container {
-            max-width: 400px;
-            margin: 10vh auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            text-align: center;
-        }
-
-        .login-header h1 {
-            color: #2c3e50;
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .login-header p {
-            color: #7f8c8d;
-            font-size: 1rem;
-            margin-bottom: 30px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .demo-accounts {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .demo-accounts h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .account-demo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .account-demo:hover {
-            background: #e9ecef;
-            transform: translateY(-1px);
-        }
-
-        .account-type {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .account-credentials {
-            color: #6c757d;
-            font-family: monospace;
-        }
-
-        .login-error {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        /* Dashboard */
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            margin: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        .zambia-label {
-            font-family: 'Georgia', serif;
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0 0 0;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            max-width: 300px;
-            margin-left: auto;
-            margin-right: auto;
-            background: #d1fae5;
-            color: #059669;
-            border: 1px solid #10b981;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* User Info Bar */
-        .user-info-bar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-        }
-
-        .user-details {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 1rem;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Role-based styling */
-        .role-admin .user-avatar { background: linear-gradient(135deg, #28a745, #20c997); }
-        .role-viewer .user-avatar { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
-        .role-reporter .user-avatar { background: linear-gradient(135deg, #ffc107, #fd7e14); }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .action-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-        }
-
-        .view-dashboard-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Search Section */
-        .search-section {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Agency Selection */
-        .agency-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #667eea !important;
-        }
-
-        .agency-btn.selected {
-            border-color: #667eea !important;
-            background: linear-gradient(135deg, #667eea, #764ba2) !important;
-            color: white !important;
-        }
-
-        .agency-btn.selected div {
-            color: white !important;
-        }
-
-        .agency-btn.selected .agency-code {
-            color: #fff !important;
-            background: rgba(255, 255, 255, 0.2) !important;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 2% auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .close {
-            color: #95a5a6;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .close:hover {
-            color: #e74c3c;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 12px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #ecf0f1;
-        }
-
-        .cancel-btn {
-            padding: 12px 24px;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .cancel-btn:hover {
-            background: #7f8c8d;
-        }
-
-        .submit-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .success-message {
-            background: #d1fae5;
-            color: #059669;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #10b981;
-            display: none;
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ef4444;
-            display: none;
-        }
-
-        /* Enhanced Age Input Styling */
-        .age-input-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .age-input-container input {
-            flex: 2;
-        }
-
-        .age-input-container select {
-            flex: 1;
-        }
-
-        /* Age display in tables with color coding */
-        .age-display {
-            font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .age-display.infant {
-            background-color: #fee2e2;
-            color: #dc2626;
-            font-weight: 600;
-        }
-
-        .age-display.toddler {
-            background-color: #fed7aa;
-            color: #ea580c;
-            font-weight: 600;
-        }
-
-        .age-display.child {
-            background-color: #dcfce7;
-            color: #059669;
-        }
-
-        .age-display.teen {
-            background-color: #dbeafe;
-            color: #2563eb;
-        }
-
-        /* Highlight months selection */
-        select option[value="months"] {
-            background-color: #fef2f2;
-            font-weight: 600;
-        }
-
-        /* Form validation styling */
-        input:invalid {
-            border-color: #ef4444;
-        }
-
-        input:valid {
-            border-color: #10b981;
-        }
-
-        .age-help-text {
-            color: #666;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            font-style: italic;
-        }
-
-        /* KPI Section */
-        .kpi-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .kpi-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .kpi-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .kpi-label {
-            font-size: 1rem;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        /* Charts */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .chart-container {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .chart-container:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .chart-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-
-        .chart-canvas {
-            max-height: 300px;
-        }
-
-        /* Filters */
-        .filters-section {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            align-items: end;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-group label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .filter-group select,
-        .date-input {
-            padding: 10px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:focus,
-        .date-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .reset-btn {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: fit-content;
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.3);
-        }
-
-        /* Table */
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 10px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .data-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #ecf0f1;
-            transition: background-color 0.2s ease;
-        }
-
-        .data-table tr:hover td {
-            background-color: #f8f9fa;
-        }
-
-        .table-wrapper {
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .victim-badge { background: #fee2e2; color: #dc2626; }
-        .witness-badge { background: #dbeafe; color: #2563eb; }
-
-        /* Utility Classes */
-        .hidden { 
-            display: none !important; 
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            z-index: 2000;
-            display: none;
-            font-weight: 600;
-            max-width: 400px;
-            word-wrap: break-word;
-            white-space: pre-line;
-        }
-
-        .notification.success {
-            background: #d1fae5;
-            color: #059669;
-            border: 1px solid #10b981;
-        }
-
-        .notification.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #ef4444;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .dashboard-container {
-                padding: 15px;
-                margin: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .zambia-label {
-                font-size: 20px;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .kpi-section {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 15px;
-                border-radius: 0;
-                max-height: 100vh;
-                overflow-y: auto;
-            }
-
-            .modal {
-                padding: 0;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .action-btn {
-                width: 90%;
-                max-width: 300px;
-                padding: 15px;
-                font-size: 16px;
-            }
-
-            .age-input-container {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .age-input-container input,
-            .age-input-container select {
-                flex: none;
-                width: 100%;
-                padding: 15px;
-                font-size: 16px;
-            }
-
-            .form-group input,
-            .form-group select {
-                padding: 15px;
-                font-size: 16px;
-                border-radius: 8px;
-            }
-
-            .user-info-bar {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-
-            #agencySelection {
-                margin-bottom: 10px;
-            }
-
-            #agencySelection > div {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .agency-btn {
-                min-width: auto;
-                width: 100%;
-                padding: 25px 15px;
-                font-size: 14px;
-            }
-
-            .login-container {
-                margin: 5% auto;
-                width: 95%;
-                padding: 30px 20px;
-            }
-
-            .submit-btn, .cancel-btn {
-                padding: 15px 25px;
-                font-size: 16px;
-                min-height: 50px;
-            }
-
-            /* Mobile form improvements */
-            .form-group label {
-                font-size: 16px;
-                margin-bottom: 10px;
-            }
-
-            .modal-title {
-                font-size: 1.3rem;
-                line-height: 1.4;
-            }
-
-            /* Ensure tap targets are at least 44px */
-            button, .action-btn, .agency-btn {
-                min-height: 44px;
-                touch-action: manipulation;
-            }
-
-            /* Prevent zoom on input focus for iOS */
-            input, select, textarea {
-                font-size: 16px !important;
-                transform-origin: left top;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .kpi-section {
-                grid-template-columns: 1fr;
-            }
-
-            .login-container {
-                margin: 5% auto;
-                width: 95%;
-                padding: 30px 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
-        <div class="login-header">
-            <h1>🔐 CVW Dashboard</h1>
-            <p>Zambia Child Victim & Witness Analytics</p>
-        </div>
-        
-        <div class="login-error" id="loginError">
-            ❌ Invalid username or password
-        </div>
-        
-        <form class="login-form" id="loginForm">
-            <input type="text" id="username" class="login-input" placeholder="Username" required>
-            <input type="password" id="password" class="login-input" placeholder="Password" required>
-            <button type="submit" class="login-btn">🚀 Login</button>
-        </form>
-        
-        <div class="demo-accounts">
-            <h3>📋 Demo Accounts</h3>
-            <div class="account-demo" onclick="quickLogin('admin', 'admin123')">
-                <span class="account-type">👑 Admin</span>
-                <span class="account-credentials">admin / admin123</span>
-            </div>
-            <div class="account-demo" onclick="quickLogin('viewer', 'view123')">
-                <span class="account-type">👀 Viewer</span>
-                <span class="account-credentials">viewer / view123</span>
-            </div>
-            <div class="account-demo" onclick="quickLogin('reporter', 'report123')">
-                <span class="account-type">📝 Reporter</span>
-                <span class="account-credentials">reporter / report123</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Container -->
-    <div id="notification" class="notification"></div>
-
-    <!-- Main Dashboard -->
-    <div id="mainDashboard" class="hidden">
-        <!-- User Info Bar -->
-        <div id="userInfoBar" class="user-info-bar">
-            <div class="user-details">
-                <div id="userAvatar" class="user-avatar">A</div>
-                <div class="user-info">
-                    <div id="userName" class="user-name">Administrator</div>
-                    <div id="userRole" class="user-role">Admin Account</div>
-                </div>
-            </div>
-            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        </div>
-
-        <div class="dashboard-container">
-            <!-- Header -->
-            <div class="header">
-                <h1>📊 CVW Case Reports Analytics</h1>
-                <p class="zambia-label">Zambia</p>
-                <p>Comprehensive Analysis of Child Victim & Witness Cases</p>
-                
-                <div class="connection-status">
-                    <div class="status-indicator"></div>
-                    <span>Database Connected</span>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons" id="actionButtons">
-                <button class="action-btn add-record-btn" id="addRecordBtn" onclick="openAddRecordModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white;" disabled>
-                    ➕ Add New Record
-                </button>
-                <button class="action-btn search-records-btn" id="searchRecordsBtn" onclick="toggleSearchSection()" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
-                    🔍 Search Records
-                </button>
-                <button class="action-btn view-dashboard-btn" id="viewDashboardBtn" onclick="showDashboardView()">
-                    📈 View Dashboard
-                </button>
-                <button class="action-btn clear-data-btn" id="clearDataBtn" onclick="clearAllData()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white;">
-                    🗑️ Clear Data
-                </button>
-            </div>
-
-            <!-- Search Section -->
-            <div class="search-section" id="searchSection" style="display: none;">
-                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Search & Update Records</h3>
-                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 250px; position: relative;">
-                        <input type="text" id="searchInput" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5, ZP-CV12)" 
-                               style="width: 100%; padding: 12px 45px 12px 15px; border: 2px solid #dee2e6; border-radius: 10px; font-size: 15px;">
-                        <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #2196f3; font-size: 20px;">🔍</span>
-                    </div>
-                    <button onclick="searchRecord()" style="padding: 12px 24px; background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Search</button>
-                    <button onclick="clearSearch()" style="padding: 12px 24px; background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">Clear</button>
-                </div>
-                
-                <div id="searchResults" style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; display: none;">
-                    <!-- Search results will appear here -->
-                </div>
-            </div>
-
-            <!-- Agency Selection -->
-            <div id="agencySelection" class="filters-section hidden" style="margin-bottom: 20px;">
-                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🏛️ Select Reporting Agency</h3>
-                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                    <button class="agency-btn" data-agency="NPA" onclick="selectAgency('NPA')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">⚖️</div>
-                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;" class="agency-name">National Prosecution Authority</div>
-                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="agency-code">NPA</div>
-                    </button>
-                    <button class="agency-btn" data-agency="MOH" onclick="selectAgency('MOH')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">🏥</div>
-                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;" class="agency-name">Ministry of Health</div>
-                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="agency-code">MOH</div>
-                    </button>
-                    <button class="agency-btn" data-agency="ZP" onclick="selectAgency('ZP')" style="background: white; border: 3px solid #dee2e6; border-radius: 15px; padding: 20px; min-width: 200px; cursor: pointer; text-align: center; transition: all 0.3s ease;">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">👮</div>
-                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: #2c3e50;" class="agency-name">Zambia Police</div>
-                        <div style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.9rem; background: #f8f9fa; color: #495057; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="agency-code">ZP</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Reporter Only Content -->
-            <div id="reporterOnlyContent" class="hidden">
-                <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
-                    <h2>📝 Reporter Dashboard</h2>
-                    <p>Welcome! You have access to add new case records and search existing ones.</p>
-                    <p><strong>Select your agency above, then you can start adding records.</strong></p>
-                    <p><strong>Step 1:</strong> Click on your agency above</p>
-                    <p><strong>Step 2:</strong> Click "Add New Record" to report a new case</p>
-                    <p><strong>Step 3:</strong> Use "Search Records" to find existing cases</p>
-                    
-                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin-top: 20px;">
-                        <strong>Case ID Prefixes:</strong><br>
-                        • <strong>NPA-CV/CW:</strong> National Prosecution Authority<br>
-                        • <strong>MOH-CV/CW:</strong> Ministry of Health<br>
-                        • <strong>ZP-CV/CW:</strong> Zambia Police
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filters Section (Hidden for Reporter) -->
-            <div class="filters-section" id="filtersSection">
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label for="districtFilter">District</label>
-                        <select id="districtFilter">
-                            <option value="">All Districts</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="recordTypeFilter">Record Type</label>
-                        <select id="recordTypeFilter">
-                            <option value="">All Types</option>
-                            <option value="Victim">Victim</option>
-                            <option value="Witness">Witness</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="crimeTypeFilter">Crime Type</label>
-                        <select id="crimeTypeFilter">
-                            <option value="">All Crime Types</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="genderFilter">Gender</label>
-                        <select id="genderFilter">
-                            <option value="">All Genders</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateFromFilter">Date From</label>
-                        <input type="date" id="dateFromFilter" class="date-input">
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateToFilter">Date To</label>
-                        <input type="date" id="dateToFilter" class="date-input">
-                    </div>
-                    <div class="filter-group">
-                        <label for="servicesFilter">Services Rendered</label>
-                        <select id="servicesFilter">
-                            <option value="">All Services</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button class="reset-btn" onclick="resetFilters()">🔄 Reset Filters</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- KPI Section (Hidden for Reporter) -->
-            <div class="kpi-section" id="kpiSection">
-                <div class="kpi-card">
-                    <div class="kpi-value" id="totalCases">0</div>
-                    <div class="kpi-label">Total Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="victimCases">0</div>
-                    <div class="kpi-label">Victim Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="witnessCases">0</div>
-                    <div class="kpi-label">Witness Cases</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-value" id="avgAge">0</div>
-                    <div class="kpi-label">Average Age</div>
-                </div>
-            </div>
-
-            <!-- Charts Section (Hidden for Reporter) -->
-            <div class="charts-grid" id="chartsSection">
-                <div class="chart-container">
-                    <div class="chart-title">Cases by District</div>
-                    <canvas id="districtChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Crime Types Distribution</div>
-                    <canvas id="crimeChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Age Distribution</div>
-                    <canvas id="ageChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Gender Distribution</div>
-                    <canvas id="genderChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Cases Over Time</div>
-                    <canvas id="timeChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Services Rendered Distribution</div>
-                    <canvas id="servicesChart" class="chart-canvas"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title">Relationship Analysis</div>
-                    <canvas id="relationshipChart" class="chart-canvas"></canvas>
-                </div>
-            </div>
-
-            <!-- Table Section (Hidden for Reporter) -->
-            <div class="table-container full-width" id="tableSection">
-                <div class="chart-title">Case Details</div>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Case ID</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>District</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Crime Type</th>
-                                <th>Disability</th>
-                                <th>Services</th>
-                                <th>Relationship</th>
-                            </tr>
-                        </thead>
-                        <tbody id="caseTableBody">
-                            <tr>
-                                <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
-                                    Loading case data...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Record Modal -->
-    <div id="addRecordModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">➕ Add New Case Record</h2>
-                <span class="close" onclick="closeAddRecordModal()">&times;</span>
-            </div>
-            
-            <div class="success-message" id="successMessage">
-                ✅ Record added successfully!
-            </div>
-            
-            <div class="error-message" id="errorMessage">
-                ❌ Please fill in all required fields.
-            </div>
-
-            <form id="addRecordForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="caseId">Case ID</label>
-                        <input type="text" id="caseId" name="caseId" placeholder="Auto-generated based on agency and record type" readonly>
-                        <small style="color: #666; margin-top: 5px;">Format: [AGENCY]-[CV/CW][NUMBER] (e.g., NPA-CV1, MOH-CW5, ZP-CV12)</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="recordType">Record Type *</label>
-                        <select id="recordType" name="recordType" required onchange="generateCaseId(); updateRelationshipLabel();">
-                            <option value="">Select Type</option>
-                            <option value="Victim">Victim</option>
-                            <option value="Witness">Witness</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="dateReported">Date Reported *</label>
-                        <input type="date" id="dateReported" name="dateReported" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="district">District *</label>
-                        <select id="district" name="district" required>
-                            <option value="">Select District</option>
-                            <option value="Lusaka">Lusaka</option>
-                            <option value="Kitwe">Kitwe</option>
-                            <option value="Solwezi">Solwezi</option>
-                            <option value="Katete">Katete</option>
-                            <option value="Chipata">Chipata</option>
-                            <option value="Mansa">Mansa</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="cvwGender">CVW Gender *</label>
-                        <select id="cvwGender" name="cvwGender" required>
-                            <option value="">Select Gender</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
-                        </select>
-                    </div>
-                    
-                    <!-- DISABILITY RIGHT AFTER CVW GENDER -->
-                    <div class="form-group">
-                        <label for="disability">CVW Disability Status</label>
-                        <select id="disability" name="disability">
-                            <option value="NON">None</option>
-                            <option value="PHYSICAL">Physical</option>
-                            <option value="MENTAL">Mental</option>
-                            <option value="MENTAL+PHYSICAL">Mental + Physical</option>
-                        </select>
-                    </div>
-                    
-                    <!-- CVW AGE WITH YEARS/MONTHS -->
-                    <div class="form-group">
-                        <label for="cvwAge">CVW Age *</label>
-                        <div class="age-input-container">
-                            <input type="number" id="cvwAge" name="cvwAge" min="0" max="120" placeholder="Enter age" required>
-                            <select id="ageUnit" name="ageUnit" required>
-                                <option value="">Select Unit</option>
-                                <option value="years">Years</option>
-                                <option value="months">Months</option>
-                            </select>
-                        </div>
-                        <small class="age-help-text">
-                            💡 Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
-                        </small>
-                    </div>
-                    
-                    <!-- SERVICES RENDERED RIGHT AFTER CVW AGE -->
-                    <div class="form-group">
-                        <label for="servicesRendered">Services Rendered</label>
-                        <select id="servicesRendered" name="servicesRendered">
-                            <option value="">Select Services</option>
-                            <option value="MEDICAL REPORT">Medical Report</option>
-                            <option value="COUNSELLING">Counselling</option>
-                            <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="offenderGender">Offender Gender</label>
-                        <select id="offenderGender" name="offenderGender">
-                            <option value="">Select Gender</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
-                        </select>
-                    </div>
-                    
-                    <!-- CRIME TYPE RIGHT AFTER OFFENDER GENDER -->
-                    <div class="form-group">
-                        <label for="crimeType">Crime Type *</label>
-                        <select id="crimeType" name="crimeType" required>
-                            <option value="">Select Crime Type</option>
-                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
-                            <option value="PHYSICAL ABUSE">Physical Abuse</option>
-                            <option value="SEXUAL ASSAULT">Sexual Assault</option>
-                            <option value="RAPE">Rape</option>
-                            <option value="CHILD NEGLECT">Child Neglect</option>
-                            <option value="DEFILEMENT">Defilement</option>
-                            <option value="ONLINE SEXUAL EXPLOITATION">Online Sexual Exploitation</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="offenderAge">Offender Age</label>
-                        <input type="number" id="offenderAge" name="offenderAge" min="0" placeholder="Offender Age">
-                    </div>
-                    
-                    <!-- DYNAMIC RELATIONSHIP FIELD RIGHT AFTER OFFENDER AGE -->
-                    <div class="form-group">
-                        <label for="relationshipToCv" id="relationshipLabel">Relationship to Child</label>
-                        <select id="relationshipToCv" name="relationshipToCv">
-                            <option value="">Select Relationship</option>
-                            <option value="STRANGER">Stranger</option>
-                            <option value="FRIEND">Friend</option>
-                            <option value="FATHER">Father</option>
-                            <option value="MOTHER">Mother</option>
-                            <option value="LANDLORD">Landlord</option>
-                            <option value="NEIGHBOR">Neighbor</option>
-                            <option value="RELATIVE">Relative</option>
-                            <option value="TEACHER">Teacher</option>
-                            <option value="CAREGIVER">Caregiver</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn" onclick="closeAddRecordModal()">Cancel</button>
-                    <button type="submit" class="submit-btn">Add Record</button>
-                </div>
-            </form>
-        </div>
-    </div>
+</html>
