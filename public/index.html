@@ -1,1 +1,2991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVW Dashboard - Zambia</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .login-screen {
+            max-width: 400px;
+            margin: 10vh auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .demo-accounts {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .account-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .user-bar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .agency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .agency-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .agency-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .agency-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .agency-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .agency-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .agency-code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .agency-display {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .kpi-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 300px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-victim {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-witness {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-results {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .notification.success {
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .notification.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .notification.info {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #3b82f6;
+        }
+
+        .statistics-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .stats-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .stats-value {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex !important;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .agency-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: white;
+        }
+
+        .agency-info {
+            flex: 1;
+        }
+
+        .agency-code-display {
+            font-weight: bold;
+            color: #2c3e50;
+            font-family: monospace;
+        }
+
+        .agency-name-display {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .agency-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <h1 class="login-title">📊 CVW Dashboard</h1>
+        <p class="login-subtitle">Zambia Child Victim & Witness Analytics</p>
+        
+        <div id="loginError" class="notification error" style="position: static; display: none; margin-bottom: 20px;">
+            Invalid credentials
+        </div>
+        
+        <div id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" class="form-input" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" class="form-input" placeholder="Password" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="handleLogin()">🚀 Login</button>
+        </div>
+        
+        <div class="demo-accounts">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">Demo Accounts</h3>
+            <div class="account-row">
+                <span><strong>Admin:</strong> admin / admin123</span>
+                <button class="btn btn-sm btn-success" onclick="fillLogin('admin', 'admin123')">Fill</button>
+            </div>
+            <div class="account-row">
+                <span><strong>Viewer:</strong> viewer / view123</span>
+                <button class="btn btn-sm btn-info" onclick="fillLogin('viewer', 'view123')">Fill</button>
+            </div>
+            <div class="account-row">
+                <span><strong>General Reporter:</strong> reporter / report123</span>
+                <button class="btn btn-sm btn-warning" onclick="fillLogin('reporter', 'report123')">Fill</button>
+            </div>
+            <div class="account-row">
+                <span><strong>NPA Reporter:</strong> npa_reporter / npa_reporter</span>
+                <button class="btn btn-sm" style="background: #6f42c1; color: white;" onclick="fillLogin('npa_reporter', 'npa_reporter')">Fill</button>
+            </div>
+            <div class="account-row">
+                <span><strong>MOH Reporter:</strong> moh_reporter / moh_reporter</span>
+                <button class="btn btn-sm" style="background: #e83e8c; color: white;" onclick="fillLogin('moh_reporter', 'moh_reporter')">Fill</button>
+            </div>
+            <div class="account-row">
+                <span><strong>ZP Reporter:</strong> zp_reporter / zp_reporter</span>
+                <button class="btn btn-sm" style="background: #20c997; color: white;" onclick="fillLogin('zp_reporter', 'zp_reporter')">Fill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" class="container hidden">
+        <!-- User Bar -->
+        <div class="user-bar">
+            <div class="user-info">
+                <div id="userAvatar" class="user-avatar">A</div>
+                <div>
+                    <div id="userName" style="font-weight: 600; color: #2c3e50;">Administrator</div>
+                    <div id="userRole" style="font-size: 0.9rem; color: #7f8c8d;">Admin Account</div>
+                </div>
+            </div>
+            <button class="btn" onclick="logout()" style="background: #dc3545; color: white;">🚪 Logout</button>
+        </div>
+
+        <!-- Header -->
+        <div class="dashboard">
+            <div class="header">
+                <h1>📊 CVW Analytics Dashboard</h1>
+                <p style="font-size: 1.5rem; font-weight: bold; color: #2c3e50; margin: 10px 0;">ZAMBIA</p>
+                <p class="subtitle">Child Victim & Witness Case Management System</p>
+            </div>
+        </div>
+
+        <!-- Dashboard Controls Section (Admin Only) -->
+        <div id="dashboardControlsSection" class="section">
+            <div class="section-header">🎛️ Dashboard Controls</div>
+            <div class="section-content">
+                <div class="action-grid">
+                    <button class="btn btn-success" onclick="openAddRecord()">➕ Add New Record</button>
+                    <button class="btn btn-info" onclick="toggleSearch()">🔍 Search Records</button>
+                    <button class="btn" style="background: #dc3545; color: white;" onclick="exportPDF()">📄 Export PDF</button>
+                    <button class="btn" style="background: #28a745; color: white;" onclick="exportCSV()">📊 Export CSV</button>
+                    <button class="btn" style="background: #6f42c1; color: white;" onclick="manageUsers()">👥 Manage Users</button>
+                    <button class="btn" style="background: #fd7e14; color: white;" onclick="manageAgencies()">🏢 Manage Agencies</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export & Reports Section (Viewer Only) -->
+        <div id="exportReportsSection" class="section hidden">
+            <div class="section-header">📤 Export & Reports</div>
+            <div class="section-content">
+                <div class="action-grid">
+                    <button class="btn" style="background: #dc3545; color: white;" onclick="exportPDF()">📄 Export PDF</button>
+                    <button class="btn" style="background: #28a745; color: white;" onclick="exportCSV()">📊 Export CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div id="searchSection" class="section hidden">
+            <div class="section-header">🔍 Case Search</div>
+            <div class="section-content">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Enter Case ID (e.g., NPA-CV1, MOH-CW5) or search by district, crime type">
+                    <button class="btn btn-primary" onclick="searchRecords()">Search</button>
+                    <button class="btn" onclick="clearSearch()" style="background: #6c757d; color: white;">Clear</button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+        </div>
+
+        <!-- Add New Record Modal -->
+        <div id="addRecordModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container" style="max-width: 900px;">
+                <div class="modal-header">
+                    <h2>Add New Case Record</h2>
+                    <button class="modal-close" onclick="closeAddRecordModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="success-message" id="successMessage" style="background: #d1fae5; color: #059669; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #10b981; display: none;">
+                        Record added successfully!
+                    </div>
+                    
+                    <div class="error-message" id="errorMessage" style="background: #fee2e2; color: #dc2626; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ef4444; display: none;">
+                        Please fill in all required fields.
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Case ID</label>
+                            <input type="text" id="modalCaseId" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" placeholder="Auto-generated if empty" readonly>
+                            <small style="color: #666; margin-top: 5px; display: block;">Will be auto-generated based on record type</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Record Type *</label>
+                            <select id="modalRecordType" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required onchange="generateModalCaseId()">
+                                <option value="">Select Type</option>
+                                <option value="Victim">Victim</option>
+                                <option value="Witness">Witness</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Date Reported *</label>
+                            <input type="date" id="modalDateReported" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">District *</label>
+                            <select id="modalDistrict" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                                <option value="">Select District</option>
+                                <option value="Lusaka">Lusaka</option>
+                                <option value="Kitwe">Kitwe</option>
+                                <option value="Ndola">Ndola</option>
+                                <option value="Kabwe">Kabwe</option>
+                                <option value="Chingola">Chingola</option>
+                                <option value="Mufulira">Mufulira</option>
+                                <option value="Livingstone">Livingstone</option>
+                                <option value="Luanshya">Luanshya</option>
+                                <option value="Kasama">Kasama</option>
+                                <option value="Chipata">Chipata</option>
+                                <option value="Katete">Katete</option>
+                                <option value="Solwezi">Solwezi</option>
+                                <option value="Mongu">Mongu</option>
+                                <option value="Mazabuka">Mazabuka</option>
+                                <option value="Monze">Monze</option>
+                                <option value="Mansa">Mansa</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">CVW Gender *</label>
+                            <select id="modalCvwGender" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Enhanced CVW Age Input with Years/Months -->
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">CVW Age *</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" id="modalCvwAge" style="flex: 2; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" min="0" max="120" placeholder="Enter age" required>
+                                <select id="modalAgeUnit" style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                                    <option value="">Select Unit</option>
+                                    <option value="years">Years</option>
+                                    <option value="months">Months</option>
+                                </select>
+                            </div>
+                            <small style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic; display: block;">
+                                Select <strong>months</strong> for infants under 1 year, <strong>years</strong> for children 1+ years old
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Offender Gender</label>
+                            <select id="modalOffenderGender" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Offender Age</label>
+                            <input type="number" id="modalOffenderAge" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" min="0" placeholder="Offender Age">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Crime Type *</label>
+                            <select id="modalCrimeType" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                                <option value="">Select Crime Type</option>
+                                <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                                <option value="PHYSICAL ABUSE">Physical Abuse</option>
+                                <option value="SEXUAL ASSAULT">Sexual Assault</option>
+                                <option value="RAPE">Rape</option>
+                                <option value="CHILD NEGLECT">Child Neglect</option>
+                                <option value="DEFILEMENT">Defilement</option>
+                                <option value="ONLINE SEXUAL EXPLOITATION">Online Sexual Exploitation</option>
+                                <option value="TRAFFICKING">Trafficking</option>
+                                <option value="NEGLECT">Neglect</option>
+                                <option value="EXPLOITATION">Exploitation</option>
+                                <option value="DOMESTIC VIOLENCE">Domestic Violence</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Disability</label>
+                            <select id="modalDisability" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="NON">None</option>
+                                <option value="PHYSICAL">Physical</option>
+                                <option value="MENTAL">Mental</option>
+                                <option value="MENTAL+PHYSICAL">Mental + Physical</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Services Rendered</label>
+                            <select id="modalServicesRendered" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="">Select Services</option>
+                                <option value="MEDICAL REPORT">Medical Report</option>
+                                <option value="COUNSELLING">Counselling</option>
+                                <option value="LEGAL AID">Legal Aid</option>
+                                <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
+                                <option value="SHELTER">Shelter</option>
+                                <option value="MEDICAL + COUNSELLING">Medical + Counselling</option>
+                                <option value="LEGAL + COUNSELLING">Legal + Counselling</option>
+                                <option value="REFERRAL">Referral</option>
+                                <option value="FOLLOW-UP">Follow-up</option>
+                                <option value="REHABILITATION">Rehabilitation</option>
+                                <option value="FAMILY SUPPORT">Family Support</option>
+                                <option value="EMERGENCY CARE">Emergency Care</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Relationship to CV</label>
+                            <select id="modalRelationshipToCv" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="">Select Relationship</option>
+                                <option value="STRANGER">Stranger</option>
+                                <option value="FRIEND">Friend</option>
+                                <option value="FATHER">Father</option>
+                                <option value="MOTHER">Mother</option>
+                                <option value="LANDLORD">Landlord</option>
+                                <option value="NEIGHBOR">Neighbor</option>
+                                <option value="RELATIVE">Relative</option>
+                                <option value="TEACHER">Teacher</option>
+                                <option value="CAREGIVER">Caregiver</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Additional Notes (Optional)</label>
+                        <textarea id="modalAdditionalNotes" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" rows="3" placeholder="Any additional information about the case..."></textarea>
+                    </div>
+                </div>
+                <div style="padding: 20px 30px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 15px;">
+                    <button type="button" class="btn" onclick="closeAddRecordModal()" style="background: #6c757d; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewRecord()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">Save Record</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Services Modal -->
+        <div id="updateServicesModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>Update Services</h2>
+                    <button class="modal-close" onclick="closeUpdateServicesModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="currentCaseInfo" class="statistics-summary" style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50;">Case Information</h4>
+                        <div class="stats-row">
+                            <span class="stats-label">Case ID:</span>
+                            <span id="updateCaseId" class="stats-value">-</span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-label">Current Services:</span>
+                            <span id="updateCurrentServices" class="stats-value">-</span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-label">Your Agency:</span>
+                            <span id="updateAgencyName" class="stats-value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Additional Service to Add *</label>
+                        <select id="additionalService" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                            <option value="">Select Additional Service</option>
+                            <option value="MEDICAL REPORT">Medical Report</option>
+                            <option value="COUNSELLING">Counselling</option>
+                            <option value="LEGAL AID">Legal Aid</option>
+                            <option value="PSYCHOSOCIAL SUPPORT">Psychosocial Support</option>
+                            <option value="SHELTER">Shelter</option>
+                            <option value="REFERRAL">Referral</option>
+                            <option value="FOLLOW-UP">Follow-up</option>
+                            <option value="REHABILITATION">Rehabilitation</option>
+                            <option value="FAMILY SUPPORT">Family Support</option>
+                            <option value="EMERGENCY CARE">Emergency Care</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Service Notes (Optional)</label>
+                        <textarea id="serviceNotes" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" rows="3" placeholder="Additional details about the service provided..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Service Date *</label>
+                        <input type="date" id="serviceDate" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" required>
+                    </div>
+                </div>
+                <div style="padding: 20px 30px; border-top: 1px solid #e0e0e0; display: flex; justify-content: flex-end; gap: 15px;">
+                    <button type="button" class="btn" onclick="closeUpdateServicesModal()" style="background: #6c757d; color: white;">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUpdatedServices()">Update Services</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Modal -->
+        <div id="userMgmtModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>👥 User Management</h2>
+                    <button class="modal-close" onclick="closeUserMgmtModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px; color: #2c3e50;">Add New User</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Username</label>
+                                <input type="text" id="newUsername" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Password</label>
+                                <input type="password" id="newPassword" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Role</label>
+                                <select id="newUserRole" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" onchange="toggleAgencySelection()">
+                                    <option value="">Select Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="viewer">Viewer</option>
+                                    <option value="reporter">Reporter</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Full Name</label>
+                                <input type="text" id="newUserName" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            </div>
+                        </div>
+                        <div class="form-group" id="agencySelectionGroup" style="display: none;">
+                            <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Agency (Optional for Reporters)</label>
+                            <select id="newUserAgency" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="">No specific agency (General Reporter)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addNewUser()">+ Add User</button>
+                    </div>
+                    
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #2c3e50;">Existing Users</h3>
+                        <div id="usersList" style="max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agency Management Modal -->
+        <div id="agencyModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h2>🏢 Manage Agencies</h2>
+                    <button class="modal-close" onclick="closeAgencyModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px; color: #2c3e50;">Add New Agency</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 15px; align-items: end;">
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Agency Code</label>
+                                <input type="text" id="newAgencyCode" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" placeholder="e.g., EDU" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; color: #2c3e50; margin-bottom: 8px; display: block;">Agency Name</label>
+                                <input type="text" id="newAgencyName" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;" placeholder="e.g., Ministry of Education">
+                            </div>
+                            <button class="btn btn-success" onclick="addAgency()" style="height: 48px;">+ Add Agency</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #2c3e50;">Current Agencies</h3>
+                        <div id="agencyList" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div id="filtersSection" class="section">
+            <div class="section-header">🔧 Data Filters</div>
+            <div class="section-content">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">District</label>
+                        <select id="districtFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Districts</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Ndola">Ndola</option>
+                            <option value="Kitwe">Kitwe</option>
+                            <option value="Livingstone">Livingstone</option>
+                            <option value="Katete">Katete</option>
+                            <option value="Kabwe">Kabwe</option>
+                            <option value="Chingola">Chingola</option>
+                            <option value="Mufulira">Mufulira</option>
+                            <option value="Luanshya">Luanshya</option>
+                            <option value="Kasama">Kasama</option>
+                            <option value="Chipata">Chipata</option>
+                            <option value="Solwezi">Solwezi</option>
+                            <option value="Mongu">Mongu</option>
+                            <option value="Mazabuka">Mazabuka</option>
+                            <option value="Monze">Monze</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Record Type</label>
+                        <select id="recordTypeFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Types</option>
+                            <option value="Victim">Victim</option>
+                            <option value="Witness">Witness</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Crime Type</label>
+                        <select id="crimeTypeFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Crime Types</option>
+                            <option value="RAPE">Rape</option>
+                            <option value="DEFILEMENT">Defilement</option>
+                            <option value="ASSAULT ON A CHILD">Assault on a Child</option>
+                            <option value="CHILD ABUSE">Child Abuse</option>
+                            <option value="TRAFFICKING">Trafficking</option>
+                            <option value="NEGLECT">Neglect</option>
+                            <option value="EXPLOITATION">Exploitation</option>
+                            <option value="DOMESTIC VIOLENCE">Domestic Violence</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Gender</label>
+                        <select id="genderFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Genders</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Age Range</label>
+                        <select id="ageRangeFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Ages</option>
+                            <option value="0-5">0-5 years</option>
+                            <option value="6-10">6-10 years</option>
+                            <option value="11-15">11-15 years</option>
+                            <option value="16-18">16-18 years</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <select id="dateRangeFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Dates</option>
+                            <option value="last7days">Last 7 days</option>
+                            <option value="last30days">Last 30 days</option>
+                            <option value="last3months">Last 3 months</option>
+                            <option value="last6months">Last 6 months</option>
+                            <option value="thisyear">This year</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" onclick="resetFilters()" style="background: #ffc107; color: #000;">🔄 Reset All</button>
+                    <button class="btn" onclick="exportFilteredData()" style="background: #28a745; color: white;">📊 Export Filtered Data</button>
+                </div>
+                
+                <!-- Filter Results Summary -->
+                <div id="filterSummary" class="statistics-summary" style="margin-top: 20px; display: none;">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">🎯 Filter Results</h4>
+                    <div class="stats-row">
+                        <span class="stats-label">Active Filters:</span>
+                        <span id="activeFilters" class="stats-value">None</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Records Shown:</span>
+                        <span id="filteredCount" class="stats-value">0</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Total Records:</span>
+                        <span id="totalCount" class="stats-value">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agency Section (Reporter Only) -->
+        <div id="agencySection" class="section">
+            <div class="section-header">Agency Selection</div>
+            <div class="section-content">
+                <div id="agencyGridContainer" class="agency-grid">
+                    <!-- Dynamic agency cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reporter Actions Section -->
+        <div id="reporterActionsSection" class="section hidden">
+            <div class="section-header">Reporter Actions</div>
+            <div class="section-content">
+                <div id="selectedAgencyInfo" class="statistics-summary" style="margin-bottom: 20px;">
+                    <div class="stats-row">
+                        <span class="stats-label">Selected Agency:</span>
+                        <span id="currentAgencyName" class="stats-value">Not Selected</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Agency Code:</span>
+                        <span id="currentAgencyCode" class="stats-value">N/A</span>
+                    </div>
+                </div>
+                <div class="action-grid">
+                    <button class="btn btn-success" onclick="openAddRecord()" id="reporterAddBtn">➕ Add New Record</button>
+                    <button class="btn btn-info" onclick="toggleSearch()">🔍 Search Records</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div id="kpiSection" class="section">
+            <div class="section-header">📊 Key Performance Indicators</div>
+            <div class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div id="totalCases" class="kpi-value">6</div>
+                        <div class="kpi-label">Total Cases</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div id="victimCases" class="kpi-value">4</div>
+                        <div class="kpi-label">Victim Cases</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div id="witnessCases" class="kpi-value">2</div>
+                        <div class="kpi-label">Witness Cases</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div id="avgAge" class="kpi-value">10.5</div>
+                        <div class="kpi-label">Average Age</div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Summary -->
+                <div class="statistics-summary">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">📈 Summary Statistics</h4>
+                    <div class="stats-row">
+                        <span class="stats-label">Most Affected District:</span>
+                        <span id="topDistrict" class="stats-value">Lusaka</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Most Common Crime:</span>
+                        <span id="topCrime" class="stats-value">Rape</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Most Common Service:</span>
+                        <span id="topService" class="stats-value">Medical Report</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Female Cases:</span>
+                        <span id="femaleCases" class="stats-value">3 (50%)</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Male Cases:</span>
+                        <span id="maleCases" class="stats-value">3 (50%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div id="chartsSection" class="section">
+            <div class="section-header">📈 Analytics Charts</div>
+            <div class="section-content">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">Cases by District</div>
+                        <div class="chart-canvas">
+                            <canvas id="districtChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Crime Types</div>
+                        <div class="chart-canvas">
+                            <canvas id="crimeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Age Distribution</div>
+                        <div class="chart-canvas">
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Gender Distribution</div>
+                        <div class="chart-canvas">
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Cases Over Time</div>
+                        <div class="chart-canvas">
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Services Rendered</div>
+                        <div class="chart-canvas">
+                            <canvas id="servicesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div id="tableSection" class="section">
+            <div class="section-header">📋 Case Records</div>
+            <div class="section-content">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>District</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Crime Type</th>
+                                <th>Services</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let selectedAgency = null;
+        let allData = [];
+        let filteredData = [];
+        let charts = {};
+        
+        // Enhanced agencies array - now dynamic
+        let agencies = [
+            { code: 'NPA', name: 'National Prosecution Authority', icon: '⚖️' },
+            { code: 'ZP',  name: 'Zambia Police', icon: '👮' },
+            { code: 'MOH', name: 'Ministry of Health', icon: '🏥' }
+        ];
+
+        // User accounts
+        const users = {
+            'admin': { password: 'admin123', role: 'admin', name: 'Administrator', avatar: 'A' },
+            'viewer': { password: 'view123', role: 'viewer', name: 'Data Viewer', avatar: 'V' },
+            'reporter': { password: 'report123', role: 'reporter', name: 'Case Reporter', avatar: 'R' },
+            'npa_reporter': { password: 'npa_reporter', role: 'reporter', name: 'NPA Reporter', avatar: 'N', agency: 'NPA' },
+            'moh_reporter': { password: 'moh_reporter', role: 'reporter', name: 'MOH Reporter', avatar: 'M', agency: 'MOH' },
+            'zp_reporter': { password: 'zp_reporter', role: 'reporter', name: 'ZP Reporter', avatar: 'Z', agency: 'ZP' }
+        };
+
+        // Sample data
+        const sampleData = [
+            {
+                'cvw code': 'NPA-CV1',
+                'Record Type': 'Victim',
+                'Date Reported': new Date('2025-01-04'),
+                'District': 'Lusaka',
+                'CVW Gender': 'MALE',
+                'CVW Age': 5,
+                'Crime Type': 'ASSAULT ON A CHILD',
+                'Services Rendered': 'MEDICAL REPORT'
+            },
+            {
+                'cvw code': 'MOH-CW5',
+                'Record Type': 'Witness',
+                'Date Reported': new Date('2025-02-07'),
+                'District': 'Katete',
+                'CVW Gender': 'MALE',
+                'CVW Age': 15,
+                'Crime Type': 'RAPE',
+                'Services Rendered': 'COUNSELLING'
+            },
+            {
+                'cvw code': 'ZP-CV4',
+                'Record Type': 'Victim',
+                'Date Reported': new Date('2025-03-11'),
+                'District': 'Lusaka',
+                'CVW Gender': 'FEMALE',
+                'CVW Age': 12,
+                'Crime Type': 'RAPE',
+                'Services Rendered': 'MEDICAL + COUNSELLING'
+            },
+            {
+                'cvw code': 'NPA-CV2',
+                'Record Type': 'Victim',
+                'Date Reported': new Date('2025-01-15'),
+                'District': 'Ndola',
+                'CVW Gender': 'FEMALE',
+                'CVW Age': 8,
+                'Crime Type': 'DEFILEMENT',
+                'Services Rendered': 'LEGAL AID'
+            },
+            {
+                'cvw code': 'MOH-CW3',
+                'Record Type': 'Witness',
+                'Date Reported': new Date('2025-02-20'),
+                'District': 'Kitwe',
+                'CVW Gender': 'MALE',
+                'CVW Age': 10,
+                'Crime Type': 'CHILD ABUSE',
+                'Services Rendered': 'PSYCHOSOCIAL SUPPORT'
+            },
+            {
+                'cvw code': 'ZP-CV6',
+                'Record Type': 'Victim',
+                'Date Reported': new Date('2025-03-01'),
+                'District': 'Livingstone',
+                'CVW Gender': 'FEMALE',
+                'CVW Age': 14,
+                'Crime Type': 'TRAFFICKING',
+                'Services Rendered': 'SHELTER'
+            }
+        ];
+
+        // Chart colors
+        const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+
+        // Agency Management Functions
+        window.manageAgencies = function() {
+            console.log('Opening agency management...');
+            if (!currentUser || currentUser.role !== 'admin') {
+                showNotification('Access denied: Only administrators can manage agencies', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('agencyModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('active');
+            updateAgencyList();
+        };
+
+        window.closeAgencyModal = function() {
+            console.log('Closing agency management modal');
+            const modal = document.getElementById('agencyModal');
+            modal.classList.remove('active');
+            modal.classList.add('hidden');
+        };
+
+        window.addAgency = function() {
+            console.log('Adding new agency...');
+            const code = document.getElementById('newAgencyCode').value.trim().toUpperCase();
+            const name = document.getElementById('newAgencyName').value.trim();
+
+            // Validation
+            if (!code || !name) {
+                showNotification('Both agency code and name are required', 'error');
+                return;
+            }
+
+            if (code.length < 2 || code.length > 5) {
+                showNotification('Agency code must be 2-5 characters long', 'error');
+                return;
+            }
+
+            if (!/^[A-Z]+$/.test(code)) {
+                showNotification('Agency code must contain only uppercase letters', 'error');
+                return;
+            }
+
+            // Check if agency already exists
+            if (agencies.find(agency => agency.code === code)) {
+                showNotification('Agency code already exists', 'error');
+                return;
+            }
+
+            // Add agency with default icon
+            const newAgency = {
+                code: code,
+                name: name,
+                icon: '🏢' // Default icon
+            };
+
+            agencies.push(newAgency);
+            
+            // Update displays
+            updateAgencyList();
+            updateAgencyGrid();
+            updateUserAgencyDropdown();
+            
+            // Clear form
+            document.getElementById('newAgencyCode').value = '';
+            document.getElementById('newAgencyName').value = '';
+            
+            showNotification(`Agency "${code} - ${name}" added successfully`, 'success');
+        };
+
+        window.deleteAgency = function(agencyCode) {
+            console.log('Deleting agency:', agencyCode);
+            
+            // Prevent deletion of core agencies
+            const coreAgencies = ['NPA', 'MOH', 'ZP'];
+            if (coreAgencies.includes(agencyCode)) {
+                showNotification('Cannot delete core agencies (NPA, MOH, ZP)', 'error');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete agency "${agencyCode}"?\n\nThis action cannot be undone and may affect existing records.`)) {
+                const agencyIndex = agencies.findIndex(agency => agency.code === agencyCode);
+                if (agencyIndex !== -1) {
+                    const deletedAgency = agencies[agencyIndex];
+                    agencies.splice(agencyIndex, 1);
+                    
+                    // Update displays
+                    updateAgencyList();
+                    updateAgencyGrid();
+                    updateUserAgencyDropdown();
+                    
+                    showNotification(`Agency "${deletedAgency.name}" has been deleted`, 'success');
+                }
+            }
+        };
+
+        function updateAgencyList() {
+            const agencyList = document.getElementById('agencyList');
+            agencyList.innerHTML = '';
+            
+            agencies.forEach(agency => {
+                const agencyDiv = document.createElement('div');
+                agencyDiv.className = 'agency-list-item';
+                
+                const coreAgencies = ['NPA', 'MOH', 'ZP'];
+                const isCore = coreAgencies.includes(agency.code);
+                
+                agencyDiv.innerHTML = `
+                    <div class="agency-info">
+                        <div class="agency-code-display">${agency.code}</div>
+                        <div class="agency-name-display">${agency.name}</div>
+                        ${isCore ? '<small style="color: #28a745; font-weight: bold;">Core Agency</small>' : ''}
+                    </div>
+                    <div>
+                        ${!isCore ? `<button onclick="deleteAgency('${agency.code}')" class="btn btn-sm" style="background: #dc3545; color: white;">Delete</button>` : '<span style="color: #28a745;">Protected</span>'}
+                    </div>
+                `;
+                
+                agencyList.appendChild(agencyDiv);
+            });
+        }
+
+        function updateAgencyGrid() {
+            const agencyGrid = document.getElementById('agencyGridContainer');
+            if (!agencyGrid) return;
+            
+            agencyGrid.innerHTML = '';
+            
+            agencies.forEach(agency => {
+                const agencyCard = document.createElement('div');
+                agencyCard.className = 'agency-card';
+                agencyCard.onclick = () => selectAgency(agency.code);
+                
+                agencyCard.innerHTML = `
+                    <div class="agency-icon">${agency.icon}</div>
+                    <div class="agency-name">${agency.name}</div>
+                    <div class="agency-code">${agency.code}</div>
+                    <div class="agency-display">${agency.code} - ${agency.name}</div>
+                `;
+                
+                agencyGrid.appendChild(agencyCard);
+            });
+        }
+
+        function updateUserAgencyDropdown() {
+            const agencySelect = document.getElementById('newUserAgency');
+            if (!agencySelect) return;
+            
+            // Clear existing options except the first one
+            agencySelect.innerHTML = '<option value="">No specific agency (General Reporter)</option>';
+            
+            // Add all agencies
+            agencies.forEach(agency => {
+                const option = document.createElement('option');
+                option.value = agency.code;
+                option.textContent = `${agency.code} - ${agency.name}`;
+                agencySelect.appendChild(option);
+            });
+        }
+
+        // Enhanced User Management Functions
+        window.toggleAgencySelection = function() {
+            const role = document.getElementById('newUserRole').value;
+            const agencyGroup = document.getElementById('agencySelectionGroup');
+            
+            if (role === 'reporter') {
+                agencyGroup.style.display = 'block';
+                updateUserAgencyDropdown();
+            } else {
+                agencyGroup.style.display = 'none';
+            }
+        };
+
+        // Global functions
+        function fillLogin(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Please enter both username and password';
+                return;
+            }
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = users[username];
+                showDashboard();
+                errorDiv.style.display = 'none';
+                showNotification(`Welcome, ${currentUser.name}!`, 'success');
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Invalid username or password';
+                document.getElementById('loginForm').style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    document.getElementById('loginForm').style.animation = '';
+                }, 500);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            
+            // Clear any previous user's filters and search states
+            clearAllFiltersAndSearch();
+            
+            // Update user info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Account`;
+            document.getElementById('userAvatar').textContent = currentUser.avatar;
+            
+            // Auto-select agency for agency-specific reporters
+            if (currentUser.agency) {
+                selectedAgency = currentUser.agency;
+                setTimeout(() => {
+                    showNotification(`Agency automatically selected: ${getAgencyFullName(currentUser.agency)}. You can now add new records.`, 'success');
+                }, 500);
+            }
+            
+            // Initialize data and UI
+            initializeData();
+            updateAgencyGrid(); // Populate agency grid
+        }
+
+        function initializeData() {
+            allData = [...sampleData];
+            filteredData = [...allData];
+            
+            // Ensure UI starts with clean state
+            updateKPIs();
+            updateStatistics();
+            updateTable();
+            updateUserInterface();
+            
+            // Clear any existing filter summary
+            const filterSummary = document.getElementById('filterSummary');
+            if (filterSummary) {
+                filterSummary.style.display = 'none';
+            }
+            
+            // Create charts after a short delay
+            setTimeout(() => {
+                if (typeof Chart !== 'undefined') {
+                    createCharts();
+                }
+            }, 500);
+        }
+
+        function updateUserInterface() {
+            if (!currentUser) return;
+
+            const dashboardControls = document.getElementById('dashboardControlsSection');
+            const exportReports = document.getElementById('exportReportsSection');
+            const agencySection = document.getElementById('agencySection');
+            const reporterActionsSection = document.getElementById('reporterActionsSection');
+            const filtersSection = document.getElementById('filtersSection');
+            const kpiSection = document.getElementById('kpiSection');
+            const chartsSection = document.getElementById('chartsSection');
+            const tableSection = document.getElementById('tableSection');
+
+            // Reset all sections first
+            [dashboardControls, exportReports, agencySection, reporterActionsSection, filtersSection, kpiSection, chartsSection, tableSection].forEach(section => {
+                if (section) {
+                    section.style.display = 'none';
+                    section.classList.add('hidden');
+                }
+            });
+
+            if (currentUser.role === 'viewer') {
+                // Viewer: Export, filters, KPIs, and charts
+                exportReports.classList.remove('hidden');
+                exportReports.style.display = 'block';
+                filtersSection.classList.remove('hidden');
+                filtersSection.style.display = 'block';
+                kpiSection.classList.remove('hidden');
+                kpiSection.style.display = 'block';
+                chartsSection.classList.remove('hidden');
+                chartsSection.style.display = 'block';
+                
+            } else if (currentUser.role === 'reporter') {
+                // Check if user has a specific agency
+                if (currentUser.agency) {
+                    // Agency-specific reporter: Show reporter actions only
+                    reporterActionsSection.classList.remove('hidden');
+                    reporterActionsSection.style.display = 'block';
+                    updateReporterAgencyInfo();
+                } else {
+                    // General reporter: Show agency selection
+                    agencySection.classList.remove('hidden');
+                    agencySection.style.display = 'block';
+                }
+                
+            } else if (currentUser.role === 'admin') {
+                // Admin: Show everything except export reports and agency sections
+                dashboardControls.classList.remove('hidden');
+                dashboardControls.style.display = 'block';
+                filtersSection.classList.remove('hidden');
+                filtersSection.style.display = 'block';
+                kpiSection.classList.remove('hidden');
+                kpiSection.style.display = 'block';
+                chartsSection.classList.remove('hidden');
+                chartsSection.style.display = 'block';
+                tableSection.classList.remove('hidden');
+                tableSection.style.display = 'block';
+            }
+        }
+
+        function updateReporterAgencyInfo() {
+            if (currentUser && currentUser.agency) {
+                document.getElementById('currentAgencyName').textContent = getAgencyFullName(currentUser.agency);
+                document.getElementById('currentAgencyCode').textContent = currentUser.agency;
+            }
+        }
+
+        // Enhanced Age Handling Functions
+        function setupModalAgeHandlers() {
+            const ageInput = document.getElementById('modalCvwAge');
+            const ageUnit = document.getElementById('modalAgeUnit');
+            
+            if (ageInput && ageUnit) {
+                ageUnit.addEventListener('change', function() {
+                    const unit = this.value;
+                    
+                    if (unit === 'months') {
+                        ageInput.max = '60'; // 5 years max in months
+                        ageInput.placeholder = 'Enter months (0-60)';
+                        ageInput.title = 'Enter age in months (0-60 months = 0-5 years)';
+                        // Highlight for months input
+                        ageInput.style.borderColor = '#dc2626';
+                        ageInput.style.backgroundColor = '#fef2f2';
+                    } else if (unit === 'years') {
+                        ageInput.max = '18';
+                        ageInput.placeholder = 'Enter years (0-18)';
+                        ageInput.title = 'Enter age in years (0-18 years)';
+                        // Reset styling for years
+                        ageInput.style.borderColor = '#e0e0e0';
+                        ageInput.style.backgroundColor = 'white';
+                    } else {
+                        ageInput.max = '120';
+                        ageInput.placeholder = 'Enter age';
+                        ageInput.title = '';
+                        ageInput.style.borderColor = '#e0e0e0';
+                        ageInput.style.backgroundColor = 'white';
+                    }
+                    
+                    // Clear the input when unit changes
+                    ageInput.value = '';
+                });
+
+                // Validate age input based on unit
+                ageInput.addEventListener('input', function() {
+                    const unit = ageUnit.value;
+                    const value = parseFloat(this.value);
+                    
+                    if (unit === 'months' && value > 60) {
+                        this.setCustomValidity('Maximum 60 months (5 years). Use "Years" for older children.');
+                    } else if (unit === 'years' && value > 18) {
+                        this.setCustomValidity('Maximum 18 years for CVW cases.');
+                    } else if (value < 0) {
+                        this.setCustomValidity('Age cannot be negative.');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+        }
+
+        // Function to convert age to years for database storage
+        function convertAgeToYears(age, unit) {
+            if (!age || !unit) return null;
+            
+            const ageNum = parseFloat(age);
+            
+            if (unit === 'months') {
+                return Math.round((ageNum / 12) * 100) / 100; // Convert months to years, round to 2 decimals
+            } else if (unit === 'years') {
+                return ageNum;
+            }
+            
+            return ageNum;
+        }
+
+        // Function to display age in human-readable format
+        function formatAgeDisplay(ageInYears) {
+            if (!ageInYears || ageInYears === 0) return 'N/A';
+            
+            const years = parseFloat(ageInYears);
+            
+            // If less than 1 year, show in months
+            if (years < 1) {
+                const months = Math.round(years * 12);
+                return `${months} month${months !== 1 ? 's' : ''}`;
+            }
+            
+            // If it's a whole number, show as years
+            if (years === Math.floor(years)) {
+                return `${Math.floor(years)} year${Math.floor(years) !== 1 ? 's' : ''}`;
+            }
+            
+            // If it has decimals (converted from months), show in a readable format
+            const wholeYears = Math.floor(years);
+            const extraMonths = Math.round((years - wholeYears) * 12);
+            
+            if (wholeYears === 0) {
+                return `${extraMonths} month${extraMonths !== 1 ? 's' : ''}`;
+            } else if (extraMonths === 0) {
+                return `${wholeYears} year${wholeYears !== 1 ? 's' : ''}`;
+            } else {
+                return `${wholeYears}y ${extraMonths}m`;
+            }
+        }
+
+        // Generate case ID for modal (FIXED with agency detection & sequential numbering)
+        window.generateModalCaseId = function() {
+            const recordType = document.getElementById('modalRecordType').value;
+            const caseIdInput = document.getElementById('modalCaseId');
+
+            if (!recordType) {
+                caseIdInput.value = '';
+                return;
+            }
+
+            // Detect agency (priority: logged in reporter > manually selected agency)
+            const agencyCode = currentUser?.agency || selectedAgency;
+            if (!agencyCode) {
+                caseIdInput.value = '';
+                showNotification('Please select an agency first.', 'error');
+                return;
+            }
+
+            // Record type suffix
+            const typeSuffix = recordType === 'Victim' ? 'CV' : 'CW';
+
+            // Build prefix (e.g., NPA-CV, MOH-CW, ZP-CV, etc.)
+            const prefix = `${agencyCode}-${typeSuffix}`;
+
+            // Find existing IDs with this prefix and get max number
+            const existingIds = allData
+                .filter(r => r['cvw code'] && r['cvw code'].startsWith(prefix))
+                .map(r => {
+                    const match = r['cvw code'].match(/(\d+)$/);
+                    return match ? parseInt(match[1]) : 0;
+                });
+
+            const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+
+            // Assign the new case ID
+            caseIdInput.value = `${prefix}${nextNumber}`;
+        };
+
+        // Hook generator into opening of Add Record modal
+        window.openAddRecord = function() {
+            const modal = document.getElementById('addRecordModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    generateModalCaseId();
+                    attachRecordTypeWatcher();
+                }, 100); // ensure elements are rendered
+            }
+        };
+
+        window.closeAddRecordModal = function() {
+            const modal = document.getElementById('addRecordModal');
+            if (modal) {
+                modal.style.display = 'none';
+                // Clear form fields
+                document.getElementById('modalCaseId').value = '';
+                document.getElementById('modalRecordType').value = '';
+            }
+        };
+
+        // Ensure Case ID refreshes automatically when Record Type changes
+        function attachRecordTypeWatcher() {
+            const recordTypeSelect = document.getElementById('modalRecordType');
+            if (recordTypeSelect) {
+                recordTypeSelect.removeEventListener('change', generateModalCaseId);
+                recordTypeSelect.addEventListener('change', generateModalCaseId);
+            }
+        }
+
+        function selectAgency(agency) {
+            selectedAgency = agency;
+            
+            // Update visual selection
+            document.querySelectorAll('.agency-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            event.target.closest('.agency-card').classList.add('selected');
+            
+            // Show reporter actions section
+            const reporterActionsSection = document.getElementById('reporterActionsSection');
+            reporterActionsSection.classList.remove('hidden');
+            reporterActionsSection.style.display = 'block';
+            
+            // Update agency info
+            document.getElementById('currentAgencyName').textContent = getAgencyFullName(agency);
+            document.getElementById('currentAgencyCode').textContent = agency;
+            
+            showNotification(`Selected agency: ${getAgencyFullName(agency)}`, 'success');
+        }
+
+        function updateKPIs() {
+            const total = filteredData.length;
+            const victims = filteredData.filter(d => d['Record Type'] === 'Victim').length;
+            const witnesses = filteredData.filter(d => d['Record Type'] === 'Witness').length;
+            const avgAge = total > 0 ? filteredData.reduce((sum, d) => sum + d['CVW Age'], 0) / total : 0;
+
+            document.getElementById('totalCases').textContent = total;
+            document.getElementById('victimCases').textContent = victims;
+            document.getElementById('witnessCases').textContent = witnesses;
+            document.getElementById('avgAge').textContent = Math.round(avgAge * 10) / 10;
+        }
+
+        function updateStatistics() {
+            const total = filteredData.length;
+            if (total === 0) return;
+
+            // District analysis
+            const districtCounts = {};
+            filteredData.forEach(d => {
+                districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+            });
+            const topDistrict = Object.keys(districtCounts).reduce((a, b) => districtCounts[a] > districtCounts[b] ? a : b);
+
+            // Crime analysis
+            const crimeCounts = {};
+            filteredData.forEach(d => {
+                crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+            });
+            const topCrime = Object.keys(crimeCounts).reduce((a, b) => crimeCounts[a] > crimeCounts[b] ? a : b);
+
+            // Service analysis
+            const serviceCounts = {};
+            filteredData.forEach(d => {
+                if (d['Services Rendered']) {
+                    serviceCounts[d['Services Rendered']] = (serviceCounts[d['Services Rendered']] || 0) + 1;
+                }
+            });
+            const topService = Object.keys(serviceCounts).length > 0 ? 
+                Object.keys(serviceCounts).reduce((a, b) => serviceCounts[a] > serviceCounts[b] ? a : b) : 'N/A';
+
+            // Gender analysis
+            const femaleCases = filteredData.filter(d => d['CVW Gender'] === 'FEMALE').length;
+            const maleCases = filteredData.filter(d => d['CVW Gender'] === 'MALE').length;
+            const femalePercent = total > 0 ? Math.round((femaleCases / total) * 100) : 0;
+            const malePercent = total > 0 ? Math.round((maleCases / total) * 100) : 0;
+
+            // Update UI
+            document.getElementById('topDistrict').textContent = topDistrict;
+            document.getElementById('topCrime').textContent = topCrime;
+            document.getElementById('topService').textContent = topService;
+            document.getElementById('femaleCases').textContent = `${femaleCases} (${femalePercent}%)`;
+            document.getElementById('maleCases').textContent = `${maleCases} (${malePercent}%)`;
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+
+            filteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: #2c3e50;">${row['cvw code']}</td>
+                    <td><span class="badge badge-${row['Record Type'].toLowerCase()}">${row['Record Type']}</span></td>
+                    <td>${row['Date Reported'].toLocaleDateString()}</td>
+                    <td>${row['District']}</td>
+                    <td>${row['CVW Gender']}</td>
+                    <td>${row['CVW Age']}</td>
+                    <td>${row['Crime Type']}</td>
+                    <td>${row['Services Rendered'] || 'N/A'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function createCharts() {
+            try {
+                // District chart
+                const districtCounts = {};
+                filteredData.forEach(d => {
+                    districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+                });
+
+                createChart('districtChart', 'bar', {
+                    labels: Object.keys(districtCounts),
+                    datasets: [{
+                        label: 'Cases',
+                        data: Object.values(districtCounts),
+                        backgroundColor: colors.slice(0, Object.keys(districtCounts).length),
+                        borderRadius: 8
+                    }]
+                });
+
+                // Crime type chart
+                const crimeCounts = {};
+                filteredData.forEach(d => {
+                    crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+                });
+
+                createChart('crimeChart', 'doughnut', {
+                    labels: Object.keys(crimeCounts),
+                    datasets: [{
+                        data: Object.values(crimeCounts),
+                        backgroundColor: colors.slice(0, Object.keys(crimeCounts).length)
+                    }]
+                });
+
+                // Age distribution
+                const ageRanges = { '0-5': 0, '6-10': 0, '11-15': 0, '16-18': 0 };
+                filteredData.forEach(d => {
+                    const age = d['CVW Age'];
+                    if (age <= 5) ageRanges['0-5']++;
+                    else if (age <= 10) ageRanges['6-10']++;
+                    else if (age <= 15) ageRanges['11-15']++;
+                    else ageRanges['16-18']++;
+                });
+
+                createChart('ageChart', 'bar', {
+                    labels: Object.keys(ageRanges),
+                    datasets: [{
+                        label: 'Count',
+                        data: Object.values(ageRanges),
+                        backgroundColor: colors.slice(0, 4),
+                        borderRadius: 8
+                    }]
+                });
+
+                // Gender distribution
+                const genderCounts = {};
+                filteredData.forEach(d => {
+                    genderCounts[d['CVW Gender']] = (genderCounts[d['CVW Gender']] || 0) + 1;
+                });
+
+                createChart('genderChart', 'pie', {
+                    labels: Object.keys(genderCounts),
+                    datasets: [{
+                        data: Object.values(genderCounts),
+                        backgroundColor: colors.slice(0, Object.keys(genderCounts).length)
+                    }]
+                });
+
+                // Time series
+                const monthCounts = {};
+                filteredData.forEach(d => {
+                    const month = d['Date Reported'].toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    monthCounts[month] = (monthCounts[month] || 0) + 1;
+                });
+
+                createChart('timeChart', 'line', {
+                    labels: Object.keys(monthCounts),
+                    datasets: [{
+                        label: 'Cases',
+                        data: Object.values(monthCounts),
+                        borderColor: colors[0],
+                        backgroundColor: colors[0] + '30',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                });
+
+                // Services distribution
+                const servicesCounts = {};
+                filteredData.forEach(d => {
+                    if (d['Services Rendered']) {
+                        servicesCounts[d['Services Rendered']] = (servicesCounts[d['Services Rendered']] || 0) + 1;
+                    }
+                });
+
+                createChart('servicesChart', 'doughnut', {
+                    labels: Object.keys(servicesCounts),
+                    datasets: [{
+                        data: Object.values(servicesCounts),
+                        backgroundColor: colors.slice(0, Object.keys(servicesCounts).length)
+                    }]
+                });
+
+            } catch (error) {
+                console.error('Error creating charts:', error);
+            }
+        }
+
+        function createChart(canvasId, type, data) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            charts[canvasId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Enhanced Auto-Refresh Filters (automatically applies when any filter changes)
+        function applyFilters() {
+            const district = document.getElementById('districtFilter').value;
+            const recordType = document.getElementById('recordTypeFilter').value;
+            const crimeType = document.getElementById('crimeTypeFilter').value;
+            const gender = document.getElementById('genderFilter').value;
+            const ageRange = document.getElementById('ageRangeFilter').value;
+            const dateRange = document.getElementById('dateRangeFilter').value;
+
+            filteredData = allData.filter(row => {
+                // District filter
+                if (district && row.District !== district) return false;
+                
+                // Record type filter
+                if (recordType && row['Record Type'] !== recordType) return false;
+                
+                // Crime type filter
+                if (crimeType && row['Crime Type'] !== crimeType) return false;
+                
+                // Gender filter
+                if (gender && row['CVW Gender'] !== gender) return false;
+                
+                // Age range filter
+                if (ageRange) {
+                    const age = row['CVW Age'];
+                    switch (ageRange) {
+                        case '0-5':
+                            if (age < 0 || age > 5) return false;
+                            break;
+                        case '6-10':
+                            if (age < 6 || age > 10) return false;
+                            break;
+                        case '11-15':
+                            if (age < 11 || age > 15) return false;
+                            break;
+                        case '16-18':
+                            if (age < 16 || age > 18) return false;
+                            break;
+                    }
+                }
+                
+                // Date range filter
+                if (dateRange) {
+                    const today = new Date();
+                    const recordDate = new Date(row['Date Reported']);
+                    let cutoffDate = new Date();
+                    
+                    switch (dateRange) {
+                        case 'last7days':
+                            cutoffDate.setDate(today.getDate() - 7);
+                            break;
+                        case 'last30days':
+                            cutoffDate.setDate(today.getDate() - 30);
+                            break;
+                        case 'last3months':
+                            cutoffDate.setMonth(today.getMonth() - 3);
+                            break;
+                        case 'last6months':
+                            cutoffDate.setMonth(today.getMonth() - 6);
+                            break;
+                        case 'thisyear':
+                            cutoffDate = new Date(today.getFullYear(), 0, 1);
+                            break;
+                    }
+                    
+                    if (recordDate < cutoffDate) return false;
+                }
+                
+                return true;
+            });
+
+            // Update all components automatically
+            updateKPIs();
+            updateStatistics();
+            updateTable();
+            createCharts();
+            updateFilterSummary();
+        }
+
+        function resetFilters() {
+            // Clear all filter selections
+            document.getElementById('districtFilter').value = '';
+            document.getElementById('recordTypeFilter').value = '';
+            document.getElementById('crimeTypeFilter').value = '';
+            document.getElementById('genderFilter').value = '';
+            document.getElementById('ageRangeFilter').value = '';
+            document.getElementById('dateRangeFilter').value = '';
+            
+            // Reset data
+            filteredData = [...allData];
+            
+            // Update all components
+            updateKPIs();
+            updateStatistics();
+            updateTable();
+            createCharts();
+            updateFilterSummary();
+            
+            showNotification('All filters reset', 'info');
+        }
+
+        function updateFilterSummary() {
+            const filterSummary = document.getElementById('filterSummary');
+            const activeFiltersSpan = document.getElementById('activeFilters');
+            const filteredCountSpan = document.getElementById('filteredCount');
+            const totalCountSpan = document.getElementById('totalCount');
+            
+            // Get active filters
+            const activeFilters = [];
+            
+            const district = document.getElementById('districtFilter').value;
+            const recordType = document.getElementById('recordTypeFilter').value;
+            const crimeType = document.getElementById('crimeTypeFilter').value;
+            const gender = document.getElementById('genderFilter').value;
+            const ageRange = document.getElementById('ageRangeFilter').value;
+            const dateRange = document.getElementById('dateRangeFilter').value;
+            
+            if (district) activeFilters.push(`District: ${district}`);
+            if (recordType) activeFilters.push(`Type: ${recordType}`);
+            if (crimeType) activeFilters.push(`Crime: ${crimeType}`);
+            if (gender) activeFilters.push(`Gender: ${gender}`);
+            if (ageRange) activeFilters.push(`Age: ${ageRange}`);
+            if (dateRange) activeFilters.push(`Date: ${dateRange}`);
+            
+            // Update display
+            if (activeFilters.length > 0) {
+                filterSummary.style.display = 'block';
+                activeFiltersSpan.textContent = activeFilters.join(', ');
+                filteredCountSpan.textContent = filteredData.length;
+                totalCountSpan.textContent = allData.length;
+            } else {
+                filterSummary.style.display = 'none';
+            }
+        }
+
+        // Modal and Form Functions
+        window.openAddRecord = function() {
+            console.log('Opening add record modal');
+            const modal = document.getElementById('addRecordModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('active');
+            
+            // Set default date to today
+            document.getElementById('modalDateReported').value = new Date().toISOString().split('T')[0];
+            
+            // Focus on first field after a short delay
+            setTimeout(() => {
+                document.getElementById('modalRecordType').focus();
+            }, 100);
+        };
+
+        window.closeAddRecordModal = function() {
+            console.log('Closing add record modal');
+            const modal = document.getElementById('addRecordModal');
+            modal.classList.remove('active');
+            modal.classList.add('hidden');
+            
+            // Reset all form fields
+            document.getElementById('modalCaseId').value = '';
+            document.getElementById('modalRecordType').value = '';
+            document.getElementById('modalDateReported').value = '';
+            document.getElementById('modalDistrict').value = '';
+            document.getElementById('modalCvwGender').value = '';
+            document.getElementById('modalCvwAge').value = '';
+            document.getElementById('modalAgeUnit').value = '';
+            document.getElementById('modalOffenderGender').value = '';
+            document.getElementById('modalOffenderAge').value = '';
+            document.getElementById('modalCrimeType').value = '';
+            document.getElementById('modalDisability').value = 'NON';
+            document.getElementById('modalServicesRendered').value = '';
+            document.getElementById('modalRelationshipToCv').value = '';
+            document.getElementById('modalAdditionalNotes').value = '';
+            
+            // Reset age input styling
+            const ageInput = document.getElementById('modalCvwAge');
+            if (ageInput) {
+                ageInput.style.borderColor = '#e0e0e0';
+                ageInput.style.backgroundColor = 'white';
+                ageInput.max = '120';
+                ageInput.placeholder = 'Enter age';
+                ageInput.title = '';
+            }
+            
+            // Hide messages
+            hideModalMessages();
+        };
+
+        window.saveNewRecord = function() {
+            console.log('Saving new record...');
+            
+            // Get form values
+            const caseId = document.getElementById('modalCaseId').value;
+            const recordType = document.getElementById('modalRecordType').value;
+            const dateReported = document.getElementById('modalDateReported').value;
+            const district = document.getElementById('modalDistrict').value;
+            const gender = document.getElementById('modalCvwGender').value;
+            const age = document.getElementById('modalCvwAge').value;
+            const ageUnit = document.getElementById('modalAgeUnit').value;
+            const offenderGender = document.getElementById('modalOffenderGender').value;
+            const offenderAge = document.getElementById('modalOffenderAge').value;
+            const crimeType = document.getElementById('modalCrimeType').value;
+            const disability = document.getElementById('modalDisability').value;
+            const services = document.getElementById('modalServicesRendered').value;
+            const relationship = document.getElementById('modalRelationshipToCv').value;
+            const notes = document.getElementById('modalAdditionalNotes').value;
+            
+            // Validate required fields
+            const requiredFields = [];
+            if (!recordType) requiredFields.push('Record Type');
+            if (!dateReported) requiredFields.push('Date Reported');
+            if (!district) requiredFields.push('District');
+            if (!gender) requiredFields.push('CVW Gender');
+            if (!age) requiredFields.push('CVW Age');
+            if (!ageUnit) requiredFields.push('Age Unit');
+            if (!crimeType) requiredFields.push('Crime Type');
+            
+            if (requiredFields.length > 0) {
+                showModalError('Please fill in all required fields: ' + requiredFields.join(', '));
+                return;
+            }
+            
+            // Convert age to years for storage
+            const ageInYears = convertAgeToYears(age, ageUnit);
+            if (ageInYears === null) {
+                showModalError('Invalid age format');
+                return;
+            }
+            
+            // Generate case ID if not provided
+            let finalCaseId = caseId;
+            if (!finalCaseId) {
+                generateModalCaseId();
+                finalCaseId = document.getElementById('modalCaseId').value;
+            }
+            
+            // Create new record
+            const newRecord = {
+                'cvw code': finalCaseId,
+                'Record Type': recordType,
+                'Date Reported': new Date(dateReported),
+                'District': district,
+                'CVW Gender': gender,
+                'CVW Age': ageInYears,
+                'Offender Gender': offenderGender || '',
+                'Offender Age': parseInt(offenderAge) || 0,
+                'Crime Type': crimeType,
+                'Disability': disability || 'NON',
+                'Services Rendered': services || '',
+                'Relationship to CV': relationship || ''
+            };
+            
+            console.log('New record created:', newRecord);
+            
+            // Add to data
+            allData.push(newRecord);
+            filteredData = [...allData];
+            
+            // Update UI
+            updateKPIs();
+            updateStatistics();
+            updateTable();
+            createCharts();
+            updateFilterSummary();
+            
+            // Show success message with readable age
+            const ageDisplay = formatAgeDisplay(ageInYears);
+            showModalSuccess(`Record ${finalCaseId} added successfully! (Age: ${ageDisplay})`);
+            
+            // Close modal after delay
+            setTimeout(() => {
+                closeAddRecordModal();
+            }, 2000);
+        };
+
+        function showModalSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            if (successMsg) {
+                successMsg.textContent = message;
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function showModalError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            if (errorMsg) {
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function hideModalMessages() {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            if (successMsg) successMsg.style.display = 'none';
+            if (errorMsg) errorMsg.style.display = 'none';
+        }
+
+        function getAgencyFullName(agencyCode) {
+            const agency = agencies.find(a => a.code === agencyCode);
+            return agency ? agency.name : agencyCode;
+        }
+
+        // Search Functions
+        window.toggleSearch = function() {
+            console.log('Toggling search...');
+            const searchSection = document.getElementById('searchSection');
+            if (searchSection.classList.contains('hidden')) {
+                searchSection.classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('searchInput').focus();
+                }, 100);
+            } else {
+                searchSection.classList.add('hidden');
+                clearSearch();
+            }
+        };
+
+        window.searchRecords = function() {
+            console.log('Searching records...');
+            const query = document.getElementById('searchInput').value.trim().toUpperCase();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<p style="color: #dc2626; padding: 10px;">Please enter a search term</p>';
+                resultsDiv.style.display = 'block';
+                return;
+            }
+
+            const results = allData.filter(record => 
+                record['cvw code'].toUpperCase().includes(query) ||
+                record['District'].toUpperCase().includes(query) ||
+                record['Crime Type'].toUpperCase().includes(query) ||
+                record['CVW Gender'].toUpperCase().includes(query) ||
+                (record['Services Rendered'] && record['Services Rendered'].toUpperCase().includes(query))
+            );
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `<p style="color: #dc2626; padding: 10px;">No records found for: "${query}"</p>`;
+            } else {
+                let html = `<h4 style="color: #2c3e50; margin-bottom: 15px; padding: 10px;">Found ${results.length} record(s):</h4>`;
+                results.forEach((record, index) => {
+                    const canUpdateServices = currentUser && currentUser.role === 'reporter' && selectedAgency;
+                    html += `
+                        <div class="result-item" style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <strong style="color: #667eea;">${record['cvw code']}</strong> - 
+                                    <span class="badge badge-${record['Record Type'].toLowerCase()}" style="margin: 0 5px;">${record['Record Type']}</span> - 
+                                    <strong>${record['District']}</strong>
+                                    <br><small style="color: #6c757d;">${record['Crime Type']} | Age: ${record['CVW Age']} | Gender: ${record['CVW Gender']} | ${record['Date Reported'].toLocaleDateString()}</small>
+                                    <br><strong style="color: #28a745;">Current Services: ${record['Services Rendered'] || 'None'}</strong>
+                                </div>
+                                ${canUpdateServices ? `
+                                    <div style="margin-left: 15px;">
+                                        <button class="btn btn-sm" style="background: #17a2b8; color: white;" onclick="openUpdateServicesModal('${record['cvw code']}')">Update Services</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML = html;
+            }
+            
+            resultsDiv.style.display = 'block';
+        };
+
+        window.clearSearch = function() {
+            console.log('Clearing search...');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+        };
+
+        // Export Functions
+        window.exportPDF = function() {
+            console.log('Exporting PDF...');
+            try {
+                const dataToExport = filteredData.length > 0 ? filteredData : allData;
+                
+                let pdfContent = `CVW CASE REPORTS - ZAMBIA\n`;
+                pdfContent += `=====================================\n`;
+                pdfContent += `Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}\n`;
+                pdfContent += `Generated by: ${currentUser ? currentUser.name : 'Unknown'} (${currentUser ? currentUser.role : 'Unknown'})\n`;
+                pdfContent += `Total Records: ${dataToExport.length}\n\n`;
+                
+                const victims = dataToExport.filter(d => d['Record Type'] === 'Victim').length;
+                const witnesses = dataToExport.filter(d => d['Record Type'] === 'Witness').length;
+                const avgAge = dataToExport.length > 0 ? dataToExport.reduce((sum, d) => sum + d['CVW Age'], 0) / dataToExport.length : 0;
+                
+                pdfContent += `SUMMARY STATISTICS:\n`;
+                pdfContent += `==================\n`;
+                pdfContent += `• Total Cases: ${dataToExport.length}\n`;
+                pdfContent += `• Victim Cases: ${victims} (${Math.round((victims/dataToExport.length)*100)}%)\n`;
+                pdfContent += `• Witness Cases: ${witnesses} (${Math.round((witnesses/dataToExport.length)*100)}%)\n`;
+                pdfContent += `• Average Age: ${Math.round(avgAge * 10) / 10} years\n\n`;
+                
+                // District breakdown
+                const districtCounts = {};
+                dataToExport.forEach(d => {
+                    districtCounts[d.District] = (districtCounts[d.District] || 0) + 1;
+                });
+                
+                pdfContent += `DISTRICT BREAKDOWN:\n`;
+                pdfContent += `==================\n`;
+                Object.entries(districtCounts).sort((a, b) => b[1] - a[1]).forEach(([district, count]) => {
+                    const percentage = Math.round((count / dataToExport.length) * 100);
+                    pdfContent += `• ${district}: ${count} cases (${percentage}%)\n`;
+                });
+                pdfContent += `\n`;
+                
+                // Crime type breakdown
+                const crimeCounts = {};
+                dataToExport.forEach(d => {
+                    crimeCounts[d['Crime Type']] = (crimeCounts[d['Crime Type']] || 0) + 1;
+                });
+                
+                pdfContent += `CRIME TYPE BREAKDOWN:\n`;
+                pdfContent += `====================\n`;
+                Object.entries(crimeCounts).sort((a, b) => b[1] - a[1]).forEach(([crime, count]) => {
+                    const percentage = Math.round((count / dataToExport.length) * 100);
+                    pdfContent += `• ${crime}: ${count} cases (${percentage}%)\n`;
+                });
+                pdfContent += `\n`;
+                
+                pdfContent += `DETAILED CASE RECORDS:\n`;
+                pdfContent += `=====================\n`;
+                pdfContent += `${'='.repeat(80)}\n`;
+                
+                dataToExport.forEach((record, index) => {
+                    pdfContent += `${index + 1}. CASE ID: ${record['cvw code']}\n`;
+                    pdfContent += `   Type: ${record['Record Type']}\n`;
+                    pdfContent += `   District: ${record['District']}\n`;
+                    pdfContent += `   Age: ${record['CVW Age']} years\n`;
+                    pdfContent += `   Gender: ${record['CVW Gender']}\n`;
+                    pdfContent += `   Crime: ${record['Crime Type']}\n`;
+                    pdfContent += `   Date Reported: ${record['Date Reported'].toLocaleDateString()}\n`;
+                    pdfContent += `   Services Rendered: ${record['Services Rendered'] || 'None'}\n`;
+                    pdfContent += `${'-'.repeat(80)}\n`;
+                });
+                
+                pdfContent += `\nEND OF REPORT\n`;
+                pdfContent += `Generated by CVW Dashboard - Zambia Child Victim & Witness Analytics System\n`;
+                
+                const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `CVW_Report_${new Date().toISOString().split('T')[0]}_${new Date().toTimeString().split(' ')[0].replace(/:/g, '')}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showNotification(`Report exported successfully! ${dataToExport.length} records included.`, 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Error generating PDF report. Please try again.', 'error');
+            }
+        };
+
+        window.exportCSV = function() {
+            console.log('Exporting CSV...');
+            try {
+                const dataToExport = filteredData.length > 0 ? filteredData : allData;
+                
+                if (dataToExport.length === 0) {
+                    showNotification('No data to export', 'error');
+                    return;
+                }
+                
+                const headers = ['Case_ID', 'Record_Type', 'Date_Reported', 'District', 'Gender', 'Age', 'Crime_Type', 'Services_Rendered'];
+                const rows = dataToExport.map(record => [
+                    record['cvw code'],
+                    record['Record Type'],
+                    record['Date Reported'].toLocaleDateString(),
+                    record['District'],
+                    record['CVW Gender'],
+                    record['CVW Age'],
+                    record['Crime Type'],
+                    record['Services Rendered'] || 'N/A'
+                ]);
+                
+                const csvContent = [headers, ...rows]
+                    .map(row => row.map(field => {
+                        // Escape quotes and wrap in quotes if needed
+                        const stringField = String(field);
+                        if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+                            return `"${stringField.replace(/"/g, '""')}"`;
+                        }
+                        return stringField;
+                    }).join(','))
+                    .join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `CVW_Data_${new Date().toISOString().split('T')[0]}_${new Date().toTimeString().split(' ')[0].replace(/:/g, '')}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showNotification(`CSV exported successfully! ${dataToExport.length} records included.`, 'success');
+            } catch (error) {
+                console.error('CSV export error:', error);
+                showNotification('Error generating CSV file. Please try again.', 'error');
+            }
+        };
+
+        // Update Services Functions
+        window.openUpdateServicesModal = function(caseId) {
+            console.log('Opening update services modal for case:', caseId);
+            
+            // Find the case record
+            const caseRecord = allData.find(record => record['cvw code'] === caseId);
+            if (!caseRecord) {
+                showNotification('Case not found', 'error');
+                return;
+            }
+            
+            // Populate case information
+            document.getElementById('updateCaseId').textContent = caseId;
+            document.getElementById('updateCurrentServices').textContent = caseRecord['Services Rendered'] || 'None';
+            document.getElementById('updateAgencyName').textContent = currentUser.agency ? getAgencyFullName(currentUser.agency) : selectedAgency ? getAgencyFullName(selectedAgency) : 'Unknown';
+            
+            // Set default service date to today
+            document.getElementById('serviceDate').value = new Date().toISOString().split('T')[0];
+            
+            // Show modal
+            const modal = document.getElementById('updateServicesModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('active');
+            
+            // Focus on service selector
+            setTimeout(() => {
+                document.getElementById('additionalService').focus();
+            }, 100);
+        };
+
+        window.closeUpdateServicesModal = function() {
+            console.log('Closing update services modal');
+            const modal = document.getElementById('updateServicesModal');
+            modal.classList.remove('active');
+            modal.classList.add('hidden');
+            
+            // Reset form
+            document.getElementById('additionalService').value = '';
+            document.getElementById('serviceNotes').value = '';
+            document.getElementById('serviceDate').value = '';
+        };
+
+        window.saveUpdatedServices = function() {
+            console.log('Saving updated services...');
+            
+            const caseId = document.getElementById('updateCaseId').textContent;
+            const additionalService = document.getElementById('additionalService').value;
+            const serviceNotes = document.getElementById('serviceNotes').value;
+            const serviceDate = document.getElementById('serviceDate').value;
+            
+            // Validate required fields
+            if (!additionalService || !serviceDate) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Find and update the case record
+            const caseIndex = allData.findIndex(record => record['cvw code'] === caseId);
+            if (caseIndex === -1) {
+                showNotification('Case not found', 'error');
+                return;
+            }
+            
+            const currentServices = allData[caseIndex]['Services Rendered'];
+            let updatedServices;
+            
+            if (!currentServices || currentServices === 'N/A' || currentServices === 'None') {
+                updatedServices = additionalService;
+            } else {
+                // Check if service already exists to avoid duplicates
+                if (currentServices.toUpperCase().includes(additionalService.toUpperCase())) {
+                    showNotification('This service is already recorded for this case', 'error');
+                    return;
+                }
+                updatedServices = currentServices + ' + ' + additionalService;
+            }
+            
+            // Update the record
+            allData[caseIndex]['Services Rendered'] = updatedServices;
+            allData[caseIndex]['Last Updated'] = new Date(serviceDate);
+            allData[caseIndex]['Updated By'] = currentUser.agency || selectedAgency;
+            
+            if (serviceNotes) {
+                allData[caseIndex]['Service Notes'] = serviceNotes;
+            }
+            
+            // Update filtered data if it contains this record
+            const filteredIndex = filteredData.findIndex(record => record['cvw code'] === caseId);
+            if (filteredIndex !== -1) {
+                filteredData[filteredIndex] = { ...allData[caseIndex] };
+            }
+            
+            // Refresh UI components
+            updateKPIs();
+            updateStatistics();
+            updateTable();
+            createCharts();
+            updateFilterSummary();
+            
+            // If search results are visible, refresh them
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value.trim()) {
+                searchRecords();
+            }
+            
+            // Close modal and show success
+            closeUpdateServicesModal();
+            showNotification(`Services updated for case ${caseId}: Added "${additionalService}"`, 'success');
+        };
+
+        window.exportFilteredData = function() {
+            exportCSV();
+        };
+
+        // User Management Functions
+        window.manageUsers = function() {
+            console.log('Opening user management...');
+            if (!currentUser || currentUser.role !== 'admin') {
+                showNotification('Access denied: Only administrators can manage users', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('userMgmtModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('active');
+            updateUsersList();
+            updateUserAgencyDropdown();
+        };
+
+        window.closeUserMgmtModal = function() {
+            console.log('Closing user management modal');
+            const modal = document.getElementById('userMgmtModal');
+            modal.classList.remove('active');
+            modal.classList.add('hidden');
+        };
+
+        window.addNewUser = function() {
+            console.log('Adding new user...');
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const role = document.getElementById('newUserRole').value;
+            const name = document.getElementById('newUserName').value.trim();
+            const agency = document.getElementById('newUserAgency').value;
+
+            // Validation
+            if (!username || !password || !role || !name) {
+                showNotification('All fields are required', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                showNotification('Username must be at least 3 characters long', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            if (users[username]) {
+                showNotification('Username already exists', 'error');
+                return;
+            }
+
+            // Add user
+            const newUser = {
+                password: password,
+                role: role,
+                name: name,
+                avatar: name.charAt(0).toUpperCase(),
+                createdAt: new Date()
+            };
+
+            // Add agency if reporter and agency selected
+            if (role === 'reporter' && agency) {
+                newUser.agency = agency;
+            }
+
+            users[username] = newUser;
+
+            updateUsersList();
+            
+            // Clear form
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('newUserRole').value = '';
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserAgency').value = '';
+            document.getElementById('agencySelectionGroup').style.display = 'none';
+            
+            const agencyText = agency ? ` with ${agency} agency` : '';
+            showNotification(`User "${username}" added successfully with ${role} role${agencyText}`, 'success');
+        };
+
+        window.resetUserPassword = function(username) {
+            console.log('Resetting password for:', username);
+            const newPassword = prompt(`Enter new password for user "${username}":\n\n(Password must be at least 6 characters long)`);
+            if (newPassword && newPassword.trim() && newPassword.length >= 6) {
+                users[username].password = newPassword.trim();
+                showNotification(`Password successfully reset for user "${username}"`, 'success');
+            } else if (newPassword !== null && newPassword !== '') {
+                showNotification('Password must be at least 6 characters long', 'error');
+            }
+        };
+
+        window.updateUsersList = function() {
+            console.log('Updating users list...');
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                const userDiv = document.createElement('div');
+                userDiv.style.cssText = 'padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 10px; background: white; display: flex; justify-content: space-between; align-items: center;';
+                
+                const createdDate = user.createdAt ? user.createdAt.toLocaleDateString() : 'N/A';
+                const agencyInfo = user.agency ? ` | Agency: ${user.agency}` : '';
+                
+                userDiv.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600; color: #2c3e50;">${user.name}</div>
+                        <div style="font-size: 0.9rem; color: #6c757d;">Username: ${username} | Role: ${user.role}${agencyInfo}</div>
+                        <div style="font-size: 0.8rem; color: #adb5bd;">Created: ${createdDate}</div>
+                    </div>
+                    <div>
+                        <button onclick="resetUserPassword('${username}')" class="btn btn-sm btn-info" style="margin-right: 5px;">Reset Password</button>
+                        ${username !== 'admin' ? `<button onclick="deleteUser('${username}')" class="btn btn-sm" style="background: #dc3545; color: white;">Delete</button>` : ''}
+                    </div>
+                `;
+                
+                usersList.appendChild(userDiv);
+            });
+        };
+
+        window.deleteUser = function(username) {
+            console.log('Deleting user:', username);
+            if (username === 'admin') {
+                showNotification('Cannot delete the administrator account', 'error');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone.`)) {
+                delete users[username];
+                updateUsersList();
+                showNotification(`User "${username}" has been deleted`, 'success');
+            }
+        };
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                selectedAgency = null;
+                
+                // Clear all filters and search states
+                clearAllFiltersAndSearch();
+                
+                // Hide dashboard and show login
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('mainDashboard').classList.add('hidden');
+                
+                // Clear login form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                
+                showNotification('Logged out successfully', 'info');
+            }
+        }
+
+        function clearAllFiltersAndSearch() {
+            // Clear all filter selections
+            const filterSelectors = [
+                'districtFilter', 'recordTypeFilter', 'crimeTypeFilter', 
+                'genderFilter', 'ageRangeFilter', 'dateRangeFilter'
+            ];
+            
+            filterSelectors.forEach(filterId => {
+                const element = document.getElementById(filterId);
+                if (element) {
+                    element.value = '';
+                }
+            });
+            
+            // Clear search input and results
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            const searchSection = document.getElementById('searchSection');
+            
+            if (searchInput) searchInput.value = '';
+            if (searchResults) {
+                searchResults.style.display = 'none';
+                searchResults.innerHTML = '';
+            }
+            if (searchSection) {
+                searchSection.classList.add('hidden');
+            }
+            
+            // Hide filter summary
+            const filterSummary = document.getElementById('filterSummary');
+            if (filterSummary) {
+                filterSummary.style.display = 'none';
+            }
+            
+            // Reset filtered data to all data
+            filteredData = [...allData];
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add event listeners when DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enter key support for login
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+
+            // Modal close on background click
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-overlay')) {
+                    if (e.target.id === 'addRecordModal') {
+                        closeAddRecordModal();
+                    } else if (e.target.id === 'userMgmtModal') {
+                        closeUserMgmtModal();
+                    } else if (e.target.id === 'updateServicesModal') {
+                        closeUpdateServicesModal();
+                    } else if (e.target.id === 'agencyModal') {
+                        closeAgencyModal();
+                    }
+                }
+            });
+
+            // Escape key to close modals
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Close all modals
+                    const addModal = document.getElementById('addRecordModal');
+                    const userModal = document.getElementById('userMgmtModal');
+                    const updateModal = document.getElementById('updateServicesModal');
+                    const agencyModal = document.getElementById('agencyModal');
+                    
+                    if (addModal && addModal.classList.contains('active')) {
+                        closeAddRecordModal();
+                    }
+                    if (userModal && userModal.classList.contains('active')) {
+                        closeUserMgmtModal();
+                    }
+                    if (updateModal && updateModal.classList.contains('active')) {
+                        closeUpdateServicesModal();
+                    }
+                    if (agencyModal && agencyModal.classList.contains('active')) {
+                        closeAgencyModal();
+                    }
+                }
+            });
+
+            // Enter key in search
+            document.addEventListener('keypress', function(e) {
+                if (e.target.id === 'searchInput' && e.key === 'Enter') {
+                    searchRecords();
+                }
+            });
+
+            // Auto-validation for agency code input (uppercase only)
+            document.addEventListener('input', function(e) {
+                if (e.target.id === 'newAgencyCode') {
+                    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 
